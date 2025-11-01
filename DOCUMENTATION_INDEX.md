@@ -164,6 +164,17 @@ Complete guide to all DLog documentation.
   - Practical recommendations
   - Monitoring CAP metrics
 
+#### Immutable Knowledge Databases
+- [IMMUTABLE_KNOWLEDGE_DB.md](IMMUTABLE_KNOWLEDGE_DB.md) ⭐ **NEW: DLog for temporal knowledge systems**
+  - Entity-Attribute-Value-Time (EAVT) model
+  - Complete immutability and audit trails
+  - Time-travel queries (query at any historical point)
+  - ACID transactions for atomic fact assertions
+  - Use cases: Scientific papers, legal documents, medical records, infrastructure as code
+  - Comparison with Datomic, Crux, PostgreSQL
+  - 50,000× faster than Datomic
+  - Complete implementation patterns and query examples
+
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
   - **DLog's Architectural Advantages** (new section)
@@ -456,13 +467,22 @@ Complete guide to all DLog documentation.
 4. Check [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) for distributed coordinators pattern
 5. Read [TIKV_COMPARISON.md](TIKV_COMPARISON.md) and [COMPARISON.md](COMPARISON.md) for performance comparisons
 
+### "I want to build an immutable knowledge database"
+1. Read [IMMUTABLE_KNOWLEDGE_DB.md](IMMUTABLE_KNOWLEDGE_DB.md) ⭐ - complete guide
+2. Study [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) for transactions and time-travel
+3. Review [EXAMPLES.md](EXAMPLES.md) for implementation patterns
+4. Check [ARCHITECTURE.md](ARCHITECTURE.md) for MVCC and storage details
+
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 21 markdown files (including academic research paper)
-- **Total Lines**: ~29,000+ lines of documentation
+- **Total Documents**: 31 markdown files
+  - 25 main documentation files
+  - 6 blog posts
+- **Total Lines**: ~35,000+ lines of documentation
 - **Coverage**:
   - ✅ Architecture and design
   - ✅ Research contributions and academic paper
+  - ✅ Immutable knowledge databases and temporal systems
   - ✅ User guides and tutorials
   - ✅ Operations and deployment
   - ✅ Performance and optimization
