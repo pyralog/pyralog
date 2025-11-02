@@ -512,6 +512,8 @@ to recover the counter value instantly.
 
 ### Icon Reference
 
+**Core Components**:
+
 | Icon | Represents | Use When |
 |------|------------|----------|
 | 🔺 | Pyralog Platform | Mentioning entire system |
@@ -520,6 +522,17 @@ to recover the counter value instantly.
 | 🪲 | Scarab IDs | Discussing unique identifiers |
 | 🎼 | Batuta Language | Discussing queries/interface |
 | 🌲 | Sulise Evergreen | Discussing language development/theory |
+
+**Feature Icons**:
+
+| Icon | Represents | Metaphor | Use When |
+|------|------------|----------|----------|
+| 🎭 | Actor Model | Theater performers | Discussing actors, concurrency, message-passing |
+| 🕸️ | Distributed Systems | Decentralized mesh | Discussing distribution, clustering, decentralization |
+| ⚡ | Parallel Execution | Lightning speed | Discussing parallelism, performance, throughput |
+| 🔒 | Cryptographic Security | Lock/vault | Discussing verification, encryption, zero-trust |
+| 🗄️ | Multi-Model Database | Filing cabinet | Discussing data models, queries, storage |
+| 🧮 | Tensor Operations | Computation | Discussing ML, AI, scientific computing |
 
 ### ASCII Art Style
 
@@ -723,6 +736,13 @@ When creating Pyralog content, ensure:
 ---
 
 ## 📝 Version History
+
+- **v2.2** (2025-11-02): Added feature-level icons
+  - Added 🎭 Theater Masks for Actor Model (theater performers = actors)
+  - Added 🕸️ Spider Web for Distributed Systems (decentralized mesh)
+  - Added feature icons: ⚡ Parallel, 🔒 Security, 🗄️ Database, 🧮 Tensors
+  - Split icon reference into "Core Components" and "Feature Icons"
+  - Added metaphor column to explain icon choices
 
 - **v2.1** (2025-11-02): Added Sulise Evergreen language development toolkit
   - Added 🌲 Sulise as complete PL development foundation
