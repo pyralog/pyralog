@@ -291,7 +291,7 @@ Result: Feature freshness <1ms, consistent training/serving
 
 ## What's Next?
 
-We're open-sourcing DLog under MIT/Apache-2.0 license.
+We're open-sourcing DLog under MIT-0 (code) and CC0-1.0 (documentation) licenses.
 
 **Coming in the next blog posts:**
 1. ✅ Introducing DLog (this post)
@@ -333,7 +333,7 @@ Interested in using DLog at your company? Reach out: hello@dlog.io
 ---
 
 **Author**: DLog Team
-**License**: MIT OR Apache-2.0
+**License**: MIT-0 (code) & CC0-1.0 (documentation)
 **GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
 
 ---

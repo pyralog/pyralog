@@ -255,7 +255,10 @@ The project demonstrates:
 
 ## License
 
-Dual-licensed under MIT and Apache 2.0 for maximum compatibility.
+- **Code**: MIT-0 (MIT No Attribution)
+- **Documentation**: CC0-1.0 (Public Domain)
+
+Maximum freedom and compatibility with no attribution requirements.
 
 ---
 

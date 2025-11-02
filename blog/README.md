@@ -199,13 +199,13 @@ A 5-part technical blog series explaining DLog's architecture, innovations, and 
 
 ## 📝 License
 
-All blog posts are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+All blog posts and documentation are licensed under [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) (Public Domain).
 
 You're free to:
 - **Share** — copy and redistribute
 - **Adapt** — remix, transform, build upon
-
-Just provide attribution to DLog.
+- **Commercial use** — use in any product or service
+- **No attribution required** — though it's appreciated!
 
 ---
 

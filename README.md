@@ -5,8 +5,13 @@
 IMPORTANT: Project in research and design phase. Drafts only.
 
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
+[![License: MIT-0](https://img.shields.io/badge/license-MIT--0-blue.svg)](LICENSE)
+[![License: CC0-1.0](https://img.shields.io/badge/docs-CC0--1.0-blue.svg)](LICENSE)
 [![Paper](https://img.shields.io/badge/research-paper-brightgreen.svg)](PAPER.md)
+[![Batuta](https://img.shields.io/badge/language-Batuta-purple.svg)](BATUTA.md)
+[![WASM](https://img.shields.io/badge/target-WebAssembly-blueviolet.svg)](BATUTA.md#2-webassembly-wasm)
+[![Docs](https://img.shields.io/badge/docs-74k%20lines-success.svg)](DOCUMENTATION_INDEX.md)
+[![Quantum Ready](https://img.shields.io/badge/quantum-resistant-red.svg)](WIREGUARD_PROTOCOL.md#quantum-resistance)
 
 ## What is DLog?
 

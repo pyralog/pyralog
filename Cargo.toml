@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Your Name"]
 description = "High-performance distributed log system inspired by Redpanda and LogDevice"
-license = "MIT OR Apache-2.0"
+license = "MIT-0"
 
 [workspace]
 members = [".", "dlog-core", "dlog-storage", "dlog-consensus", "dlog-replication", "dlog-protocol"]

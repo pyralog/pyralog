@@ -1233,8 +1233,10 @@ unmaintained = "warn"
 unlicensed = "deny"
 allow = [
     "MIT",
+    "MIT-0",
     "Apache-2.0",
     "BSD-3-Clause",
+    "CC0-1.0",
 ]
 
 [bans]

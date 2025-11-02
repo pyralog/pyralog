@@ -345,17 +345,20 @@ Current best practices:
 
 ### What license is DLog under?
 
-**Dual licensed**: MIT OR Apache-2.0
+**Dual licensed**: MIT-0 (code) and CC0-1.0 (documentation)
 
-You can choose either license. This is common in the Rust ecosystem and provides maximum flexibility.
+- **Code** (Rust source): MIT-0 (MIT No Attribution) - the most permissive possible
+- **Documentation** (Markdown, papers): CC0-1.0 (Public Domain) - no restrictions whatsoever
+
+This provides maximum freedom and flexibility for both commercial and open-source use.
 
 ### Can I use DLog commercially?
 
-**Yes!** Both MIT and Apache-2.0 allow commercial use.
+**Yes!** Both MIT-0 and CC0-1.0 are maximally permissive licenses. You can use DLog in any commercial product without attribution requirements.
 
 ### Do I need to open-source my application?
 
-**No!** Neither MIT nor Apache-2.0 are copyleft licenses. You can use DLog in proprietary software.
+**No!** Neither MIT-0 nor CC0-1.0 are copyleft licenses. You can use DLog in proprietary software without any obligation to share your code or even mention DLog.
 
 ## Community Questions
 

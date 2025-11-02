@@ -541,9 +541,9 @@ Contributors are recognized:
 
 ## License
 
-By contributing to DLog, you agree that your contributions will be licensed under both:
-- MIT License
-- Apache License 2.0
+By contributing to DLog, you agree that your contributions will be licensed under:
+- **Code contributions**: MIT-0 (MIT No Attribution)
+- **Documentation contributions**: CC0-1.0 (Public Domain)
 
 ---
 

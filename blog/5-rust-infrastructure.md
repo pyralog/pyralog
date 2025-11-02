@@ -698,7 +698,7 @@ Rust is the future of systems programming. If you're building high-performance i
 
 ## What's Next for DLog?
 
-We're open-sourcing DLog under MIT/Apache-2.0 license. Join us:
+We're open-sourcing DLog under MIT-0 (code) and CC0-1.0 (documentation) licenses. Join us:
 
 **GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
 **Discord**: [discord.gg/dlog](https://discord.gg/dlog)
@@ -731,6 +731,6 @@ Let's build the future of data infrastructure together—in Rust! 🦀
 ---
 
 **Author**: DLog Team
-**License**: MIT OR Apache-2.0
+**License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 
