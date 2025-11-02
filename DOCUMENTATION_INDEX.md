@@ -1008,7 +1008,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 **Maintainers**: DLog Team
 
-**License**: MIT OR Apache-2.0
+**License**: MIT-0 (code) & CC0-1.0 (documentation)
 
 *Found an issue with the documentation? Please [open an issue](https://github.com/dlog/dlog/issues) or submit a PR!*
 

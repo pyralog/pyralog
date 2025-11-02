@@ -759,12 +759,14 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 
 ## 📝 License
 
-This project is licensed under either of:
+This project is dual-licensed:
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
-- MIT License ([LICENSE-MIT](LICENSE-MIT))
+- **Source code**: [MIT-0](https://opensource.org/licenses/MIT-0) (MIT No Attribution)
+- **Documentation**: [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) (Public Domain)
 
-at your option.
+See [LICENSE](LICENSE) and [COPYRIGHT](COPYRIGHT) for details.
+
+**TL;DR**: Use this however you want, no attribution required.
 
 ## 🙏 Acknowledgments
 
