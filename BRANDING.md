@@ -363,37 +363,52 @@ to recover the counter value instantly.
 
 ## 📐 Logo & Iconography
 
-### Icon Usage
+### DLog Platform Icon
 
-**The Four Icons**:
+**🔺 Pyramid** represents DLog as a platform:
+- Most iconic Egyptian symbol
+- Represents **layered architecture** (data layer, coordination layer, interface layer)
+- **Timeless monument** = built to last millennia
+- **Solid foundation** = stable infrastructure
+- **Points upward** = scaling to the sky
+- **Hierarchical** = clear system organization
+
+### Component Icons
+
+**The Four Component Icons**:
 - 🗿 = Moai (Easter Island head) represents obelisk/monument
 - ☀️ = Sun with rays represents pharaoh/coordination
 - 🪲 = Beetle represents scarab/identity
 - 🎼 = Musical score represents batuta/orchestration
 
-**Combined Logo Concept**:
+**Primary Logo**:
 ```
-        🎼
-        │
-     ☀️
-   /  |  \
-  /   |   \
-🗿 ← DLog → 🪲
+       🔺
+      DLog
+    ────────
+   🗿 ☀️ 🪲 🎼
 ```
 
-**Text Logo**:
+**Alternative - Pyramid Structure**:
 ```
-   DLog
-   ━━━━
-🗿☀️🪲 + 🎼
-```
-
-**Alternative Stack**:
-```
-     🎼 Batuta
-    ─────────
-    🗿 ☀️ 🪲
+        🔺 DLog
+       ─────────
+      🎼 Batuta
+     ───────────
+    🗿  ☀️  🪲
   Infrastructure
+```
+
+**Text Logo (Horizontal)**:
+```
+🔺 DLog  |  🗿 Obelisk · ☀️ Pharaoh · 🪲 Scarab · 🎼 Batuta
+```
+
+**Simple Stack**:
+```
+   🔺 DLog
+   ───────
+   🗿☀️🪲🎼
 ```
 
 ### ASCII Art Diagrams
@@ -463,6 +478,21 @@ Use ASCII art liberally for:
 
 ### 1. Documentation
 
+**Project README**:
+```markdown
+# 🔺 DLog
+
+> Built to Last Millennia
+
+DLog is a unified distributed data platform...
+
+## Components
+- 🗿 Obelisk Sequencer
+- ☀️ Pharaoh Network
+- 🪲 Scarab IDs
+- 🎼 Batuta Language
+```
+
 **Section Headings**:
 ```markdown
 # 🗿 Obelisk Sequencer
@@ -484,26 +514,28 @@ Built on sparse files...
 ### 3. Conference Talks
 
 **Slide Structure**:
-1. Title slide: "DLog: 🗿☀️🪲"
+1. Title slide: "🔺 DLog: Built to Last Millennia"
 2. Problem: Centralized bottlenecks
-3. Solution: Three pillars
-4. Each pillar gets dedicated slides with icon
+3. Solution: Four components (🗿☀️🪲🎼)
+4. Each component gets dedicated slides with icon
+5. Pyramid architecture diagram
 
 ### 4. Social Media
 
 **Twitter/X**:
 ```
-🚀 DLog achieves 28B ops/sec with:
+🔺 DLog achieves 28B ops/sec with:
 🗿 Obelisk Sequencer - crash-safe counters
 ☀️ Pharaoh Network - distributed coordination
 🪲 Scarab IDs - unique identifiers
 🎼 Batuta - expressive query language
 
-No central bottlenecks. Pure scalability.
+Built to last millennia. Zero bottlenecks.
 ```
 
 **GitHub README Badge Ideas**:
 ```markdown
+![DLog](https://img.shields.io/badge/🔺-DLog-C2B280)
 ![Obelisk](https://img.shields.io/badge/🗿-Obelisk-D4AF37)
 ![Pharaoh](https://img.shields.io/badge/☀️-Pharaoh-15317E)
 ![Scarab](https://img.shields.io/badge/🪲-Scarab-30D5C8)
@@ -531,30 +563,30 @@ pub struct ObeliskSequencer {
 ### Taglines
 
 **Primary**:
-> **DLog: Built to Last Millennia**
+> **🔺 DLog: Built to Last Millennia**
 
 **Alternatives**:
-- "Monumental Performance, Eternal Data"
-- "The Distributed Log for the Ages"
-- "Coordination Fit for Pharaohs"
-- "28 Billion Operations Per Second. Zero Compromises."
+- "🔺 DLog: Monumental Performance, Eternal Data"
+- "🔺 DLog: The Distributed Log for the Ages"
+- "🔺 DLog: Solid Foundation, Infinite Scale"
+- "🔺 DLog: 28 Billion Operations Per Second. Zero Compromises."
 
 ### Elevator Pitch
 
 **30 seconds**:
 ```
-DLog is a unified distributed data platform inspired by ancient 
+🔺 DLog is a unified distributed data platform inspired by ancient 
 Egyptian engineering. Like the pyramids, it's built to last—with 
 crash-safe primitives (🗿 Obelisk Sequencer), distributed 
-coordination (☀️ Pharaoh Network), and unique identifiers 
-(🪲 Scarab IDs). It achieves 28 billion operations per second 
-without centralized bottlenecks.
+coordination (☀️ Pharaoh Network), unique identifiers (🪲 Scarab IDs),
+and an expressive language (🎼 Batuta). It achieves 28 billion 
+operations per second without centralized bottlenecks.
 ```
 
 **5 seconds**:
 ```
-DLog: Distributed data infrastructure with zero bottlenecks.
-28 billion ops/sec. Built to last.
+🔺 DLog: Distributed data infrastructure with zero bottlenecks.
+28 billion ops/sec. Built to last millennia.
 ```
 
 ---
@@ -623,6 +655,12 @@ When creating DLog content, ensure:
 
 ## 📝 Version History
 
+- **v1.2** (2025-11-02): Added DLog platform icon
+  - Selected 🔺 Pyramid as primary DLog icon
+  - Represents layered architecture and lasting monument
+  - Updated all logos and branding examples
+  - Added pyramid structure diagrams
+
 - **v1.1** (2025-11-02): Added Batuta language
   - Added 🎼 Batuta as fourth component
   - Multi-cultural design philosophy (Egyptian + Latin)
@@ -655,5 +693,5 @@ We encourage:
 
 **Questions?** Open an issue or join our [Discord](https://discord.gg/dlog)
 
-**DLog**: Built to last millennia. 🗿☀️🪲 + 🎼
+**🔺 DLog**: Built to last millennia. 🗿☀️🪲🎼
 
