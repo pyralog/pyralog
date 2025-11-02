@@ -14,7 +14,7 @@ A **persistent atomic counter** (like `AtomicU64`, but crash-safe) that enables:
 - ✅ Consumer Generation IDs (crash-safe rebalancing)
 - ✅ Schema IDs (monotonic, sortable schema versions)
 - ✅ CDC Event IDs (durable event sequencing)
-- ✅ **Similar to Scarab IDs** used by Twitter, Discord, Instagram
+- ✅ **Similar to Snowflake IDs** used by Twitter, Discord, Instagram
 
 **Performance:** ~1-2 µs per ID generation, instant recovery (~2 µs)
 
@@ -6872,7 +6872,7 @@ Each feature will be carefully designed to integrate with **DLog's unique archit
 - Transaction IDs, Session IDs, Schema IDs, Event IDs
 - ~1-2 µs generation, instant recovery
 - Like `AtomicU64`, but crash-safe
-- **Similar to Scarab IDs** (Twitter, Discord, Instagram)
+- **Similar to Snowflake IDs** (Twitter, Discord, Instagram)
 
 **2. Dual Raft Clusters**
 - Global Raft: Coordinator election, metadata

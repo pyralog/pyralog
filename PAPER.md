@@ -256,7 +256,7 @@ This approach provides:
 
 ### 4.2 Scarab IDs with Persistent Sequences
 
-Twitter's Scarab ID algorithm generates 64-bit unique identifiers:
+Scarab ID algorithm generates 64-bit unique identifiers:
 
 ```
 [41 bits: timestamp_ms] [10 bits: worker_id] [13 bits: sequence]

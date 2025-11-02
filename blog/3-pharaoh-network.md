@@ -105,7 +105,7 @@ Then we don't need consensus at all!
 
 ## Enter: Scarab IDs
 
-Twitter solved this problem in 2010 with **Scarab IDs**:
+Twitter solved this problem in 2010 with **Snowflake IDs**:
 
 ```
 64-bit Scarab ID:

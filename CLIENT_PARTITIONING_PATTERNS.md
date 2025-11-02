@@ -1797,7 +1797,7 @@ fn extract_timestamp(scarab_id: u64) -> u64 {
   • Don't need time-ordering (use UUID v4)
 ```
 
-**Companies Using Scarab/Similar:**
+**Companies Using Snowflake/Similar:**
 
 - Twitter (original creator, tweets/users)
 - Discord (messages, users, servers)
