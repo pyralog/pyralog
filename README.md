@@ -48,7 +48,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 ### 🎯 Novel Coordination Primitives
 
 - **🗿 Obelisk Sequencer**: Crash-safe persistent atomic counters with minimal disk overhead (~1-2μs per increment)
-- **Distributed Coordinators**: Eliminate all centralized bottlenecks via Snowflake IDs
+- **☀️ Pharaoh Network**: Eliminate all centralized bottlenecks via Snowflake IDs
   - 4B+ transactions/sec (8,000× faster than TiKV)
   - 4B+ timestamps/sec (distributed TSO)
   - 28B+ total operations/sec across all services
@@ -238,7 +238,7 @@ DLog's revolutionary layered architecture eliminates traditional boundaries:
 └────────────────────────────────────────────────────────────┘
                            ▼
 ┌────────────────────────────────────────────────────────────┐
-│  Distributed Coordinator Layer (1024 nodes each type)      │
+│  ☀️ Pharaoh Network Layer (1024 nodes each type)           │
 │  Timestamp Oracles │ Tx Coordinators │ Session Managers    │
 │  (Snowflake IDs + Obelisk Sequencers)                     │
 └────────────────────────────────────────────────────────────┘

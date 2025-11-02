@@ -718,7 +718,7 @@ Let's build the future of data infrastructure together—in Rust! 🦀
 **Blog Series**:
 1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
-3. [Distributed Coordinators Without Consensus](3-distributed-coordinators.md)
+3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
 5. Building Modern Data Infrastructure in Rust (this post)
 

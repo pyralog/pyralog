@@ -234,7 +234,7 @@ Let's benchmark against alternatives:
 
 **Obelisk Sequencer is the only method that is both fast AND crash-safe.**
 
-For DLog's use case (generating IDs for distributed coordinators), 500K ops/sec per counter is plenty—we run **1024 coordinators in parallel** for 500M+ ops/sec total.
+For DLog's use case (generating IDs for Pharaoh Network), 500K ops/sec per counter is plenty—we run **1024 coordinators in parallel** for 500M+ ops/sec total.
 
 ## Recovery Speed
 
@@ -252,7 +252,7 @@ Obelisk Sequencer Recovery:
 Total: ~1 microsecond downtime ✅
 ```
 
-**Instant recovery** means instant failover for distributed coordinators.
+**Instant recovery** means instant failover for Pharaoh Network.
 
 ## Real-World Usage in DLog
 
@@ -452,7 +452,7 @@ By leveraging sparse files—a feature present in every modern filesystem—we b
 - 📦 **Minimal storage** (~4KB for billions of IDs)
 - 🎯 **Simple** (~50 lines of code)
 
-This primitive enables DLog's distributed coordinators to achieve **28 billion operations per second** without central bottlenecks.
+This primitive enables DLog's Pharaoh Network to achieve **28 billion operations per second** without central bottlenecks.
 
 In the next post, we'll show how combining Obelisk Sequencers with Snowflake IDs eliminates ALL coordinators in distributed systems.
 
@@ -467,5 +467,5 @@ In the next post, we'll show how combining Obelisk Sequencers with Snowflake IDs
 ---
 
 *← [Previous: Introducing DLog](1-introducing-dlog.md)*
-*→ [Next: Distributed Coordinators Without Consensus](3-distributed-coordinators.md)*
+*→ [Next: Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)*
 

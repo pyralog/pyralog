@@ -683,7 +683,7 @@ Batch everything: writes, reads, RPC, consensus.
 
 28 billion operations per second isn't magic—it's the result of **eliminating every bottleneck** through principled architectural design:
 
-✅ **Distributed coordinators** (no central bottlenecks)
+✅ **Pharaoh Network** (no central bottlenecks)
 ✅ **Dual Raft** (parallel consensus)
 ✅ **Epoch-based writes** (decouple consensus from data)
 ✅ **Per-record CopySet** (uniform load distribution)
@@ -707,6 +707,6 @@ In the final post, we'll share lessons learned from building modern data infrast
 
 ---
 
-*← [Previous: Distributed Coordinators Without Consensus](3-distributed-coordinators.md)*
+*← [Previous: Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)*
 *→ [Next: Building Modern Data Infrastructure in Rust](5-rust-infrastructure.md)*
 

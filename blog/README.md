@@ -38,11 +38,11 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 **Highlights**:
 - Novel technique not found in other systems
 - Potential standalone crate (`sparse-counter`)
-- Enables all of DLog's distributed coordinators
+- Enables all of DLog's Pharaoh Network
 
 ---
 
-### [3. Distributed Coordinators Without Consensus](3-distributed-coordinators.md)
+### [3. ☀️ Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 *How we eliminated every centralized coordinator*
 
 **Key Topics**:
@@ -242,7 +242,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 
 ### For Architects
 1. [Introducing DLog](1-introducing-dlog.md) - System overview
-2. [Distributed Coordinators](3-distributed-coordinators.md) - Scaling pattern
+2. [Pharaoh Network](3-pharaoh-network.md) - Scaling pattern
 3. [28 Billion Ops/Sec](4-28-billion-ops.md) - Complete architecture
 4. [Multi-Model Database](7-multi-model-database.md) - Category theory foundation
 5. [Actor-Based Concurrency](9-actor-concurrency.md) - Execution model
@@ -264,7 +264,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 
 ### For Distributed Systems Engineers
 1. [Obelisk Sequencer](2-obelisk-sequencer.md) - Novel primitive
-2. [Distributed Coordinators](3-distributed-coordinators.md) - Coordination pattern
+2. [Pharaoh Network](3-pharaoh-network.md) - Coordination pattern
 3. [28 Billion Ops/Sec](4-28-billion-ops.md) - Implementation details
 4. [Actor-Based Concurrency](9-actor-concurrency.md) - Supervision trees & topology reactivity
 5. [Research Paper](../PAPER.md) - Formal analysis

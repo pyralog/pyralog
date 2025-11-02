@@ -1,4 +1,4 @@
-# Distributed Coordinators Without Consensus
+# Pharaoh Network Without Consensus
 
 **How we eliminated every centralized coordinator and achieved 28 billion operations per second**
 
@@ -191,9 +191,9 @@ impl SnowflakeGenerator {
 
 **Result**: No duplicate IDs, ever. Exactly-once semantics preserved.
 
-## Building Distributed Coordinators
+## Building Pharaoh Network
 
-Now we can build a truly distributed coordinator:
+Now we can build a truly Pharaoh Network node:
 
 ```rust
 pub struct DistributedTimestampOracle {
@@ -370,7 +370,7 @@ let event_id = generators[generator_id].next_event_id();
 
 ```
 ┌────────────────────────────────────────────────┐
-│  DLog Distributed Coordinator Capacity        │
+│  DLog ☀️ Pharaoh Network Capacity             │
 ├────────────────────────────────────────────────┤
 │                                                │
 │  Timestamp Oracles:      512M ts/sec          │

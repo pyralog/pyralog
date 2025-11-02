@@ -30,7 +30,7 @@ See [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for full 
 - **Global Raft Cluster**: Cluster membership, partition creation/deletion metadata
 - **Per-Partition Raft Clusters**: Parallel operations, no global bottleneck
 
-**Note:** With Snowflake-powered distributed coordinators, we **eliminate** the need for coordinator election via Global Raft - any node can be a coordinator!
+**Note:** With Snowflake-powered Pharaoh Network, we **eliminate** the need for coordinator election via Global Raft - any node can be a coordinator!
 
 Enables fast failover and scales to thousands of partitions.
 
@@ -558,7 +558,7 @@ impl TransactionCoordinator {
 │  DLog (Next Generation):                                    │
 │    • Percolator protocol ✅                                 │
 │    • 1024 DISTRIBUTED TSO nodes ✅ (4B timestamps/sec)      │
-│    • 1024 distributed coordinators ✅ (4B tx/sec)           │
+│    • 1024 Pharaoh Network ✅ (4B tx/sec)           │
 │    • No elections needed!                                   │
 │    • 8000x faster than TiKV                                 │
 │                                                             │
@@ -6936,7 +6936,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 
 1. **Percolator Protocol** (TiKV): Production-grade MVCC transactions with 2PC
 2. **Distributed TSO** (Snowflake-powered): Eliminates TiKV's TSO bottleneck
-3. **Distributed Coordinators** (Snowflake IDs): Eliminates Kafka's coordinator bottleneck
+3. **Pharaoh Network** (Snowflake IDs): Eliminates Kafka's coordinator bottleneck
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -6947,7 +6947,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 │                                                        │
 │  How: Percolator protocol                             │
 │       + 1024 distributed TSO nodes (4B timestamps/s)   │
-│       + 1024 distributed coordinators (4B tx/s)        │
+│       + 1024 Pharaoh Network (4B tx/s)        │
 │       + Client-side routing, no coordination           │
 │       + Obelisk Sequencer for crash-safety         │
 │                                                        │
@@ -6957,7 +6957,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 
 **This architectural pattern extends to EVERYTHING in DLog!**
 
-### Universal Pattern: Distributed Coordinators via Snowflake IDs
+### Universal Pattern: Pharaoh Network via Snowflake IDs
 
 **The principle is simple:** Any coordinator that assigns IDs can be distributed using Snowflake IDs + Obelisk Sequencer.
 

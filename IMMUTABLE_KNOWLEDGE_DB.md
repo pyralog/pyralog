@@ -137,7 +137,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 │     • Snapshot isolation                                   │
 │     • Multi-partition atomic writes                        │
 │     • Related facts committed together                     │
-│     • 512M tx/sec (distributed coordinators)               │
+│     • 512M tx/sec (Pharaoh Network)               │
 │                                                            │
 │  3. Time-Travel Queries                                    │
 │     • Query database at any historical timestamp           │
@@ -1078,7 +1078,7 @@ Single entity write:
 
 Throughput (cluster-wide):
   - Simple writes:  500M writes/sec
-  - Transactions:   512M tx/sec (distributed coordinators)
+  - Transactions:   512M tx/sec (Pharaoh Network)
   - Facts per tx:   Variable (10-100 typical)
   - Total facts:    5-50B facts/sec
 ```
@@ -1123,7 +1123,7 @@ Example: 1 billion facts = ~20-50 GB storage
 Horizontal scaling:
   - Add nodes → linear throughput increase
   - Add partitions → linear capacity increase
-  - No central bottlenecks (distributed coordinators)
+  - No central bottlenecks (Pharaoh Network)
 
 Tested configurations:
   - 10 nodes:   15M writes/sec,  45M reads/sec

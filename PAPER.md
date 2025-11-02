@@ -2,7 +2,7 @@
 
 **Abstract**
 
-We present DLog, a unified distributed data platform that introduces several novel architectural innovations to achieve unprecedented scalability and performance. DLog eliminates traditional coordination bottlenecks through a new primitive called the Obelisk Sequencer, enabling distributed coordinators that scale linearly without central points of contention. Combined with a Dual Raft architecture, per-record CopySet replication, cryptographic verification with BLAKE3, multi-model database support grounded in category theory, and a pure functional query system, DLog achieves 28+ billion operations per second across all service types—orders of magnitude higher than existing systems. 
+We present DLog, a unified distributed data platform that introduces several novel architectural innovations to achieve unprecedented scalability and performance. DLog eliminates traditional coordination bottlenecks through a new primitive called the Obelisk Sequencer, enabling Pharaoh Network that scale linearly without central points of contention. Combined with a Dual Raft architecture, per-record CopySet replication, cryptographic verification with BLAKE3, multi-model database support grounded in category theory, and a pure functional query system, DLog achieves 28+ billion operations per second across all service types—orders of magnitude higher than existing systems. 
 
 We demonstrate how DLog's architecture enables it to serve simultaneously as a high-throughput distributed log, a transactional data store, a multi-model database (supporting relational, graph, document, key-value, and RDF models), an immutable knowledge database with temporal queries, a tamper-proof cryptographically verified log, a stream processing platform with functional programming primitives, and an observability backend—all while maintaining strong consistency guarantees, exactly-once semantics, and mathematical rigor through category theory. DLog includes Batuta, a novel programming language that combines Lisp macros, Elixir-style actor model, Zig-style explicit error handling, and Pony-style reference capabilities, compiling to both native code and WebAssembly for universal deployment. Implemented in Rust and built on Apache Arrow, DLog represents a new generation of distributed systems that unify traditionally separate infrastructure components into a single, mathematically sound, cryptographically verifiable platform with a type-safe, high-level programming language.
 
@@ -34,7 +34,7 @@ This paper makes the following contributions:
 
 1. **Obelisk Sequencer**: A novel persistent atomic counter primitive that enables crash-safe, high-performance monotonic ID generation with minimal disk overhead.
 
-2. **Distributed Coordinators via Snowflake IDs**: An architectural pattern that eliminates all centralized coordinators by combining Snowflake-style distributed IDs with Obelisk Sequencers, achieving linear horizontal scalability.
+2. **Pharaoh Network via Snowflake IDs**: An architectural pattern that eliminates all centralized coordinators by combining Snowflake-style distributed IDs with Obelisk Sequencers, achieving linear horizontal scalability.
 
 **Consensus and Replication:**
 
@@ -167,7 +167,7 @@ DLog employs a layered architecture:
 └────────────────────────────────────────────────────────────┘
                            ▼
 ┌────────────────────────────────────────────────────────────┐
-│              Distributed Coordinator Layer                 │
+│              ☀️ Pharaoh Network Layer                 │
 │  Timestamp Oracles │ Tx Coordinators │ Session Managers   │
 │  (1024 nodes each, Snowflake IDs + Sparse Counters)       │
 └────────────────────────────────────────────────────────────┘
@@ -278,9 +278,9 @@ The sequence counter persists in a Obelisk Sequencer file, providing:
 - **High Performance**: 1-2 microseconds per ID generation
 - **Linear Scalability**: 1024 coordinators × 4M IDs/sec = 4+ billion IDs/sec
 
-This combination enables distributed coordinators without coordination.
+This combination enables Pharaoh Network without coordination.
 
-### 4.3 Distributed Coordinator Pattern
+### 4.3 ☀️ Pharaoh Network Pattern
 
 Traditional distributed systems rely on centralized coordinators elected through Paxos or Raft. These create bottlenecks and single points of failure. DLog eliminates them entirely.
 
@@ -533,7 +533,7 @@ Combined with idempotent writes, this ensures exactly-once end-to-end processing
 Performance:
 - Idempotent write overhead: <5% latency increase
 - Transactional write overhead: ~10-20ms additional latency
-- EOS throughput: 1000× better than Kafka due to distributed coordinators
+- EOS throughput: 1000× better than Kafka due to Pharaoh Network
 
 ---
 
@@ -1096,7 +1096,7 @@ All experiments conducted on:
 | 20 | 200 | 30,100 | 99.5% |
 | 50 | 500 | 74,800 | 98.8% |
 
-**Analysis**: DLog demonstrates near-linear scalability to 50 nodes. Per-record CopySet and distributed coordinators eliminate traditional bottlenecks, enabling efficient utilization of large clusters.
+**Analysis**: DLog demonstrates near-linear scalability to 50 nodes. Per-record CopySet and Pharaoh Network eliminate traditional bottlenecks, enabling efficient utilization of large clusters.
 
 ### 11.7 Failover Recovery Time
 
@@ -1146,7 +1146,7 @@ The Obelisk Sequencer provides an elegant solution to persistent atomic counters
 
 For DLog's use case—generating monotonic IDs for coordinators—these limitations are acceptable. The ~1-2 microsecond overhead per ID generation is negligible compared to network and storage latency.
 
-### 12.2 Distributed Coordinators vs. Consensus
+### 12.2 Pharaoh Network vs. Consensus
 
 Traditional distributed systems use consensus (Paxos, Raft) to elect leaders for critical services like timestamp oracles and transaction coordinators. DLog's approach eliminates consensus for coordinators entirely.
 
@@ -1475,7 +1475,7 @@ DLog represents a fundamental rethinking of distributed data systems. Through no
 
 **Coordination Primitives:**
 1. **Obelisk Sequencer**: A persistent atomic counter primitive enabling crash-safe monotonic ID generation with minimal overhead.
-2. **Distributed Coordinators**: Elimination of all centralized coordinators through Snowflake IDs + Obelisk Sequencers, achieving linear horizontal scalability.
+2. **Pharaoh Network**: Elimination of all centralized coordinators through Snowflake IDs + Obelisk Sequencers, achieving linear horizontal scalability.
 
 **Consensus and Replication:**
 3. **Dual Raft Architecture**: Separation of cluster-wide and partition-specific consensus, enabling parallel failover and reducing coordination overhead.
@@ -1513,7 +1513,7 @@ DLog demonstrates that distributed systems can achieve:
 - **Unified Platform**: Eliminating operational complexity of managing 5+ separate systems.
 - **Extreme Performance**: Linear scalability through elimination of coordination bottlenecks.
 
-The open-source implementation in Rust provides a foundation for future research and production deployments. We believe DLog's architectural patterns—particularly the Obelisk Sequencer, Distributed Coordinator pattern, category-theoretic multi-model support, and functional query system—will influence future distributed systems design.
+The open-source implementation in Rust provides a foundation for future research and production deployments. We believe DLog's architectural patterns—particularly the Obelisk Sequencer, Pharaoh Network pattern, category-theoretic multi-model support, and functional query system—will influence future distributed systems design.
 
 As data volumes grow exponentially and use cases diversify (real-time analytics, machine learning, regulatory compliance, complex graph queries), unified platforms like DLog become essential. DLog's architecture provides a blueprint for building systems that are simultaneously fast, safe, mathematically sound, and operationally simple.
 

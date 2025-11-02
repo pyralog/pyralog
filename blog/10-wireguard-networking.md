@@ -588,7 +588,7 @@ let result = client.query("SELECT * FROM users").await?;
 This concludes our 10-part blog series on DLog. We've covered:
 
 1. **Novel coordination primitives** (Obelisk Sequencer)
-2. **Distributed coordinators** (eliminating bottlenecks)
+2. **Pharaoh Network** (eliminating bottlenecks)
 3. **28+ billion operations per second** (architectural deep-dive)
 4. **Building in Rust** (lessons learned)
 5. **Cryptographic verification** (BLAKE3, Merkle trees, zero-trust)
@@ -636,7 +636,7 @@ cargo run --example quick-start
 **Blog Series** (Complete):
 1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
-3. [Distributed Coordinators Without Consensus](3-distributed-coordinators.md)
+3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
 5. [Building Modern Data Infrastructure in Rust](5-rust-infrastructure.md)
 6. [Cryptographic Verification with BLAKE3](6-cryptographic-verification.md)

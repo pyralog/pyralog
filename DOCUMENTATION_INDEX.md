@@ -19,7 +19,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - **[Blog Series](blog/README.md)** 🎯 - **5-part technical blog series** explaining DLog
   - [1. Introducing DLog](blog/1-introducing-dlog.md) - Why we need unified infrastructure
   - [2. Obelisk Sequencer](blog/2-obelisk-sequencer.md) - Novel persistent atomic primitive
-  - [3. Distributed Coordinators](blog/3-distributed-coordinators.md) - Eliminating bottlenecks
+  - [3. ☀️ Pharaoh Network](blog/3-pharaoh-network.md) - Eliminating bottlenecks
   - [4. 28 Billion Ops/Sec](blog/4-28-billion-ops.md) - Architectural deep-dive
   - [5. Building in Rust](blog/5-rust-infrastructure.md) - Lessons learned
 - **[DATA_PATH](DATA_PATH.md)** - Write and read path with detailed diagrams
@@ -94,7 +94,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - Abstract and contributions
   - Background and related work survey
   - Novel coordination primitives (Obelisk Sequencer)
-  - Distributed coordinators via Snowflake IDs
+  - Pharaoh Network via Snowflake IDs
   - Dual Raft architecture
   - Configurable CopySet strategies
   - Percolator protocol integration
@@ -583,7 +583,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Data pipelines (automated ETL workflows)
     - 1-5 GB/sec bulk load throughput
     - 100K-1M events/sec streaming ingestion
-  - **Universal Pattern**: Distributed Coordinators via Snowflake IDs
+  - **Universal Pattern**: ☀️ Pharaoh Network via Snowflake IDs
     - Extends to ALL coordinators in DLog
     - 28 billion ops/sec across 7 service types
   - Implementation roadmap
@@ -802,7 +802,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 1. Read [PAPER.md](PAPER.md) ⭐ - comprehensive research paper
 2. Study [ARCHITECTURE.md](ARCHITECTURE.md) for architectural innovations
 3. Review [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Obelisk Sequencer details
-4. Check [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) for distributed coordinators pattern
+4. Check [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) for Pharaoh Network coordination pattern
 5. Read [TIKV_COMPARISON.md](TIKV_COMPARISON.md) and [COMPARISON.md](COMPARISON.md) for performance comparisons
 
 ### "I want to build an immutable knowledge database"

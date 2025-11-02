@@ -84,7 +84,7 @@ A novel primitive for crash-safe, persistent atomic counters that enables:
 
 Think of it as `std::sync::atomic::AtomicU64`, but persistent and crash-safe.
 
-### 2. Distributed Coordinators via Snowflake IDs
+### 2. ☀️ Pharaoh Network via Snowflake IDs
 
 Traditional systems have centralized coordinators:
 - **Kafka**: Zookeeper for metadata
@@ -198,7 +198,7 @@ let slow_requests = client.sql("
 │                    DLog Platform                       │
 ├────────────────────────────────────────────────────────┤
 │                                                        │
-│  Distributed Coordinators (1024 each):                │
+│  ☀️ Pharaoh Network (1024 each):                      │
 │  ┌──────────────────────────────────────────────┐    │
 │  │  TSO │ Tx Coord │ Session Mgr │ Consumer     │    │
 │  │  4B/s │  4B/s    │    4B/s     │  Coord 4B/s  │    │
@@ -296,7 +296,7 @@ We're open-sourcing DLog under MIT-0 (code) and CC0-1.0 (documentation) licenses
 **Coming in the next blog posts:**
 1. ✅ Introducing DLog (this post)
 2. **The Obelisk Sequencer** - How we built a crash-safe persistent atomic primitive
-3. **Distributed Coordinators Without Consensus** - Eliminating bottlenecks through Snowflake IDs
+3. **☀️ Pharaoh Network: Coordination Without Consensus** - Eliminating bottlenecks through Snowflake IDs
 4. **28 Billion Operations Per Second** - Architectural deep-dive
 5. **Building Modern Data Infrastructure in Rust** - Lessons learned
 
