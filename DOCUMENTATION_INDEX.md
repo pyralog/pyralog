@@ -15,6 +15,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - **[CORE_CONCEPTS](CORE_CONCEPTS.md)** - Fundamental concepts (LogId, Partitions, Records, Offsets, Epochs)
 - **[ARCHITECTURE](ARCHITECTURE.md)** - Deep dive into system internals
 - **[DESIGN](DESIGN.md)** - Design decisions and rationale
+- **[BRANDING](BRANDING.md)** 🎨 - **Brand identity guide** (Egyptian theme, visual identity, terminology)
 - **[PAPER](PAPER.md)** ⭐ - **Academic research paper** on DLog's novel contributions
 - **[Blog Series](blog/README.md)** 🎯 - **5-part technical blog series** explaining DLog
   - [1. Introducing DLog](blog/1-introducing-dlog.md) - Why we need unified infrastructure

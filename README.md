@@ -581,6 +581,7 @@ DLog includes **74,000+ lines** of documentation across **41 files**:
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete system architecture
 - **[DATA_PATH.md](DATA_PATH.md)** - Write/read paths with diagrams
 - **[DESIGN.md](DESIGN.md)** - Design decisions and tradeoffs
+- **[BRANDING.md](BRANDING.md)** 🎨 - Brand identity guide (Egyptian theme, visual identity)
 
 ### 🔐 Cryptographic Features
 - **[CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md)** - BLAKE3 Merkle trees, zero-trust
