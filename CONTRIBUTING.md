@@ -81,11 +81,11 @@ Look for issues labeled:
 # Fork the repository on GitHub first
 
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/dlog.git
+git clone https://github.com/YOUR_USERNAME/pyralog.git
 cd dlog
 
 # Add upstream remote
-git remote add upstream https://github.com/original/dlog.git
+git remote add upstream https://github.com/pyralog/pyralog.git
 
 # Build the project
 cargo build
@@ -518,8 +518,8 @@ cargo add --dev test-dependency
 
 ### Resources
 
-- **Documentation**: https://docs.dlog.io
-- **Discord**: https://discord.gg/dlog
+- **Documentation**: https://docs.pyralog.io
+- **Discord**: https://discord.gg/pyralog
 - **GitHub Issues**: For bug reports and features
 - **GitHub Discussions**: For questions and ideas
 
@@ -529,7 +529,7 @@ Don't hesitate to ask:
 - Open a GitHub Discussion
 - Ask on Discord
 - Comment on issues/PRs
-- Email: dev@dlog.io
+- Email: dev@pyralog.io
 
 ## Recognition
 

@@ -2288,7 +2288,7 @@ Perfect for:
 
 ---
 
-**Questions?** Join our Discord: [discord.gg/dlog](https://discord.gg/dlog)
+**Questions?** Join our Discord: [discord.gg/pyralog](https://discord.gg/pyralog)
 
-**GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
+**GitHub**: [github.com/pyralog/pyralog](https://github.com/pyralog/pyralog)
 

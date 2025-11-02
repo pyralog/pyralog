@@ -304,7 +304,7 @@ We're open-sourcing Pyralog under MIT-0 (code) and CC0-1.0 (documentation) licen
 
 ```bash
 # Clone the repository
-git clone https://github.com/dlog/dlog
+git clone https://github.com/pyralog/pyralog
 cd dlog
 
 # Start a local cluster
@@ -316,8 +316,8 @@ cargo run --example sql-queries
 cargo run --example transactions
 ```
 
-**Documentation**: [github.com/dlog/dlog/docs](https://github.com/dlog/dlog)
-**Discord**: [discord.gg/dlog](https://discord.gg/dlog)
+**Documentation**: [github.com/pyralog/pyralog/docs](https://github.com/pyralog/pyralog)
+**Discord**: [discord.gg/pyralog](https://discord.gg/pyralog)
 **Research Paper**: [PAPER.md](../PAPER.md)
 
 ## Join Us
@@ -328,13 +328,13 @@ Pyralog is in active development. We're looking for:
 - **Companies** interested in production deployments
 - **Researchers** interested in distributed systems innovations
 
-Interested in using Pyralog at your company? Reach out: hello@dlog.io
+Interested in using Pyralog at your company? Reach out: hello@pyralog.io
 
 ---
 
 **Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
-**GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
+**GitHub**: [github.com/pyralog/pyralog](https://github.com/pyralog/pyralog)
 
 ---
 

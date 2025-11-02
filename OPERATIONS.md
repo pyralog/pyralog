@@ -107,7 +107,7 @@ echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag
 
 ```bash
 # Download latest release
-wget https://github.com/dlog/dlog/releases/download/v0.1.0/dlog-linux-amd64.tar.gz
+wget https://github.com/pyralog/pyralog/releases/download/v0.1.0/pyralog-linux-amd64.tar.gz
 
 # Extract
 tar -xzf dlog-linux-amd64.tar.gz
@@ -124,7 +124,7 @@ sudo chmod +x /usr/local/bin/dlog
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Clone and build
-git clone https://github.com/dlog/dlog.git
+git clone https://github.com/pyralog/pyralog.git
 cd dlog
 cargo build --release
 

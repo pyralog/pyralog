@@ -701,9 +701,9 @@ In the final post, we'll share lessons learned from building modern data infrast
 ---
 
 **Try Pyralog**:
-- [GitHub Repository](https://github.com/dlog/dlog)
+- [GitHub Repository](https://github.com/pyralog/pyralog)
 - [Research Paper](../PAPER.md)
-- [Join Discord](https://discord.gg/dlog)
+- [Join Discord](https://discord.gg/pyralog)
 
 ---
 

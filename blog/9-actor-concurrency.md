@@ -662,7 +662,7 @@ In the final post of this series, we'll explore **Pyralog's quantum-resistant ne
 
 **Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
-**Contact**: hello@dlog.io
+**Contact**: hello@pyralog.io
 
 ---
 

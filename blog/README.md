@@ -337,10 +337,10 @@ Read all 10 posts in order for the complete Pyralog story—from primitives to q
 ## 💬 Discussion & Feedback
 
 **Found these useful?**
-- ⭐ Star us on [GitHub](https://github.com/dlog/dlog)
-- 💬 Join [Discord](https://discord.gg/dlog)
+- ⭐ Star us on [GitHub](https://github.com/pyralog/pyralog)
+- 💬 Join [Discord](https://discord.gg/pyralog)
 - 🐦 Share on [Twitter](https://twitter.com/intent/tweet?text=Check%20out%20Pyralog%27s%20blog%20series)
-- 📧 Email us: hello@dlog.io
+- 📧 Email us: hello@pyralog.io
 
 **Questions or corrections?**
 - Open an issue on GitHub
@@ -370,7 +370,7 @@ You're free to:
 
 ---
 
-**Want to write a guest post about using Pyralog?** Contact us: hello@dlog.io
+**Want to write a guest post about using Pyralog?** Contact us: hello@pyralog.io
 
 ---
 

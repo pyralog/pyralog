@@ -287,7 +287,7 @@ Pyralog's revolutionary layered architecture eliminates traditional boundaries:
 ### Building from Source
 
 ```bash
-git clone https://github.com/yourusername/dlog.git
+git clone https://github.com/pyralog/pyralog.git
 cd dlog
 cargo build --release
 ```
@@ -837,9 +837,9 @@ Pyralog builds upon groundbreaking work from many projects:
 
 ## 📧 Contact
 
-- GitHub Issues: [github.com/yourusername/dlog/issues](https://github.com/yourusername/dlog/issues)
-- Discord: [Join our community](https://discord.gg/dlog)
-- Email: hello@dlog.io
+- GitHub Issues: [github.com/pyralog/pyralog/issues](https://github.com/pyralog/pyralog/issues)
+- Discord: [Join our community](https://discord.gg/pyralog)
+- Email: hello@pyralog.io
 
 ---
 

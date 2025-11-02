@@ -569,7 +569,7 @@ In the next post, we'll introduce **Batuta**, Pyralog's programming language tha
 
 **Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
-**Contact**: hello@dlog.io
+**Contact**: hello@pyralog.io
 
 ---
 

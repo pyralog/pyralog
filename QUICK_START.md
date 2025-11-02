@@ -12,7 +12,7 @@ Get Pyralog up and running in 5 minutes!
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/dlog.git
+git clone https://github.com/pyralog/pyralog.git
 cd dlog
 
 # Build the project
@@ -297,13 +297,13 @@ Try:
 - Read the [Architecture Guide](ARCHITECTURE.md) to understand internals
 - Check out [Examples](EXAMPLES.md) for advanced patterns
 - Review [Design Document](DESIGN.md) for design decisions
-- Join our [Discord](https://discord.gg/dlog) community
+- Join our [Discord](https://discord.gg/pyralog) community
 
 ## Getting Help
 
 - GitHub Issues: Report bugs and request features
 - Discord: Real-time help from the community
-- Documentation: https://docs.dlog.io
+- Documentation: https://docs.pyralog.io
 
 Happy logging! 🚀
 

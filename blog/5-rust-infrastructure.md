@@ -700,10 +700,10 @@ Rust is the future of systems programming. If you're building high-performance i
 
 We're open-sourcing Pyralog under MIT-0 (code) and CC0-1.0 (documentation) licenses. Join us:
 
-**GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
-**Discord**: [discord.gg/dlog](https://discord.gg/dlog)
-**Docs**: [docs.dlog.io](https://docs.dlog.io)
-**Email**: hello@dlog.io
+**GitHub**: [github.com/pyralog/pyralog](https://github.com/pyralog/pyralog)
+**Discord**: [discord.gg/pyralog](https://discord.gg/pyralog)
+**Docs**: [docs.pyralog.io](https://docs.pyralog.io)
+**Email**: hello@pyralog.io
 
 We're looking for:
 - **Contributors** to help build features
@@ -732,5 +732,5 @@ Let's build the future of data infrastructure together—in Rust! 🦀
 
 **Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
-**Contact**: hello@dlog.io
+**Contact**: hello@pyralog.io
 

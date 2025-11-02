@@ -670,7 +670,7 @@ In the next post, we'll explore **Actor-Based Concurrency** in Pyralog, showing 
 
 **Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
-**Contact**: hello@dlog.io
+**Contact**: hello@pyralog.io
 
 ---
 

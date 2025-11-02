@@ -439,7 +439,7 @@ fn main() -> Result<()> {
 }
 ```
 
-**Would you use this in your projects?** Let us know: hello@dlog.io
+**Would you use this in your projects?** Let us know: hello@pyralog.io
 
 ## Conclusion
 
@@ -462,7 +462,7 @@ In the next post, we'll show how combining Obelisk Sequencers with Scarab IDs el
 - [Research Paper (PAPER.md)](../PAPER.md) - Formal analysis and proofs
 - [Implementation (CLIENT_PARTITIONING_PATTERNS.md)](../CLIENT_PARTITIONING_PATTERNS.md) - Complete code
 
-**Questions?** Join our Discord: [discord.gg/dlog](https://discord.gg/dlog)
+**Questions?** Join our Discord: [discord.gg/pyralog](https://discord.gg/pyralog)
 
 ---
 

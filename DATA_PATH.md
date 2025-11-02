@@ -1417,10 +1417,10 @@ pub struct BrokerMetadata {
     ]
   }],
   "brokers": [
-    { "node_id": 1, "host": "node1.dlog.io", "port": 9092 },
-    { "node_id": 2, "host": "node2.dlog.io", "port": 9092 },
-    { "node_id": 3, "host": "node3.dlog.io", "port": 9092 },
-    { "node_id": 5, "host": "node5.dlog.io", "port": 9092 }
+    { "node_id": 1, "host": "node1.pyralog.io", "port": 9092 },
+    { "node_id": 2, "host": "node2.pyralog.io", "port": 9092 },
+    { "node_id": 3, "host": "node3.pyralog.io", "port": 9092 },
+    { "node_id": 5, "host": "node5.pyralog.io", "port": 9092 }
   ]
 }
 ```

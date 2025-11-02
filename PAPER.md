@@ -1683,7 +1683,7 @@ Special thanks to the creators of Clojure (Rich Hickey), Elixir (José Valim), E
 
 This paper describes the design and implementation of Pyralog, an open-source distributed log system.
 
-Project repository: https://github.com/dlog/dlog
+Project repository: https://github.com/pyralog/pyralog
 
 License: MIT-0 (code) & CC0-1.0 (documentation)
 

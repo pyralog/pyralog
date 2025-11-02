@@ -691,7 +691,7 @@ We encourage:
 
 ---
 
-**Questions?** Open an issue or join our [Discord](https://discord.gg/dlog)
+**Questions?** Open an issue or join our [Discord](https://discord.gg/pyralog)
 
 **🔺 Pyralog**: Built to last millennia. 🗿☀️🪲🎼
 

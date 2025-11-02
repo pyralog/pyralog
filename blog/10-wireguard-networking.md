@@ -628,8 +628,8 @@ cargo run --example quick-start
 ### Join the Community
 
 - **GitHub**: [github.com/pyralog/pyralog](https://github.com/pyralog/pyralog)
-- **Discord**: [discord.gg/dlog](https://discord.gg/dlog)
-- **Email**: hello@dlog.io
+- **Discord**: [discord.gg/pyralog](https://discord.gg/pyralog)
+- **Email**: hello@pyralog.io
 
 ---
 
@@ -652,7 +652,7 @@ cargo run --example quick-start
 
 **Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
-**Contact**: hello@dlog.io
+**Contact**: hello@pyralog.io
 
 ---
 

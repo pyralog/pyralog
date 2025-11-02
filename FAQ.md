@@ -201,7 +201,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Clone and build
-git clone https://github.com/dlog/dlog.git
+git clone https://github.com/pyralog/pyralog.git
 cd dlog
 cargo build --release
 ```
@@ -368,7 +368,7 @@ Multiple channels:
 - **GitHub Issues**: Bug reports and features
 - **GitHub Discussions**: Questions and ideas
 - **Discord**: Real-time chat
-- **Email**: dev@dlog.io
+- **Email**: dev@pyralog.io
 
 ### How do I report a bug?
 
@@ -407,5 +407,5 @@ See [README.md](README.md#roadmap) for planned features and timeline.
 
 ---
 
-**Don't see your question?** Ask on [GitHub Discussions](https://github.com/dlog/dlog/discussions) or [Discord](https://discord.gg/dlog).
+**Don't see your question?** Ask on [GitHub Discussions](https://github.com/pyralog/pyralog/discussions) or [Discord](https://discord.gg/pyralog).
 

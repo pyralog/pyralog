@@ -972,7 +972,7 @@ If you can't find what you're looking for:
    - GitHub Discussions
    - Discord server
    - GitHub Issues (for bugs)
-4. **Email**: dev@dlog.io
+4. **Email**: dev@pyralog.io
 
 ## 🔄 Keeping Documentation Updated
 
@@ -1011,5 +1011,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 
-*Found an issue with the documentation? Please [open an issue](https://github.com/dlog/dlog/issues) or submit a PR!*
+*Found an issue with the documentation? Please [open an issue](https://github.com/pyralog/pyralog/issues) or submit a PR!*
 

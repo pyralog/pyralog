@@ -625,9 +625,9 @@ In the next post, we'll show how all these innovations come together to achieve 
 ---
 
 **Try it yourself**:
-- [GitHub Repository](https://github.com/dlog/dlog)
+- [GitHub Repository](https://github.com/pyralog/pyralog)
 - [Research Paper](../PAPER.md)
-- [Join Discord](https://discord.gg/dlog)
+- [Join Discord](https://discord.gg/pyralog)
 
 ---
 

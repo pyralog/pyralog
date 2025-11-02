@@ -2066,7 +2066,7 @@ Batuta is an open-source project. Contributions welcome!
 ### Development Setup
 
 ```bash
-git clone https://github.com/dlog/batuta
+git clone https://github.com/pyralog/batuta
 cd batuta
 cargo build
 cargo test
@@ -2106,9 +2106,9 @@ Like a conductor's baton directing an orchestra, Batuta coordinates:
 
 ---
 
-**Documentation**: https://dlog.io/batuta  
-**GitHub**: https://github.com/dlog/batuta  
-**Discord**: https://discord.gg/dlog  
+**Documentation**: https://pyralog.io/batuta  
+**GitHub**: https://github.com/pyralog/batuta  
+**Discord**: https://discord.gg/pyralog  
 
 *Built with ❤️ in Rust for Pyralog*
 
