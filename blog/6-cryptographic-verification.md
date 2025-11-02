@@ -1,10 +1,10 @@
 # Cryptographic Verification with BLAKE3: Building Zero-Trust Data Systems
 
-**Part 6 of the DLog Blog Series**
+**Part 6 of the Pyralog Blog Series**
 
 In distributed systems, trust is a luxury we can't afford. How do you know your data hasn't been tampered with? How can clients verify server responses without blind faith? How do you prove to auditors that your logs are immutable?
 
-**DLog's answer: Don't trust. Verify everything.**
+**Pyralog's answer: Don't trust. Verify everything.**
 
 We've built a cryptographically verified distributed log using BLAKE3 Merkle trees, enabling zero-trust architecture where every piece of data can be independently verified. This isn't just security theater—it's a fundamental shift in how distributed systems handle trust.
 
@@ -32,7 +32,7 @@ Most systems have **no answer** to these questions. You either trust the server 
 
 ## Zero-Trust Architecture
 
-DLog takes a different approach:
+Pyralog takes a different approach:
 
 ```
 Client: "Give me record #12345"
@@ -238,7 +238,7 @@ impl VerifiedClient {
 
 ## Notarization API
 
-For compliance and auditing, DLog provides a **notarization service**:
+For compliance and auditing, Pyralog provides a **notarization service**:
 
 ```rust
 // Notarize a record
@@ -256,7 +256,7 @@ let notarization = client.notarize(record_id).await?;
 1. The record existed at a specific time
 2. The record has a specific hash
 3. The record is part of the immutable log
-4. The DLog cluster signed this proof
+4. The Pyralog cluster signed this proof
 
 **Use cases:**
 - **Legal compliance**: Prove document creation time
@@ -395,9 +395,9 @@ for notarization in product.chain_of_custody {
 
 ---
 
-## Comparison: immudb vs DLog
+## Comparison: immudb vs Pyralog
 
-| Feature | immudb | DLog |
+| Feature | immudb | Pyralog |
 |---------|--------|------|
 | Merkle trees | ✅ Yes | ✅ Yes |
 | Hash algorithm | SHA256 | **BLAKE3 (10× faster)** |
@@ -409,7 +409,7 @@ for notarization in product.chain_of_custody {
 | Multi-model | ❌ No | **✅ Yes** |
 | Query language | SQL | **SQL + Cypher + SPARQL + Batuta** |
 
-DLog combines immudb's **cryptographic guarantees** with **extreme performance** and **multi-model flexibility**.
+Pyralog combines immudb's **cryptographic guarantees** with **extreme performance** and **multi-model flexibility**.
 
 ---
 
@@ -456,7 +456,7 @@ But for maximum future-proofing, we're exploring:
 
 ## Getting Started
 
-Enable cryptographic verification in your DLog cluster:
+Enable cryptographic verification in your Pyralog cluster:
 
 ```toml
 # dlog.toml
@@ -507,14 +507,14 @@ println!("Root hash: {}", proof.merkle_root);
 
 ## What's Next?
 
-In the next post, we'll explore **DLog's multi-model database capabilities**, showing how category theory enables seamless queries across relational, graph, document, key-value, and RDF models—all within a single, mathematically rigorous system.
+In the next post, we'll explore **Pyralog's multi-model database capabilities**, showing how category theory enables seamless queries across relational, graph, document, key-value, and RDF models—all within a single, mathematically rigorous system.
 
 **Next**: [Multi-Model Database with Category Theory →](7-multi-model-database.md)
 
 ---
 
 **Blog Series**:
-1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
@@ -526,7 +526,7 @@ In the next post, we'll explore **DLog's multi-model database capabilities**, sh
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to DLog will be documented in this file.
+All notable changes to Pyralog will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -151,5 +151,5 @@ We use [SemVer](http://semver.org/) for versioning:
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute to DLog.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute to Pyralog.
 

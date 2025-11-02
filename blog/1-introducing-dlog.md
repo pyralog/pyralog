@@ -1,4 +1,4 @@
-# Introducing DLog: Rethinking Distributed Logs
+# Introducing Pyralog: Rethinking Distributed Logs
 
 **A new distributed log system that achieves 28 billion operations per second by eliminating coordination bottlenecks**
 
@@ -47,9 +47,9 @@ At every arrow, you're paying the cost of:
 
 ## What if there was a better way?
 
-**DLog is a distributed log system that unifies all of these capabilities into a single, coherent platform.**
+**Pyralog is a distributed log system that unifies all of these capabilities into a single, coherent platform.**
 
-But this isn't just another "kitchen sink" database that tries to do everything poorly. DLog achieves this unification through fundamental architectural innovations that make it **faster than specialized systems** in their own domains:
+But this isn't just another "kitchen sink" database that tries to do everything poorly. Pyralog achieves this unification through fundamental architectural innovations that make it **faster than specialized systems** in their own domains:
 
 - **15.2M writes/sec** (4.8× faster than Kafka)
 - **45.2M reads/sec** (5.6× faster than Kafka) 
@@ -72,7 +72,7 @@ Most distributed systems face fundamental bottlenecks:
 **Flink**: Separate from storage → network overhead
 **Traditional logs**: Either strongly consistent OR high throughput, never both
 
-DLog eliminates these bottlenecks through three core innovations:
+Pyralog eliminates these bottlenecks through three core innovations:
 
 ### 1. The 🗿 Obelisk Sequencer
 
@@ -93,19 +93,19 @@ Traditional systems have centralized coordinators:
 
 These become bottlenecks at scale.
 
-DLog eliminates ALL centralized coordinators by distributing them using Scarab-style IDs + Obelisk Sequencers:
+Pyralog eliminates ALL centralized coordinators by distributing them using Scarab-style IDs + Obelisk Sequencers:
 
 ```
 Traditional: 1 coordinator → 500K ops/sec (bottleneck!)
 
-DLog: 1024 coordinators → 4+ billion ops/sec (linear scaling!)
+Pyralog: 1024 coordinators → 4+ billion ops/sec (linear scaling!)
 ```
 
 No leader elections. No single points of failure. Just hash-based routing to stateless coordinators.
 
 ### 3. Apache Arrow Native
 
-DLog stores and processes data in Apache Arrow's columnar format:
+Pyralog stores and processes data in Apache Arrow's columnar format:
 - **Zero-copy** interchange between storage and compute
 - **SIMD vectorization** for 10-100× faster queries
 - **Native integration** with DataFusion (SQL) and Polars (DataFrames)
@@ -151,7 +151,7 @@ let processed = stream
     .await?;
 ```
 
-Kafka requires complex producer/consumer configuration. DLog makes it native.
+Kafka requires complex producer/consumer configuration. Pyralog makes it native.
 
 ### Distributed Transactions
 
@@ -195,7 +195,7 @@ let slow_requests = client.sql("
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│                    DLog Platform                       │
+│                    Pyralog Platform                       │
 ├────────────────────────────────────────────────────────┤
 │                                                        │
 │  ☀️ Pharaoh Network (1024 each):                      │
@@ -222,7 +222,7 @@ let slow_requests = client.sql("
 
 ## Why Now?
 
-Three trends make DLog possible:
+Three trends make Pyralog possible:
 
 **1. Apache Arrow has matured**
 - Industry standard (Spark, Pandas 2.0, BigQuery)
@@ -240,7 +240,7 @@ Three trends make DLog possible:
 - High-bandwidth networks (100Gbps+)
 - Abundant CPU cores (128+ vCPUs)
 
-DLog exploits all three.
+Pyralog exploits all three.
 
 ## Real-World Use Cases
 
@@ -248,7 +248,7 @@ DLog exploits all three.
 ```
 Use case: Trade processing + risk analytics
 Traditional: Kafka → Flink → Clickhouse (500ms latency)
-DLog: Single platform (5ms latency) ✅
+Pyralog: Single platform (5ms latency) ✅
 Result: 100× faster risk calculations, real-time compliance
 ```
 
@@ -256,7 +256,7 @@ Result: 100× faster risk calculations, real-time compliance
 ```
 Use case: Inventory + orders + payments (transactional)
 Traditional: PostgreSQL (1000 tx/sec per node)
-DLog: 4M tx/sec distributed ✅
+Pyralog: 4M tx/sec distributed ✅
 Result: Flash sales with millions of concurrent buyers
 ```
 
@@ -264,7 +264,7 @@ Result: Flash sales with millions of concurrent buyers
 ```
 Use case: Distributed tracing + metrics + logs
 Traditional: Jaeger + Prometheus + Elasticsearch
-DLog: Unified platform ✅
+Pyralog: Unified platform ✅
 Result: 90% cost reduction, 10× faster queries
 ```
 
@@ -272,13 +272,13 @@ Result: 90% cost reduction, 10× faster queries
 ```
 Use case: Feature store + model serving
 Traditional: Kafka + Redis + Custom feature store
-DLog: Built-in time-travel queries + exactly-once ✅
+Pyralog: Built-in time-travel queries + exactly-once ✅
 Result: Feature freshness <1ms, consistent training/serving
 ```
 
 ## How It Compares
 
-| Feature | Kafka | TiKV | Databend | **DLog** |
+| Feature | Kafka | TiKV | Databend | **Pyralog** |
 |---------|-------|------|----------|----------|
 | Write throughput | 3.2M/s | 500K/s | N/A | **15.2M/s** ✅ |
 | Transactions | 100K/s | 500 tx/s | No | **4.2M/s** ✅ |
@@ -291,10 +291,10 @@ Result: Feature freshness <1ms, consistent training/serving
 
 ## What's Next?
 
-We're open-sourcing DLog under MIT-0 (code) and CC0-1.0 (documentation) licenses.
+We're open-sourcing Pyralog under MIT-0 (code) and CC0-1.0 (documentation) licenses.
 
 **Coming in the next blog posts:**
-1. ✅ Introducing DLog (this post)
+1. ✅ Introducing Pyralog (this post)
 2. **The Obelisk Sequencer** - How we built a crash-safe persistent atomic primitive
 3. **☀️ Pharaoh Network: Coordination Without Consensus** - Eliminating bottlenecks through Scarab IDs
 4. **28 Billion Operations Per Second** - Architectural deep-dive
@@ -322,17 +322,17 @@ cargo run --example transactions
 
 ## Join Us
 
-DLog is in active development. We're looking for:
+Pyralog is in active development. We're looking for:
 - **Early adopters** to test and provide feedback
 - **Contributors** to help build features
 - **Companies** interested in production deployments
 - **Researchers** interested in distributed systems innovations
 
-Interested in using DLog at your company? Reach out: hello@dlog.io
+Interested in using Pyralog at your company? Reach out: hello@dlog.io
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
 

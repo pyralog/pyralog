@@ -1,6 +1,6 @@
-# DLog vs TiKV: Architectural Comparison
+# Pyralog vs TiKV: Architectural Comparison
 
-A detailed comparison between DLog (distributed log) and TiKV (distributed key-value store).
+A detailed comparison between Pyralog (distributed log) and TiKV (distributed key-value store).
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ A detailed comparison between DLog (distributed log) and TiKV (distributed key-v
 
 ## Overview
 
-### DLog
+### Pyralog
 
 **Type**: Distributed log / Streaming platform  
 **Language**: Rust  
@@ -43,7 +43,7 @@ Both systems share fundamental distributed systems patterns:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│   DLog Multi-Raft                                       │
+│   Pyralog Multi-Raft                                       │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  Global Raft: [N1, N2, N3, N4, N5]                     │
@@ -76,7 +76,7 @@ Both systems share fundamental distributed systems patterns:
 
 ### 2. Sharding Strategy
 
-**DLog: Partitions**
+**Pyralog: Partitions**
 ```rust
 // Partition by key hash
 partition_id = hash(record.key) % partition_count
@@ -99,7 +99,7 @@ if region.size > threshold {
 
 **Similarity**: Both distribute data across independent shards with separate Raft groups.
 
-**Difference**: TiKV's regions split/merge dynamically; DLog's partitions are static (pre-allocated).
+**Difference**: TiKV's regions split/merge dynamically; Pyralog's partitions are static (pre-allocated).
 
 ### 3. Rust Implementation
 
@@ -111,7 +111,7 @@ Both are implemented in Rust for:
 
 ### 4. Flexible Replication
 
-**DLog:**
+**Pyralog:**
 ```toml
 [replication]
 replication_factor = 3
@@ -135,7 +135,7 @@ Both use quorum-based replication for fault tolerance.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│   DLog: Append-Only Log                                 │
+│   Pyralog: Append-Only Log                                 │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  Operations:                                            │
@@ -175,7 +175,7 @@ Both use quorum-based replication for fault tolerance.
 
 ### 2. Transaction Support
 
-**DLog:**
+**Pyralog:**
 - ❌ No built-in ACID transactions (by design)
 - ✅ Atomic appends within a partition
 - ✅ Exactly-once semantics (idempotent producers)
@@ -188,12 +188,12 @@ Both use quorum-based replication for fault tolerance.
 - ✅ Optimistic/Pessimistic locking
 
 **Use case difference:**
-- DLog: Event streaming, where order matters more than updates
+- Pyralog: Event streaming, where order matters more than updates
 - TiKV: Database storage, where updates and transactions are essential
 
 ### 3. Consistency Model
 
-**DLog:**
+**Pyralog:**
 ```
 Per-Partition Sequential Consistency:
   - Records within a partition are totally ordered
@@ -220,7 +220,7 @@ Snapshot Isolation:
 
 ### 4. Storage Engine
 
-**DLog:**
+**Pyralog:**
 ```rust
 // Log-structured, append-only
 pub struct LogStorage {
@@ -255,7 +255,7 @@ pub struct RocksDBEngine {
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│   DLog: Distributed Metadata                            │
+│   Pyralog: Distributed Metadata                            │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  Global Raft cluster (embedded):                        │
@@ -290,7 +290,7 @@ pub struct RocksDBEngine {
 
 ### 6. Client Protocol
 
-**DLog: Smart Clients (Kafka-style)**
+**Pyralog: Smart Clients (Kafka-style)**
 ```rust
 // Client fetches metadata, routes directly
 let metadata = client.fetch_metadata(log_id).await?;
@@ -324,7 +324,7 @@ client.send_to_region(region, kv_request).await?;
 
 ### Resource Usage
 
-**DLog (5 nodes, 1000 partitions, RF=3):**
+**Pyralog (5 nodes, 1000 partitions, RF=3):**
 ```
 Per Node:
   Global Raft: 1 group
@@ -352,7 +352,7 @@ Network: ~1200 heartbeats/sec + PD reports
 
 ### Failure Handling
 
-**DLog Partition Leader Failure:**
+**Pyralog Partition Leader Failure:**
 ```
 1. Per-Partition Raft detects leader failure
    → Partition 0: [N1, N2, N3], N1 fails
@@ -390,7 +390,7 @@ Time: ~300ms total (similar!)
 
 ### Scalability
 
-**DLog:**
+**Pyralog:**
 ```
 Static partitions:
   - Partition count set at creation
@@ -430,7 +430,7 @@ Best for:
 
 ## Use Cases
 
-### DLog Excels At
+### Pyralog Excels At
 
 **1. Event Streaming**
 ```rust
@@ -453,7 +453,7 @@ consumer_group.consume(log_id, |record| {
 
 **3. Change Data Capture**
 ```rust
-// Database changes → DLog → downstream systems
+// Database changes → Pyralog → downstream systems
 db.on_change(|change| {
     dlog.append(change).await;
 });
@@ -512,7 +512,7 @@ tikv.put("config:feature_flags", flags).await?;
 │   Write Throughput (10 nodes, RF=3)                      │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
-│  DLog:                                                    │
+│  Pyralog:                                                    │
 │    Sequential writes: 10M+ records/sec                   │
 │    Per partition: 1M+ records/sec                        │
 │    Batch size: 1000 records                              │
@@ -522,7 +522,7 @@ tikv.put("config:feature_flags", flags).await?;
 │    Per region: ~20K ops/sec                              │
 │    Transaction overhead: ~2-3ms per txn                  │
 │                                                          │
-│  Winner: DLog (50x higher for sequential writes)         │
+│  Winner: Pyralog (50x higher for sequential writes)         │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 
@@ -530,7 +530,7 @@ tikv.put("config:feature_flags", flags).await?;
 │   Read Throughput (10 nodes, RF=3)                       │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
-│  DLog:                                                    │
+│  Pyralog:                                                    │
 │    Sequential scans: 30M+ records/sec                    │
 │    Random reads: 1M+ reads/sec                           │
 │    (mmap + zero-copy)                                    │
@@ -541,7 +541,7 @@ tikv.put("config:feature_flags", flags).await?;
 │    (RocksDB block cache)                                 │
 │                                                          │
 │  Winner: Depends on access pattern                       │
-│    - Sequential: DLog                                    │
+│    - Sequential: Pyralog                                    │
 │    - Random: TiKV                                        │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
@@ -554,7 +554,7 @@ tikv.put("config:feature_flags", flags).await?;
 │   Write Latency (p99)                                     │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
-│  DLog:                                                    │
+│  Pyralog:                                                    │
 │    With write cache: < 1ms                               │
 │    Durable (fsync): ~5ms                                 │
 │    Replication: ~10ms (quorum)                           │
@@ -564,7 +564,7 @@ tikv.put("config:feature_flags", flags).await?;
 │    Transaction: ~20ms                                    │
 │    (2PC + Raft commit)                                   │
 │                                                          │
-│  Winner: DLog (10x lower latency)                        │
+│  Winner: Pyralog (10x lower latency)                        │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 
@@ -572,7 +572,7 @@ tikv.put("config:feature_flags", flags).await?;
 │   Read Latency (p99)                                      │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
-│  DLog:                                                    │
+│  Pyralog:                                                    │
 │    Sequential (hot): < 0.5ms (mmap)                      │
 │    Random (hot): ~1ms                                    │
 │    Cold: ~10ms (disk seek)                               │
@@ -582,7 +582,7 @@ tikv.put("config:feature_flags", flags).await?;
 │    Point read (cold): ~5ms                               │
 │    Range scan: ~10ms                                     │
 │                                                          │
-│  Winner: Similar for hot data, DLog for scans            │
+│  Winner: Similar for hot data, Pyralog for scans            │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -592,7 +592,7 @@ tikv.put("config:feature_flags", flags).await?;
 Both scale linearly with nodes:
 
 ```
-DLog:
+Pyralog:
   10 nodes: 10M writes/sec
   20 nodes: 20M writes/sec
   Limit: Network bandwidth
@@ -607,7 +607,7 @@ TiKV:
 
 ## Design Philosophy
 
-### DLog: Optimized for Streaming
+### Pyralog: Optimized for Streaming
 
 **Priorities:**
 1. ⭐ Sequential write throughput
@@ -639,7 +639,7 @@ TiKV:
 
 ## When to Use Which
 
-### Use DLog When
+### Use Pyralog When
 
 ✅ **Event streaming is the primary use case**
 ```
@@ -718,16 +718,16 @@ Requirements:
 
 **YES!** Common patterns:
 
-**Pattern 1: DLog → TiKV**
+**Pattern 1: Pyralog → TiKV**
 ```
-Application → DLog (event stream)
+Application → Pyralog (event stream)
               ↓
            Consumer → TiKV (materialized views)
 ```
 
 Example:
 ```rust
-// Write events to DLog (high throughput)
+// Write events to Pyralog (high throughput)
 dlog.append(Event {
     user_id: 123,
     action: "purchase",
@@ -748,14 +748,14 @@ consumer.process(|event| {
 
 **Pattern 2: Database CDC**
 ```
-TiDB → DLog (change stream)
+TiDB → Pyralog (change stream)
         ↓
      Downstream consumers
 ```
 
 Example:
 ```rust
-// Capture TiDB changes to DLog
+// Capture TiDB changes to Pyralog
 tidb.on_change(|change| {
     dlog.append(change).await;
 });
@@ -772,7 +772,7 @@ cache_invalidator.consume_from(dlog);
 
 ### Similarities
 
-Both DLog and TiKV:
+Both Pyralog and TiKV:
 - ✅ Use multi-Raft for scalability
 - ✅ Written in Rust for performance
 - ✅ Support 1000+ shards per node
@@ -781,7 +781,7 @@ Both DLog and TiKV:
 
 ### Key Differences
 
-| Feature | DLog | TiKV |
+| Feature | Pyralog | TiKV |
 |---------|------|------|
 | **Data Model** | Append-only log | Mutable key-value |
 | **Access Pattern** | Sequential | Random |
@@ -800,7 +800,7 @@ Both DLog and TiKV:
 │                                                         │
 │  Append-Only ←──────────────────────→ Mutable          │
 │                                                         │
-│  DLog            Kafka          TiKV        PostgreSQL │
+│  Pyralog            Kafka          TiKV        PostgreSQL │
 │  ↓                ↓              ↓              ↓       │
 │  Pure log    Event stream   KV store    Relational DB │
 │                                                         │
@@ -810,7 +810,7 @@ Both DLog and TiKV:
 ```
 
 **Bottom Line:**
-- **DLog**: Best-in-class distributed log for streaming workloads
+- **Pyralog**: Best-in-class distributed log for streaming workloads
 - **TiKV**: Best-in-class distributed KV store for database workloads
 - **Together**: Complementary, can be used in the same architecture!
 

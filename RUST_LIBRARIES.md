@@ -1,4 +1,4 @@
-# Recommended Rust Libraries for DLog
+# Recommended Rust Libraries for Pyralog
 
 Comprehensive guide to the Rust ecosystem for building high-performance distributed log systems.
 
@@ -225,7 +225,7 @@ tonic-build = "0.12"
 ```rust
 // Service definition
 #[tonic::async_trait]
-impl DLogService for DLogServer {
+impl PyralogService for PyralogServer {
     async fn produce(
         &self,
         request: Request<ProduceRequest>,
@@ -238,7 +238,7 @@ impl DLogService for DLogServer {
 
 // Server
 Server::builder()
-    .add_service(DLogServiceServer::new(server))
+    .add_service(PyralogServiceServer::new(server))
     .serve(addr)
     .await?;
 ```
@@ -563,7 +563,7 @@ thiserror = "1.0"
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum DLogError {
+pub enum PyralogError {
     #[error("invalid offset: {0}")]
     InvalidOffset(u64),
     
@@ -586,7 +586,7 @@ pub enum DLogError {
     Serialization(#[from] bincode::Error),
 }
 
-pub type Result<T> = std::result::Result<T, DLogError>;
+pub type Result<T> = std::result::Result<T, PyralogError>;
 ```
 
 ### anyhow (Application Errors)
@@ -605,7 +605,7 @@ fn main() -> Result<()> {
     let config = load_config("config.toml")
         .context("Failed to load configuration")?;
     
-    let server = DLogServer::new(config)
+    let server = PyralogServer::new(config)
         .context("Failed to initialize server")?;
     
     server.start()
@@ -945,7 +945,7 @@ use clap::Parser;
 
 #[derive(Parser)]
 #[command(name = "dlog")]
-#[command(about = "DLog distributed log server")]
+#[command(about = "Pyralog distributed log server")]
 struct Cli {
     #[arg(short, long, default_value = "config.toml")]
     config: String,
@@ -1291,7 +1291,7 @@ pub async fn replicate_to_all(&self, record: Record) -> Result<()> {
         }
     }
     
-    Err(DLogError::QuorumNotAvailable)
+    Err(PyralogError::QuorumNotAvailable)
 }
 ```
 
@@ -1301,7 +1301,7 @@ pub async fn replicate_to_all(&self, record: Record) -> Result<()> {
 use tokio::signal;
 use tokio::sync::broadcast;
 
-pub async fn run_server(server: DLogServer) -> Result<()> {
+pub async fn run_server(server: PyralogServer) -> Result<()> {
     let (shutdown_tx, _) = broadcast::channel(1);
     let shutdown_rx = shutdown_tx.subscribe();
     

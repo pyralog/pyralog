@@ -1,12 +1,12 @@
 use crate::cluster::ClusterManager;
 use crate::config::DLogConfig;
-use dlog_consensus::RaftConfig;
-use dlog_core::{LogId, LogMetadata, LogConfig, PartitionId, Record, RecordHeader, Result, DLogError, RetentionPolicy};
-use dlog_protocol::{
+use pyralog_consensus::RaftConfig;
+use pyralog_core::{LogId, LogMetadata, LogConfig, PartitionId, Record, RecordHeader, Result, DLogError, RetentionPolicy};
+use pyralog_protocol::{
     api::*, Partitioner, PartitionStrategy,
 };
-use dlog_replication::ReplicationManager;
-use dlog_storage::LogStorage;
+use pyralog_replication::ReplicationManager;
+use pyralog_storage::LogStorage;
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -28,7 +28,7 @@ impl DLogServer {
             node_id: config.node.node_id,
             cluster_nodes: config.node.cluster_nodes.clone(),
             data_dir: config.node.data_dir.join("raft"),
-            election_timeout: dlog_consensus::election::ElectionTimeoutConfig::default(),
+            election_timeout: pyralog_consensus::election::ElectionTimeoutConfig::default(),
         };
 
         std::fs::create_dir_all(&config.node.data_dir)

@@ -1,4 +1,4 @@
-# DLog as a Multi-Model Database
+# Pyralog as a Multi-Model Database
 
 **Integrating Category Theory and Multi-Model Support inspired by MultiCategory**
 
@@ -24,16 +24,16 @@
 
 ## Overview
 
-**DLog + MultiCategory = Unified Multi-Model Database**
+**Pyralog + MultiCategory = Unified Multi-Model Database**
 
-DLog already provides:
+Pyralog already provides:
 - ✅ High-performance distributed log (500M writes/sec)
 - ✅ ACID transactions (Percolator protocol)
 - ✅ Time-travel queries
 - ✅ SQL + DataFrame APIs (DataFusion + Polars)
 - ✅ Arrow columnar storage
 
-By integrating **MultiCategory's features**, DLog gains:
+By integrating **MultiCategory's features**, Pyralog gains:
 - 🎯 **Multi-model data support** (relational, graph, document, key-value, RDF)
 - 🎯 **Category theory foundation** (mathematically rigorous)
 - 🎯 **Fold-function queries** (functional programming paradigm)
@@ -67,15 +67,15 @@ Traditional approach:
 ```
 
 ```
-DLog multi-model approach:
-  All data models → DLog (single backend)
+Pyralog multi-model approach:
+  All data models → Pyralog (single backend)
   
   Result: One database, unified queries! ✓
 ```
 
 ### Supported Data Models
 
-DLog will support **five data models**:
+Pyralog will support **five data models**:
 
 #### 1. **Relational Model**
 
@@ -243,7 +243,7 @@ Category theory provides:
 - ✅ **Type safety** (morphisms preserve structure)
 - ✅ **Optimization** (category laws enable rewrite rules)
 
-### DLog Schema as a Category
+### Pyralog Schema as a Category
 
 **Schema Category** `C`:
 - **Objects**: Data types (Int, String, User, Post, etc.)
@@ -266,7 +266,7 @@ Composition:
   (follow the post, then its author)
 ```
 
-### DLog Instance as a Functor
+### Pyralog Instance as a Functor
 
 An **instance** is a **functor** `F: C → Set`:
 - Maps each schema object (type) to a set (table of values)
@@ -2261,7 +2261,7 @@ impl RLOptimizer {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog Multi-Model Database                                 │
+│  Pyralog Multi-Model Database                                 │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  QUERY LAYER                                               │
@@ -2293,7 +2293,7 @@ impl RLOptimizer {
 │  │  RDF        → Triple table                       │    │
 │  └──────────────────────────────────────────────────┘    │
 │                          ↓                                 │
-│  DISTRIBUTED LOG (DLog Core)                               │
+│  DISTRIBUTED LOG (Pyralog Core)                               │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  • 500M writes/sec                               │    │
 │  │  • ACID transactions (Percolator)                │    │
@@ -2385,7 +2385,7 @@ impl RLOptimizer {
 
 ### Storage Overhead
 
-| Data Model | Traditional | DLog (Arrow) | Compression Ratio |
+| Data Model | Traditional | Pyralog (Arrow) | Compression Ratio |
 |------------|-------------|--------------|-------------------|
 | Relational | 100% | 100% | 1× (baseline) |
 | Document (JSON) | 300% | 120% | 2.5× better ✅ |
@@ -2419,7 +2419,7 @@ Multi-model joins:
 
 ### Multi-Model Join Performance
 
-| Join Type | Baseline (ETL) | DLog | Speedup |
+| Join Type | Baseline (ETL) | Pyralog | Speedup |
 |-----------|----------------|------|---------|
 | Relational ⟕ Graph | 10 sec | 0.5 sec | **20× faster** ✅ |
 | Document ⟕ Relational | 8 sec | 0.4 sec | **20× faster** ✅ |
@@ -2440,7 +2440,7 @@ Multi-model joins:
 - Social graph (follows, likes)
 - Activity feeds (time-series)
 
-**DLog Solution**:
+**Pyralog Solution**:
 
 ```rust
 // Relational: Users table
@@ -2486,7 +2486,7 @@ LIMIT 10
 - Recommendations (graph)
 - Inventory (key-value)
 
-**DLog Solution**:
+**Pyralog Solution**:
 
 ```rust
 // Product catalog (hybrid: relational + document)
@@ -2528,7 +2528,7 @@ LIMIT 10
 - Citations (graph)
 - Ontology (RDF)
 
-**DLog Solution**:
+**Pyralog Solution**:
 
 ```sparql
 -- Find papers citing Einstein's work (RDF + Graph)
@@ -2549,7 +2549,7 @@ WHERE {
 
 ## Conclusion
 
-By integrating **MultiCategory's features** into DLog, we create the **ultimate unified database**:
+By integrating **MultiCategory's features** into Pyralog, we create the **ultimate unified database**:
 
 ✅ **Multi-model support**: Relational, document, graph, key-value, RDF  
 ✅ **Category theory foundation**: Mathematical rigor, provable correctness  
@@ -2560,7 +2560,7 @@ By integrating **MultiCategory's features** into DLog, we create the **ultimate 
 ✅ **Hierarchical queries**: JSONPath, XPath, tree folds  
 ✅ **ML-driven optimization**: Adaptive, workload-aware  
 
-**Plus DLog's existing strengths**:
+**Plus Pyralog's existing strengths**:
 - ✅ 500M writes/sec (high throughput)
 - ✅ ACID transactions (Percolator protocol)
 - ✅ Time-travel queries (temporal consistency)
@@ -2576,7 +2576,7 @@ By integrating **MultiCategory's features** into DLog, we create the **ultimate 
 
 ## Further Reading
 
-- [PAPER.md](PAPER.md) - DLog research paper
+- [PAPER.md](PAPER.md) - Pyralog research paper
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Transactions, stream processing
 - [IMMUTABLE_KNOWLEDGE_DB.md](IMMUTABLE_KNOWLEDGE_DB.md) - Temporal databases

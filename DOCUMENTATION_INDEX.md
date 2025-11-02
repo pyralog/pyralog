@@ -1,8 +1,8 @@
-# DLog Documentation Index
+# Pyralog Documentation Index
 
-**Complete guide to DLog: A platform for secure, parallel, distributed, and decentralized computing.**
+**Complete guide to Pyralog: A platform for secure, parallel, distributed, and decentralized computing.**
 
-DLog unifies cryptographic verification, actor-based concurrency, functional programming, multi-model databases, and decentralized consensus into a single coherent system.
+Pyralog unifies cryptographic verification, actor-based concurrency, functional programming, multi-model databases, and decentralized consensus into a single coherent system.
 
 ## 📚 Quick Navigation
 
@@ -11,14 +11,14 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - **[QUICK_START](QUICK_START.md)** - Get running in 5 minutes
 - **[FAQ](FAQ.md)** - Frequently asked questions
 
-### Learning DLog
+### Learning Pyralog
 - **[CORE_CONCEPTS](CORE_CONCEPTS.md)** - Fundamental concepts (LogId, Partitions, Records, Offsets, Epochs)
 - **[ARCHITECTURE](ARCHITECTURE.md)** - Deep dive into system internals
 - **[DESIGN](DESIGN.md)** - Design decisions and rationale
 - **[BRANDING](BRANDING.md)** 🎨 - **Brand identity guide** (Egyptian theme, visual identity, terminology)
-- **[PAPER](PAPER.md)** ⭐ - **Academic research paper** on DLog's novel contributions
-- **[Blog Series](blog/README.md)** 🎯 - **5-part technical blog series** explaining DLog
-  - [1. Introducing DLog](blog/1-introducing-dlog.md) - Why we need unified infrastructure
+- **[PAPER](PAPER.md)** ⭐ - **Academic research paper** on Pyralog's novel contributions
+- **[Blog Series](blog/README.md)** 🎯 - **5-part technical blog series** explaining Pyralog
+  - [1. Introducing Pyralog](blog/1-introducing-dlog.md) - Why we need unified infrastructure
   - [2. Obelisk Sequencer](blog/2-obelisk-sequencer.md) - Novel persistent atomic primitive
   - [3. ☀️ Pharaoh Network](blog/3-pharaoh-network.md) - Eliminating bottlenecks
   - [4. 28 Billion Ops/Sec](blog/4-28-billion-ops.md) - Architectural deep-dive
@@ -35,7 +35,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - **[OPERATIONS](OPERATIONS.md)** - Deployment, configuration, and maintenance
 - **[PERFORMANCE](PERFORMANCE.md)** - Performance tuning and optimization
 - **[MEMORY_ONLY_MODE](MEMORY_ONLY_MODE.md)** ⭐ **NEW: Ultra-fast ephemeral storage (10-100× faster)**
-- **[COMPARISON](COMPARISON.md)** - How DLog compares to alternatives
+- **[COMPARISON](COMPARISON.md)** - How Pyralog compares to alternatives
 - **[TIKV_COMPARISON](TIKV_COMPARISON.md)** - Detailed comparison with TiKV
 
 ### Advanced Computing Primitives
@@ -44,10 +44,10 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - **[DADBS](DADBS.md)** ⭐ **NEW: Decentralized Autonomous Database Systems**
 - **[MPHF](MPHF.md)** ⭐ **NEW: Partitioned Perfect Hash Maps (O(1) lookups, zero collisions)**
 - **[WIREGUARD_PROTOCOL](WIREGUARD_PROTOCOL.md)** ⭐ **NEW: Quantum-resistant universal protocol (WireGuard + Rosenpass)**
-- **[BATUTA](BATUTA.md)** ⭐ **NEW: DLog's programming language (Clojure + Elixir fusion, actor-first queries)**
+- **[BATUTA](BATUTA.md)** ⭐ **NEW: Pyralog's programming language (Clojure + Elixir fusion, actor-first queries)**
 
 ### Development
-- **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to DLog
+- **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to Pyralog
 - **[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md)** - Complete implementation roadmap
 - **[RUST_LIBRARIES](RUST_LIBRARIES.md)** - Recommended Rust crates and ecosystem
 - **[CHANGELOG](CHANGELOG.md)** - Version history and release notes
@@ -168,7 +168,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 #### CAP Theorem
 - [CAP_THEOREM.md](CAP_THEOREM.md)
   - CAP theorem explained
-  - DLog's position in CAP space
+  - Pyralog's position in CAP space
   - Flexible quorums and CAP
   - Configuration examples (CP, AP, balanced)
   - Comparison with other systems
@@ -177,7 +177,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - Monitoring CAP metrics
 
 #### Immutable Knowledge Databases
-- [IMMUTABLE_KNOWLEDGE_DB.md](IMMUTABLE_KNOWLEDGE_DB.md) ⭐ **NEW: DLog for temporal knowledge systems**
+- [IMMUTABLE_KNOWLEDGE_DB.md](IMMUTABLE_KNOWLEDGE_DB.md) ⭐ **NEW: Pyralog for temporal knowledge systems**
   - Entity-Attribute-Value-Time (EAVT) model
   - Complete immutability and audit trails
   - Time-travel queries (query at any historical point)
@@ -195,7 +195,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Trustless (cryptographic verification, Byzantine fault tolerance)
     - Economic incentives align node behavior
   - **5 Consensus Mechanisms**
-    - Raft (crash fault tolerant, fast, DLog default)
+    - Raft (crash fault tolerant, fast, Pyralog default)
     - PBFT (Practical Byzantine Fault Tolerant, malicious nodes)
     - Tendermint (BFT with fast finality, instant finality)
     - Proof of Work (Nakamoto consensus, permissionless, energy-intensive)
@@ -400,7 +400,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Node→Node (internal cluster, Raft, replication)
     - Cluster→Cluster (multi-datacenter replication)
     - Admin→Cluster (secure administration)
-    - Universal protocol for all DLog communication
+    - Universal protocol for all Pyralog communication
   - **Security Model**
     - Curve25519 (ECDH), ChaCha20 (encryption), Poly1305 (authentication), BLAKE2s (hashing)
     - Zero-trust architecture with peer isolation
@@ -454,7 +454,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - **~2,780 lines of comprehensive documentation**
 
 #### Programming Language
-- [BATUTA.md](BATUTA.md) ⭐ **NEW: DLog's Dynamic Programming Language**
+- [BATUTA.md](BATUTA.md) ⭐ **NEW: Pyralog's Dynamic Programming Language**
   - **Clojure + Elixir Fusion**
     - Lisp S-expressions with full macro system
     - Elixir-style pattern matching and pipe operators
@@ -501,7 +501,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Hot code reloading
     - Actor introspection
     - Time-travel debugging
-  - **DLog Native Integration**
+  - **Pyralog Native Integration**
     - Scarab IDs, Obelisk Sequencers
     - Merkle tree verification
     - Multi-model queries (SQL, Cypher, SPARQL, JSONPath)
@@ -516,7 +516,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
-  - **DLog's Architectural Advantages** (new section)
+  - **Pyralog's Architectural Advantages** (new section)
     - Obelisk Sequencer primitive
     - Dual Raft clusters
     - Smart client pattern
@@ -531,7 +531,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - **Exactly-once semantics** ⭐ **EXPANDED: Complete deep-dive**
     - Three delivery guarantees (at-most-once, at-least-once, exactly-once)
     - Kafka's three-part solution (idempotent producers, transactions, offset commits)
-    - Complete DLog implementation with Percolator + Scarab IDs
+    - Complete Pyralog implementation with Percolator + Scarab IDs
     - Distributed session managers (4B sessions/sec)
     - Deduplication algorithm and cache management
     - Transactional writes with MVCC
@@ -546,7 +546,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Stream-stream joins
     - Complete end-to-end examples
     - Performance benchmarks (10-100x faster than JVM)
-    - State management with DLog changelog
+    - State management with Pyralog changelog
   - Schema registry (Obelisk Sequencer for schema IDs)
   - Consumer groups (Obelisk Sequencer for generations)
   - Connectors framework
@@ -560,7 +560,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Lazy-loading from S3
     - Memory efficiency analysis
   - Observability features
-  - **DLog as OpenTelemetry Backend** ⭐ **NEW: OTLP receiver + Arrow storage**
+  - **Pyralog as OpenTelemetry Backend** ⭐ **NEW: OTLP receiver + Arrow storage**
     - OTLP/gRPC receiver for traces/metrics/logs
     - Arrow schema for OpenTelemetry data
     - DataFusion SQL queries for trace analysis
@@ -585,7 +585,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - 1-5 GB/sec bulk load throughput
     - 100K-1M events/sec streaming ingestion
   - **Universal Pattern**: ☀️ Pharaoh Network via Scarab IDs
-    - Extends to ALL coordinators in DLog
+    - Extends to ALL coordinators in Pyralog
     - 28 billion ops/sec across 7 service types
   - Implementation roadmap
 
@@ -656,10 +656,10 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 
 #### System Comparison
 - [COMPARISON.md](COMPARISON.md)
-  - DLog vs Kafka
-  - DLog vs Redpanda
-  - DLog vs LogDevice
-  - DLog vs Pulsar
+  - Pyralog vs Kafka
+  - Pyralog vs Redpanda
+  - Pyralog vs LogDevice
+  - Pyralog vs Pulsar
   - Performance comparison
   - Feature matrix
   - Migration paths
@@ -755,26 +755,26 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 
 ## 🎯 Documentation by Use Case
 
-### "I want to learn about DLog"
+### "I want to learn about Pyralog"
 1. Start with [README.md](README.md) for overview
 2. Read [CORE_CONCEPTS.md](CORE_CONCEPTS.md) to understand fundamentals (LogId, Partitions, etc.)
 3. Read [DESIGN.md](DESIGN.md) for philosophy
 4. Check [ARCHITECTURE.md](ARCHITECTURE.md) for details
 5. Review [COMPARISON.md](COMPARISON.md) vs alternatives
 
-### "I want to deploy DLog"
+### "I want to deploy Pyralog"
 1. Read [QUICK_START.md](QUICK_START.md) for basics
 2. Follow [OPERATIONS.md](OPERATIONS.md) for production
 3. Check [PERFORMANCE.md](PERFORMANCE.md) for tuning
 4. Refer to [FAQ.md](FAQ.md) for common issues
 
-### "I want to develop with DLog"
+### "I want to develop with Pyralog"
 1. Start with [QUICK_START.md](QUICK_START.md)
 2. Study [EXAMPLES.md](EXAMPLES.md) for patterns
 3. Read API documentation (inline docs)
 4. Check [FAQ.md](FAQ.md) for questions
 
-### "I want to contribute to DLog"
+### "I want to contribute to Pyralog"
 1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 2. Review [ARCHITECTURE.md](ARCHITECTURE.md) to understand internals
 3. Check [CHANGELOG.md](CHANGELOG.md) for roadmap
@@ -792,14 +792,14 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 3. Check [OPERATIONS.md](OPERATIONS.md) for tuning
 4. Try examples from [EXAMPLES.md](EXAMPLES.md)
 
-### "I want to implement DLog"
+### "I want to implement Pyralog"
 1. Read [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for complete roadmap
 2. Review [ARCHITECTURE.md](ARCHITECTURE.md) to understand the design
 3. Check [RUST_LIBRARIES.md](RUST_LIBRARIES.md) for recommended crates
 4. Follow phase-by-phase approach with code examples
 5. Use [CONTRIBUTING.md](CONTRIBUTING.md) for development setup
 
-### "I want to understand DLog's research contributions"
+### "I want to understand Pyralog's research contributions"
 1. Read [PAPER.md](PAPER.md) ⭐ - comprehensive research paper
 2. Study [ARCHITECTURE.md](ARCHITECTURE.md) for architectural innovations
 3. Review [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Obelisk Sequencer details
@@ -885,7 +885,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 5. Explore immutable data structures (persistent vectors, maps, sets)
 6. Check fault tolerance with supervision trees
 7. Try REPL-driven development with live data exploration
-8. Review DLog native integration (Scarab IDs, Merkle trees, multi-model queries)
+8. Review Pyralog native integration (Scarab IDs, Merkle trees, multi-model queries)
 
 ## 📊 Documentation Statistics
 
@@ -1005,9 +1005,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 ---
 
-**Last Updated**: 2025-11-02 (includes BATUTA.md - DLog's programming language)
+**Last Updated**: 2025-11-02 (includes BATUTA.md - Pyralog's programming language)
 
-**Maintainers**: DLog Team
+**Maintainers**: Pyralog Team
 
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 

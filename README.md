@@ -1,4 +1,4 @@
-# 🔺 DLog - Platform for Secure, Parallel, Distributed, and Decentralized Computing
+# 🔺 Pyralog - Platform for Secure, Parallel, Distributed, and Decentralized Computing
 
 > **Built to last millennia** · 🗿 Obelisk · ☀️ Pharaoh · 🪲 Scarab · 🎼 Batuta
 
@@ -15,11 +15,11 @@ IMPORTANT: Project in research and design phase. Drafts only.
 [![Docs](https://img.shields.io/badge/docs-74k%20lines-success.svg)](DOCUMENTATION_INDEX.md)
 [![Quantum Ready](https://img.shields.io/badge/quantum-resistant-red.svg)](WIREGUARD_PROTOCOL.md#quantum-resistance)
 
-## What is DLog?
+## What is Pyralog?
 
-DLog has evolved from a distributed log into a **comprehensive computing platform** that unifies secure, parallel, distributed, and decentralized computation. Built in Rust with novel coordination primitives, category theory foundations, and BLAKE3 cryptographic verification, DLog achieves **28+ billion operations per second** while providing strong consistency, exactly-once semantics, and compile-time type safety.
+Pyralog has evolved from a distributed log into a **comprehensive computing platform** that unifies secure, parallel, distributed, and decentralized computation. Built in Rust with novel coordination primitives, category theory foundations, and BLAKE3 cryptographic verification, Pyralog achieves **28+ billion operations per second** while providing strong consistency, exactly-once semantics, and compile-time type safety.
 
-### Four Pillars of DLog
+### Four Pillars of Pyralog
 
 | Pillar | Key Technologies | Benefits |
 |--------|------------------|----------|
@@ -36,7 +36,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 - ⏱️ **Immutable Knowledge Base**: Temporal queries, 50,000× faster than Datomic
 - 🧮 **Functional Query System**: Monads, type safety, 14× optimization speedup
 - 🎭 **Actor-Based Concurrency**: Location-transparent actors, supervision trees, topology-level reactivity
-- 🔭 **Self-Observability**: DLog monitors DLog via OpenTelemetry (no separate stack needed)
+- 🔭 **Self-Observability**: Pyralog monitors Pyralog via OpenTelemetry (no separate stack needed)
 - 🔄 **Stream Processing**: Exactly-once semantics, 1000× better than Kafka's coordinator
 - 🧠 **Tensor Database**: ML/AI workloads, DLPack, distributed training, GPU acceleration
 - 🌐 **Decentralized Autonomous**: 5 consensus mechanisms (Raft, PBFT, Tendermint, PoW, PoS)
@@ -117,7 +117,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 - **Exactly-Once Semantics**: Percolator-style MVCC transactions
 - **DataFusion Streaming SQL**: Windowing, aggregations, stream-stream joins
 - **Polars Lazy DataFrames**: Native Arrow streaming
-- **State Management**: Durable state backed by DLog
+- **State Management**: Durable state backed by Pyralog
 - **1000× Better EOS**: Distributed session managers vs. Kafka's centralized coordinator
 
 ### 🎨 Advanced Analytics
@@ -132,7 +132,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 ### 🌐 Enterprise Ready
 
 - **OpenTelemetry Backend**: Native OTLP ingestion (10-50× faster than Jaeger)
-- **Self-Observability**: DLog monitors itself - no separate observability stack needed
+- **Self-Observability**: Pyralog monitors itself - no separate observability stack needed
 - **Multi-Tenancy**: Isolated workloads with resource limits and quota enforcement
 - **Kafka Protocol Compatible**: Drop-in replacement for existing Kafka apps
 - **Dynamic Partitions**: Automatic splitting/merging of hot/cold partitions
@@ -203,7 +203,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 
 ### 🔒 WireGuard Universal Protocol
 
-- **Universal Communication**: Single protocol for all DLog communication (client-cluster, node-node, cluster-cluster, admin-cluster)
+- **Universal Communication**: Single protocol for all Pyralog communication (client-cluster, node-node, cluster-cluster, admin-cluster)
 - **Quantum Resistance**: Rosenpass integration for post-quantum security (Kyber1024 + Dilithium)
 - **Hybrid Cryptography**: Defense in depth - attacker must break BOTH classical AND post-quantum crypto
 - **Extreme Performance**: 1-RTT handshake (~0.2ms), 9.5 Gbps kernel / 6-8 Gbps userspace (BoringTun)
@@ -226,13 +226,13 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 - **Reference Capabilities**: Pony-style capabilities (iso, trn, ref, val, box, tag) for safe concurrency without data races
 - **Compiles to Rust**: Native performance (2-3× faster than Clojure, 1.5× faster than Elixir)
 - **REPL-Driven**: Live data exploration, hot code reloading, actor introspection
-- **DLog Native**: Direct access to all DLog primitives (🪲 Scarab IDs, Merkle trees, multi-model queries)
+- **Pyralog Native**: Direct access to all Pyralog primitives (🪲 Scarab IDs, Merkle trees, multi-model queries)
 - **Time-Travel Queries**: as-of and history queries built into the language
 - **Startup Time**: 50ms (vs 2s for Clojure)
 
 ## 📊 Unified Architecture
 
-DLog's revolutionary layered architecture eliminates traditional boundaries:
+Pyralog's revolutionary layered architecture eliminates traditional boundaries:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -313,7 +313,7 @@ cargo run --release -- --node-id 3 --data-dir ./data3 --cluster-nodes 1,2,3
 
 ## 🎯 CAP Theorem and Flexibility
 
-DLog uniquely allows you to **configure your position on the CAP spectrum**:
+Pyralog uniquely allows you to **configure your position on the CAP spectrum**:
 
 ```rust
 // Strong Consistency (CP)
@@ -345,7 +345,7 @@ use dlog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::new("localhost:9092").await?;
+    let client = PyralogClient::new("localhost:9092").await?;
     
     // Produce with exactly-once semantics
     client.produce_transactional(
@@ -491,7 +491,7 @@ while let Some(batch) = stream.next().await {
 
 ### 7. Self-Observability with OpenTelemetry
 
-DLog can monitor itself using its own OpenTelemetry backend:
+Pyralog can monitor itself using its own OpenTelemetry backend:
 
 ```rust
 use dlog::observability::*;
@@ -499,17 +499,17 @@ use opentelemetry::trace::Tracer;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Configure DLog to ingest its own telemetry
-    let config = DLogConfig {
+    // Configure Pyralog to ingest its own telemetry
+    let config = PyralogConfig {
         otlp_endpoint: "localhost:4317",
         traces_log: "dlog_traces",
         metrics_log: "dlog_metrics",
         logs_log: "dlog_logs",
     };
     
-    let client = DLogClient::new_with_observability(config).await?;
+    let client = PyralogClient::new_with_observability(config).await?;
     
-    // DLog now monitors itself - traces, metrics, logs all stored in DLog
+    // Pyralog now monitors itself - traces, metrics, logs all stored in Pyralog
     
     // Query your own performance in real-time
     let query_latency = client.query_sql(r#"
@@ -551,7 +551,7 @@ async fn main() -> Result<()> {
 - ✅ **Infinite retention**: Tiered storage (S3/GCS) for long-term observability
 - ✅ **Cost-effective**: Single system, single deployment, single bill
 
-**DLog monitors DLog** - complete dogfooding for production confidence.
+**Pyralog monitors Pyralog** - complete dogfooding for production confidence.
 
 ## 🎯 Design Principles
 
@@ -571,7 +571,7 @@ async fn main() -> Result<()> {
 
 ## 📚 Comprehensive Documentation
 
-DLog includes **74,000+ lines** of documentation across **41 files**:
+Pyralog includes **74,000+ lines** of documentation across **41 files**:
 
 ### 🎯 Getting Started
 - **[QUICK_START.md](QUICK_START.md)** - Get up and running in 5 minutes
@@ -622,7 +622,7 @@ DLog includes **74,000+ lines** of documentation across **41 files**:
 - **[CAP_THEOREM.md](CAP_THEOREM.md)** - CAP theorem and PACELC
 
 ### 📖 Blog Series
-- **[blog/](blog/)** - 5-part technical blog series on DLog innovations
+- **[blog/](blog/)** - 5-part technical blog series on Pyralog innovations
 
 ### 🛠️ Development
 - **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Complete roadmap (6 phases)
@@ -644,7 +644,7 @@ The storage engine uses a log-structured design with the following features:
 
 ### Consensus Protocol
 
-DLog uses Raft for cluster coordination:
+Pyralog uses Raft for cluster coordination:
 
 - Leader election with randomized timeouts
 - Log replication with majority quorums
@@ -686,7 +686,7 @@ Production-validated benchmarks on AWS i3.8xlarge (32 vCPUs, 244GB RAM, 4×1.9TB
 
 ### Multi-Model Queries
 
-| Query Type | DLog | Competitor | Speedup |
+| Query Type | Pyralog | Competitor | Speedup |
 |------------|------|------------|---------|
 | SQL (relational) | 2.3s | PostgreSQL: 23s | 10× |
 | Cypher (graph) | 1.8s | Neo4j: 28s | 15× |
@@ -696,7 +696,7 @@ Production-validated benchmarks on AWS i3.8xlarge (32 vCPUs, 244GB RAM, 4×1.9TB
 
 ### Analytics & Stream Processing
 
-| Workload | DLog (DataFusion) | Competitor | Speedup |
+| Workload | Pyralog (DataFusion) | Competitor | Speedup |
 |----------|-------------------|------------|---------|
 | Full scan + filter (1B records) | 2.3s | Spark: 15.2s | 6.6× |
 | Group by + aggregation | 3.8s | Flink: 22.5s | 5.9× |
@@ -715,7 +715,7 @@ Production-validated benchmarks on AWS i3.8xlarge (32 vCPUs, 244GB RAM, 4×1.9TB
 
 ### Failover & Recovery
 
-| Metric | DLog | Kafka | Speedup |
+| Metric | Pyralog | Kafka | Speedup |
 |--------|------|-------|---------|
 | Detection time | 300ms | 2s | 6.7× |
 | Epoch activation | 150ms | N/A | - |
@@ -778,7 +778,7 @@ See [LICENSE](LICENSE) and [COPYRIGHT](COPYRIGHT) for details.
 
 ## 🙏 Acknowledgments
 
-DLog builds upon groundbreaking work from many projects:
+Pyralog builds upon groundbreaking work from many projects:
 
 ### Distributed Logging
 - [Apache Kafka](https://kafka.apache.org/) - Foundational distributed log concepts

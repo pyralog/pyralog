@@ -1,16 +1,16 @@
 # Quantum-Resistant Networking with WireGuard: Secure Communication in Any Environment
 
-**Part 10 of the DLog Blog Series** (Final Post)
+**Part 10 of the Pyralog Blog Series** (Final Post)
 
 What if your database could communicate securely through corporate firewalls, censored networks, and even quantum computers? What if **every connection** was encrypted, authenticated, and untraceable—with **zero configuration**?
 
-**DLog uses WireGuard as its universal protocol** for all communication:
+**Pyralog uses WireGuard as its universal protocol** for all communication:
 - Node-to-node
 - Client-to-cluster  
 - Cluster-to-cluster
 - Admin-to-cluster
 
-Combined with **Rosenpass** for post-quantum key exchange, DLog is prepared for the quantum computing era—today.
+Combined with **Rosenpass** for post-quantum key exchange, Pyralog is prepared for the quantum computing era—today.
 
 This isn't paranoia. It's **engineering for reality.**
 
@@ -70,9 +70,9 @@ WireGuard is a modern VPN protocol that outperforms TLS in every metric:
 
 **WireGuard is 100× smaller.** Smaller code = fewer bugs = more secure.
 
-### Why This Matters for DLog
+### Why This Matters for Pyralog
 
-DLog requires:
+Pyralog requires:
 1. **High throughput**: 28+ billion ops/sec
 2. **Low latency**: Sub-millisecond queries
 3. **Strong security**: Zero-trust architecture
@@ -83,7 +83,7 @@ DLog requires:
 
 ---
 
-## DLog's WireGuard Architecture
+## Pyralog's WireGuard Architecture
 
 ### Universal Protocol
 
@@ -91,7 +91,7 @@ Every connection uses WireGuard:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│          DLog Cluster (Node A, B, C)            │
+│          Pyralog Cluster (Node A, B, C)            │
 │                                                 │
 │  Node A ←WireGuard→ Node B ←WireGuard→ Node C  │
 │     ↑                                            │
@@ -199,7 +199,7 @@ Hybrid security:
 - ~140-bit security (quantum)
 - Fast: 0.2 ms key generation
 
-### DLog Integration
+### Pyralog Integration
 
 ```rust
 use rosenpass::*;
@@ -294,9 +294,9 @@ No patterns. No signatures. Untraceable.
 3. **Encrypted metadata**: Everything encrypted except type byte
 4. **Looks like UDP noise**: Indistinguishable from random data
 
-### DLog Enhancements
+### Pyralog Enhancements
 
-DLog adds additional DPI resistance:
+Pyralog adds additional DPI resistance:
 
 ```rust
 pub struct DPIEvasionConfig {
@@ -321,7 +321,7 @@ pub struct DPIEvasionConfig {
 
 ### Bypass Success Rates
 
-| Environment | TLS | OpenVPN | **WireGuard** | **WireGuard + DLog** |
+| Environment | TLS | OpenVPN | **WireGuard** | **WireGuard + Pyralog** |
 |-------------|-----|---------|---------------|----------------------|
 | Great Firewall (China) | 0% | 10% | 80% | **95%** |
 | Russia (DPI) | 50% | 40% | 85% | **98%** |
@@ -329,18 +329,18 @@ pub struct DPIEvasionConfig {
 | Corporate firewalls | 60% | 50% | 90% | **99%** |
 | ISP throttling | 70% | 60% | 95% | **99%** |
 
-**DLog's WireGuard configuration bypasses** nearly all DPI.
+**Pyralog's WireGuard configuration bypasses** nearly all DPI.
 
 ---
 
 ## Automatic Configuration
 
-DLog handles WireGuard configuration automatically:
+Pyralog handles WireGuard configuration automatically:
 
 ### Node Bootstrap
 
 ```bash
-# Start DLog node (first time)
+# Start Pyralog node (first time)
 $ dlog-server --bootstrap
 
 Generating WireGuard keys...
@@ -401,7 +401,7 @@ data:
     ListenPort = 51820
     
     [Peer]
-    # Auto-populated by DLog
+    # Auto-populated by Pyralog
     PublicKey = <peer-public-key>
     AllowedIPs = 10.0.0.0/24
     Endpoint = dlog-node-1:51820
@@ -441,7 +441,7 @@ WireGuard enables secure multi-region replication:
 ```
 Region: US-East               Region: EU-West
 ┌─────────────────┐          ┌─────────────────┐
-│  DLog Cluster   │          │  DLog Cluster   │
+│  Pyralog Cluster   │          │  Pyralog Cluster   │
 │  Node A, B, C   │          │  Node X, Y, Z   │
 └─────────────────┘          └─────────────────┘
         ↑                              ↑
@@ -483,7 +483,7 @@ quantum_resistant = true
 | CPU usage | 15% | 30% | 40% | **2%** |
 | DPI resistance | Low | Low | Medium | **High** |
 | Post-quantum | ❌ | ❌ | ❌ | **✅ (via Rosenpass)** |
-| Auto-config | ❌ | ❌ | ❌ | **✅ (DLog)** |
+| Auto-config | ❌ | ❌ | ❌ | **✅ (Pyralog)** |
 
 **WireGuard dominates every metric.**
 
@@ -543,7 +543,7 @@ decoy_traffic = true
 ### Generate Keys
 
 ```bash
-# DLog auto-generates keys on first run
+# Pyralog auto-generates keys on first run
 $ dlog-server
 
 # Or manually:
@@ -571,7 +571,7 @@ let result = client.query("SELECT * FROM users").await?;
 
 ## Key Takeaways
 
-1. **WireGuard Universal Protocol**: All DLog communication
+1. **WireGuard Universal Protocol**: All Pyralog communication
 2. **10× Faster Than TLS**: 9.8 GB/s vs 950 MB/s
 3. **Quantum-Resistant**: Rosenpass + Kyber1024
 4. **DPI Resistance**: Bypass firewalls, censorship, throttling
@@ -585,7 +585,7 @@ let result = client.query("SELECT * FROM users").await?;
 
 ## The End of the Series
 
-This concludes our 10-part blog series on DLog. We've covered:
+This concludes our 10-part blog series on Pyralog. We've covered:
 
 1. **Novel coordination primitives** (Obelisk Sequencer)
 2. **Pharaoh Network** (eliminating bottlenecks)
@@ -597,13 +597,13 @@ This concludes our 10-part blog series on DLog. We've covered:
 8. **Actor-based concurrency** (supervision trees, topology-level reactivity)
 9. **Quantum-resistant networking** (WireGuard + Rosenpass)
 
-**DLog isn't just a database—it's a platform for secure, parallel, distributed, and decentralized computing.**
+**Pyralog isn't just a database—it's a platform for secure, parallel, distributed, and decentralized computing.**
 
 ---
 
 ## What's Next for You?
 
-### Try DLog
+### Try Pyralog
 
 ```bash
 # Clone repository
@@ -634,7 +634,7 @@ cargo run --example quick-start
 ---
 
 **Blog Series** (Complete):
-1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
@@ -650,7 +650,7 @@ cargo run --example quick-start
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 

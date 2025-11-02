@@ -1,8 +1,8 @@
-# Epochs in DLog
+# Epochs in Pyralog
 
 ## Overview
 
-DLog now implements **epochs** inspired by LogDevice's sequencer epochs. This document explains what epochs are, why they're important, and how DLog uses them.
+Pyralog now implements **epochs** inspired by LogDevice's sequencer epochs. This document explains what epochs are, why they're important, and how Pyralog uses them.
 
 ## What are Epochs?
 
@@ -212,7 +212,7 @@ for record in records {
 
 This is why **epochs are a critical innovation** from LogDevice that makes high-throughput distributed logs practical.
 
-## DLog Implementation
+## Pyralog Implementation
 
 ### Core Types
 
@@ -399,9 +399,9 @@ struct IndexEntry {
 }
 ```
 
-## Comparison: DLog vs LogDevice
+## Comparison: Pyralog vs LogDevice
 
-| Feature | LogDevice | DLog |
+| Feature | LogDevice | Pyralog |
 |---------|-----------|------|
 | Epoch Tracking | ✅ | ✅ |
 | Sequencer Failover | ✅ | ✅ |
@@ -417,7 +417,7 @@ struct IndexEntry {
 ```rust
 let epoch = sequencer.current_epoch(partition)?;
 if !sequencer.can_write(partition, epoch) {
-    return Err(DLogError::EpochSealed);
+    return Err(PyralogError::EpochSealed);
 }
 // Proceed with write...
 ```
@@ -481,12 +481,12 @@ metadata_store.save(partition, metadata)?;
 
 ## Conclusion
 
-Epochs are a crucial feature from LogDevice that make DLog's failover behavior safe and predictable. By tracking which leader wrote which records, we can:
+Epochs are a crucial feature from LogDevice that make Pyralog's failover behavior safe and predictable. By tracking which leader wrote which records, we can:
 
 - Prevent split-brain scenarios
 - Enable safe failover
 - Simplify recovery logic
 - Provide clear audit trails
 
-This brings DLog closer to LogDevice's robust sequencer design while maintaining compatibility with Raft-based consensus.
+This brings Pyralog closer to LogDevice's robust sequencer design while maintaining compatibility with Raft-based consensus.
 

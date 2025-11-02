@@ -1,4 +1,4 @@
-# DLog Branding Guide
+# Pyralog Branding Guide
 
 > **Theme**: Ancient Egyptian Architecture & Symbolism  
 > **Core Values**: Permanence · Power · Precision · Monumentality
@@ -7,14 +7,14 @@
 
 ## 🎨 Brand Identity
 
-DLog's branding draws from **ancient Egyptian civilization**—a culture renowned for:
+Pyralog's branding draws from **ancient Egyptian civilization**—a culture renowned for:
 
 - **Engineering Excellence**: Pyramids and monuments that lasted millennia
 - **Precision**: Advanced mathematics and astronomy
 - **Distributed Coordination**: Managing vast territories without modern communication
 - **Permanence**: Stone architecture, immutable hieroglyphics, eternal legacy
 
-These values mirror DLog's technical characteristics:
+These values mirror Pyralog's technical characteristics:
 - **Crash-safe primitives** (Obelisk Sequencer)
 - **Distributed coordination** without consensus (Pharaoh Network)
 - **Immutable, time-ordered data** (Scarab IDs)
@@ -23,7 +23,7 @@ These values mirror DLog's technical characteristics:
 
 ## 🏛️ The Three Pillars
 
-DLog's architecture is embodied by three Egyptian symbols:
+Pyralog's architecture is embodied by three Egyptian symbols:
 
 ### 🗿 Obelisk Sequencer
 
@@ -114,7 +114,7 @@ Using Scarab IDs (🪲)...
 - Actor-first queries and data processing
 - Compiles to Rust and WebAssembly
 - Lisp syntax with macros and metaprogramming
-- Native DLog integration
+- Native Pyralog integration
 
 **Visual Metaphor**:
 - Batuta = Spanish/Portuguese/Italian for "baton"
@@ -123,7 +123,7 @@ Using Scarab IDs (🪲)...
 - Harmony through coordination = distributed computation
 
 **Why Not Egyptian?**:
-- Batuta represents the **human interface** to DLog
+- Batuta represents the **human interface** to Pyralog
 - While infrastructure is Egyptian (permanent, monumental), the language is **orchestral** (expressive, artistic)
 - Bridges the gap between raw power (🗿☀️🪲) and human expression (🎼)
 - Complements rather than replaces the Egyptian theme
@@ -158,7 +158,7 @@ Egyptian Foundation (Infrastructure)
 
 ```
 ┌─────────────────────────────────────────────────┐
-│              DLog Platform                      │
+│              Pyralog Platform                      │
 │         (Unified Data Platform)                 │
 └─────────────────────────────────────────────────┘
                     │
@@ -197,7 +197,7 @@ let pharaoh_node = pharaoh_network.get(coordinator_id);
 ```clojure
 ;; Batuta code - expressive and powerful
 (defquery user-activity
-  "Find active users using DLog primitives"
+  "Find active users using Pyralog primitives"
   [db time-range]
   (->> (dlog/query db
          {:find [?user ?count]
@@ -281,8 +281,8 @@ Hieroglyph Black:     #000000  ■  Strong emphasis
 
 **Confident · Precise · Monumental**
 
-- **Do**: "DLog achieves 28 billion operations per second"
-- **Don't**: "DLog might be able to handle billions of operations"
+- **Do**: "Pyralog achieves 28 billion operations per second"
+- **Don't**: "Pyralog might be able to handle billions of operations"
 
 **Technical but Accessible**
 
@@ -296,14 +296,14 @@ Hieroglyph Black:     #000000  ■  Strong emphasis
 
 ### Voice
 
-**DLog is**:
+**Pyralog is**:
 - ✅ Ambitious (28 billion ops/sec)
 - ✅ Precise (exact numbers, benchmarks)
 - ✅ Confident (definitive statements)
 - ✅ Educational (explains complex concepts)
 - ✅ Monumental (big ideas, lasting impact)
 
-**DLog is NOT**:
+**Pyralog is NOT**:
 - ❌ Arrogant (doesn't belittle competitors)
 - ❌ Vague (no hand-waving)
 - ❌ Hype-driven (no buzzwords without substance)
@@ -319,7 +319,7 @@ Hieroglyph Black:     #000000  ■  Strong emphasis
 - **Pharaoh Network** (not "pharaoh network" or "Pharaoh")
 - **Scarab IDs** (not "scarab IDs" or "Scarab")
 - **Batuta** (not "batuta" or "BATUTA")
-- **DLog** (not "dlog" or "DLOG" or "D-Log")
+- **Pyralog** (not "dlog" or "DLOG" or "D-Log")
 
 ### When to Use Icons
 
@@ -333,14 +333,14 @@ Hieroglyph Black:     #000000  ■  Strong emphasis
 ```markdown
 ## 🗿 Obelisk Sequencer: Crash-Safe Counters
 
-DLog's Obelisk Sequencer provides:
+Pyralog's Obelisk Sequencer provides:
 - Atomic increments
 - Crash safety
 - Instant recovery
 
 ## 🎼 Batuta: Orchestrating Data Operations
 
-Query DLog using Batuta's expressive syntax:
+Query Pyralog using Batuta's expressive syntax:
 - Lisp macros
 - Actor-first concurrency
 - Compiles to Rust
@@ -363,9 +363,9 @@ to recover the counter value instantly.
 
 ## 📐 Logo & Iconography
 
-### DLog Platform Icon
+### Pyralog Platform Icon
 
-**🔺 Pyramid** represents DLog as a platform:
+**🔺 Pyramid** represents Pyralog as a platform:
 - Most iconic Egyptian symbol
 - Represents **layered architecture** (data layer, coordination layer, interface layer)
 - **Timeless monument** = built to last millennia
@@ -384,14 +384,14 @@ to recover the counter value instantly.
 **Primary Logo**:
 ```
        🔺
-      DLog
+      Pyralog
     ────────
    🗿 ☀️ 🪲 🎼
 ```
 
 **Alternative - Pyramid Structure**:
 ```
-        🔺 DLog
+        🔺 Pyralog
        ─────────
       🎼 Batuta
      ───────────
@@ -401,12 +401,12 @@ to recover the counter value instantly.
 
 **Text Logo (Horizontal)**:
 ```
-🔺 DLog  |  🗿 Obelisk · ☀️ Pharaoh · 🪲 Scarab · 🎼 Batuta
+🔺 Pyralog  |  🗿 Obelisk · ☀️ Pharaoh · 🪲 Scarab · 🎼 Batuta
 ```
 
 **Simple Stack**:
 ```
-   🔺 DLog
+   🔺 Pyralog
    ───────
    🗿☀️🪲🎼
 ```
@@ -480,11 +480,11 @@ Use ASCII art liberally for:
 
 **Project README**:
 ```markdown
-# 🔺 DLog
+# 🔺 Pyralog
 
 > Built to Last Millennia
 
-DLog is a unified distributed data platform...
+Pyralog is a unified distributed data platform...
 
 ## Components
 - 🗿 Obelisk Sequencer
@@ -514,7 +514,7 @@ Built on sparse files...
 ### 3. Conference Talks
 
 **Slide Structure**:
-1. Title slide: "🔺 DLog: Built to Last Millennia"
+1. Title slide: "🔺 Pyralog: Built to Last Millennia"
 2. Problem: Centralized bottlenecks
 3. Solution: Four components (🗿☀️🪲🎼)
 4. Each component gets dedicated slides with icon
@@ -524,7 +524,7 @@ Built on sparse files...
 
 **Twitter/X**:
 ```
-🔺 DLog achieves 28B ops/sec with:
+🔺 Pyralog achieves 28B ops/sec with:
 🗿 Obelisk Sequencer - crash-safe counters
 ☀️ Pharaoh Network - distributed coordination
 🪲 Scarab IDs - unique identifiers
@@ -535,7 +535,7 @@ Built to last millennia. Zero bottlenecks.
 
 **GitHub README Badge Ideas**:
 ```markdown
-![DLog](https://img.shields.io/badge/🔺-DLog-C2B280)
+![Pyralog](https://img.shields.io/badge/🔺-Pyralog-C2B280)
 ![Obelisk](https://img.shields.io/badge/🗿-Obelisk-D4AF37)
 ![Pharaoh](https://img.shields.io/badge/☀️-Pharaoh-15317E)
 ![Scarab](https://img.shields.io/badge/🪲-Scarab-30D5C8)
@@ -563,19 +563,19 @@ pub struct ObeliskSequencer {
 ### Taglines
 
 **Primary**:
-> **🔺 DLog: Built to Last Millennia**
+> **🔺 Pyralog: Built to Last Millennia**
 
 **Alternatives**:
-- "🔺 DLog: Monumental Performance, Eternal Data"
-- "🔺 DLog: The Distributed Log for the Ages"
-- "🔺 DLog: Solid Foundation, Infinite Scale"
-- "🔺 DLog: 28 Billion Operations Per Second. Zero Compromises."
+- "🔺 Pyralog: Monumental Performance, Eternal Data"
+- "🔺 Pyralog: The Distributed Log for the Ages"
+- "🔺 Pyralog: Solid Foundation, Infinite Scale"
+- "🔺 Pyralog: 28 Billion Operations Per Second. Zero Compromises."
 
 ### Elevator Pitch
 
 **30 seconds**:
 ```
-🔺 DLog is a unified distributed data platform inspired by ancient 
+🔺 Pyralog is a unified distributed data platform inspired by ancient 
 Egyptian engineering. Like the pyramids, it's built to last—with 
 crash-safe primitives (🗿 Obelisk Sequencer), distributed 
 coordination (☀️ Pharaoh Network), unique identifiers (🪲 Scarab IDs),
@@ -585,7 +585,7 @@ operations per second without centralized bottlenecks.
 
 **5 seconds**:
 ```
-🔺 DLog: Distributed data infrastructure with zero bottlenecks.
+🔺 Pyralog: Distributed data infrastructure with zero bottlenecks.
 28 billion ops/sec. Built to last millennia.
 ```
 
@@ -593,7 +593,7 @@ operations per second without centralized bottlenecks.
 
 ## ✅ Brand Checklist
 
-When creating DLog content, ensure:
+When creating Pyralog content, ensure:
 
 - [ ] Egyptian theme is consistent (if using metaphors for infrastructure)
 - [ ] Four components (🗿☀️🪲🎼) are properly introduced when relevant
@@ -655,8 +655,8 @@ When creating DLog content, ensure:
 
 ## 📝 Version History
 
-- **v1.2** (2025-11-02): Added DLog platform icon
-  - Selected 🔺 Pyramid as primary DLog icon
+- **v1.2** (2025-11-02): Added Pyralog platform icon
+  - Selected 🔺 Pyramid as primary Pyralog icon
   - Represents layered architecture and lasting monument
   - Updated all logos and branding examples
   - Added pyramid structure diagrams
@@ -680,12 +680,12 @@ When creating DLog content, ensure:
 This branding guide is licensed under **CC0-1.0** (Public Domain).
 
 You are free to:
-- Use DLog's branding in presentations, articles, and documentation
+- Use Pyralog's branding in presentations, articles, and documentation
 - Reference the Egyptian theme in your own work
-- Create derivative content about DLog
+- Create derivative content about Pyralog
 
 We encourage:
-- Proper attribution to DLog and its inspirations
+- Proper attribution to Pyralog and its inspirations
 - Maintaining technical accuracy
 - Educational use
 
@@ -693,5 +693,5 @@ We encourage:
 
 **Questions?** Open an issue or join our [Discord](https://discord.gg/dlog)
 
-**🔺 DLog**: Built to last millennia. 🗿☀️🪲🎼
+**🔺 Pyralog**: Built to last millennia. 🗿☀️🪲🎼
 

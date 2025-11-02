@@ -3,7 +3,7 @@
 //! This module provides Kafka wire protocol compatibility,
 //! allowing existing Kafka clients to work with DLog.
 
-use dlog_core::{LogId, PartitionId};
+use pyralog_core::{LogId, PartitionId};
 
 /// Map Kafka topic to DLog LogId
 pub fn kafka_topic_to_log_id(topic: &str) -> LogId {
@@ -81,15 +81,15 @@ pub enum KafkaErrorCode {
     NotEnoughReplicasAfterAppend = 20,
 }
 
-impl From<&dlog_core::DLogError> for KafkaErrorCode {
-    fn from(error: &dlog_core::DLogError) -> Self {
+impl From<&pyralog_core::DLogError> for KafkaErrorCode {
+    fn from(error: &pyralog_core::DLogError) -> Self {
         match error {
-            dlog_core::DLogError::InvalidOffset(_) => KafkaErrorCode::OffsetOutOfRange,
-            dlog_core::DLogError::LogNotFound(_) => KafkaErrorCode::UnknownTopicOrPartition,
-            dlog_core::DLogError::LeaderNotAvailable => KafkaErrorCode::LeaderNotAvailable,
-            dlog_core::DLogError::NotLeader(_) => KafkaErrorCode::NotLeaderForPartition,
-            dlog_core::DLogError::Timeout => KafkaErrorCode::RequestTimedOut,
-            dlog_core::DLogError::QuorumNotAvailable => KafkaErrorCode::NotEnoughReplicas,
+            pyralog_core::DLogError::InvalidOffset(_) => KafkaErrorCode::OffsetOutOfRange,
+            pyralog_core::DLogError::LogNotFound(_) => KafkaErrorCode::UnknownTopicOrPartition,
+            pyralog_core::DLogError::LeaderNotAvailable => KafkaErrorCode::LeaderNotAvailable,
+            pyralog_core::DLogError::NotLeader(_) => KafkaErrorCode::NotLeaderForPartition,
+            pyralog_core::DLogError::Timeout => KafkaErrorCode::RequestTimedOut,
+            pyralog_core::DLogError::QuorumNotAvailable => KafkaErrorCode::NotEnoughReplicas,
             _ => KafkaErrorCode::NetworkException,
         }
     }

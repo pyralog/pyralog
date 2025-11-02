@@ -1,8 +1,8 @@
-# DLog Project Summary
+# Pyralog Project Summary
 
 ## Overview
 
-DLog is a **high-performance distributed log system** built in Rust, inspired by **Redpanda** and **LogDevice**. This project represents a complete, production-ready architecture for building distributed streaming systems.
+Pyralog is a **high-performance distributed log system** built in Rust, inspired by **Redpanda** and **LogDevice**. This project represents a complete, production-ready architecture for building distributed streaming systems.
 
 ## What Was Built
 
@@ -99,7 +99,7 @@ dlog (main crate)
 
 ## Innovation Points
 
-### What Makes DLog Unique
+### What Makes Pyralog Unique
 
 1. **Rust-Native**: Memory safety without GC overhead
 2. **Best of Both Worlds**: Combines Redpanda + LogDevice ideas
@@ -186,7 +186,7 @@ Based on research and modern hardware:
 
 ## Use Cases
 
-DLog is designed for:
+Pyralog is designed for:
 
 1. **Event Streaming**: High-throughput event processing
 2. **Message Queuing**: Reliable message delivery
@@ -223,7 +223,7 @@ DLog is designed for:
 
 ## Comparison with Alternatives
 
-| Feature | DLog | Kafka | Redpanda | LogDevice |
+| Feature | Pyralog | Kafka | Redpanda | LogDevice |
 |---------|------|-------|----------|-----------|
 | Language | Rust | Java/Scala | C++ | C++ |
 | Consensus | Raft | ZooKeeper | Raft | Paxos |
@@ -235,7 +235,7 @@ DLog is designed for:
 
 ## Conclusion
 
-DLog represents a **complete, well-designed distributed log system** that combines the best ideas from industry-leading systems (Redpanda and LogDevice) while leveraging Rust's unique strengths in systems programming.
+Pyralog represents a **complete, well-designed distributed log system** that combines the best ideas from industry-leading systems (Redpanda and LogDevice) while leveraging Rust's unique strengths in systems programming.
 
 The project demonstrates:
 - ✅ Deep understanding of distributed systems
@@ -244,7 +244,7 @@ The project demonstrates:
 - ✅ Comprehensive documentation and examples
 - ✅ Clean, maintainable code structure
 
-**DLog is ready for further development and production use.**
+**Pyralog is ready for further development and production use.**
 
 ## Resources
 

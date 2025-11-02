@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use bytes::Bytes;
-use dlog_core::{LogId, LogOffset, PartitionId, Record, Result};
+use pyralog_core::{LogId, LogOffset, PartitionId, Record, Result};
 use serde::{Deserialize, Serialize};
 
 /// Request to produce records to a log

@@ -1,16 +1,16 @@
-# DLog Blog Series
+# Pyralog Blog Series
 
-A 10-part technical blog series explaining DLog's architecture, innovations, and implementation—from core primitives to quantum-resistant networking.
+A 10-part technical blog series explaining Pyralog's architecture, innovations, and implementation—from core primitives to quantum-resistant networking.
 
 ## 📚 The Series
 
-### [1. Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
-*The problem with modern data infrastructure and how DLog solves it*
+### [1. Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+*The problem with modern data infrastructure and how Pyralog solves it*
 
 **Key Topics**:
 - Why we need unified data infrastructure
 - The 5+ systems you're probably running today
-- How DLog achieves 28 billion ops/sec
+- How Pyralog achieves 28 billion ops/sec
 - Three core innovations
 - Real-world use cases and comparisons
 
@@ -28,7 +28,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 - Why traditional approaches fail (WAL, snapshots, mmap)
 - How sparse files provide crash-safety with microsecond performance
 - Complete implementation (~50 lines of Rust)
-- Use cases in DLog (timestamps, transactions, sessions)
+- Use cases in Pyralog (timestamps, transactions, sessions)
 - Performance analysis and comparisons
 
 **Target Audience**: Systems engineers, distributed systems researchers
@@ -38,7 +38,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 **Highlights**:
 - Novel technique not found in other systems
 - Potential standalone crate (`sparse-counter`)
-- Enables all of DLog's Pharaoh Network
+- Enables all of Pyralog's Pharaoh Network
 
 ---
 
@@ -65,7 +65,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### [4. 28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
-*How DLog's architecture achieves unprecedented scale*
+*How Pyralog's architecture achieves unprecedented scale*
 
 **Key Topics**:
 - Layer-by-layer architecture breakdown
@@ -112,7 +112,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### [6. Cryptographic Verification with BLAKE3: Building Zero-Trust Data Systems](6-cryptographic-verification.md)
-*How DLog ensures data integrity with cryptographic proofs*
+*How Pyralog ensures data integrity with cryptographic proofs*
 
 **Key Topics**:
 - Zero-trust architecture: verify everything, trust nothing
@@ -158,7 +158,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### [8. Batuta: A New Language for Data Processing](8-batuta-language.md)
-*Introducing DLog's programming language—Lisp + Elixir + Zig + Pony + WASM*
+*Introducing Pyralog's programming language—Lisp + Elixir + Zig + Pony + WASM*
 
 **Key Topics**:
 - Lisp syntax with S-expressions and macros
@@ -167,17 +167,17 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 - Zig-style explicit error handling (no exceptions!)
 - Pony-style reference capabilities (no data races!)
 - WebAssembly compilation (run anywhere)
-- Native DLog integration
+- Native Pyralog integration
 - Gradual typing (start dynamic, add types as needed)
 
-**Target Audience**: Language enthusiasts, DLog users, functional programmers
+**Target Audience**: Language enthusiasts, Pyralog users, functional programmers
 
 **Length**: ~30 minute read
 
 **Highlights**:
 - Best features from 4 languages
 - Compiles to native + WASM
-- Built specifically for DLog
+- Built specifically for Pyralog
 
 ---
 
@@ -206,7 +206,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### [10. Quantum-Resistant Networking with WireGuard: Secure Communication in Any Environment](10-wireguard-networking.md)
-*How DLog achieves post-quantum security with WireGuard + Rosenpass*
+*How Pyralog achieves post-quantum security with WireGuard + Rosenpass*
 
 **Key Topics**:
 - WireGuard as universal protocol (10× faster than TLS)
@@ -231,7 +231,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ## 🎯 Reading Paths
 
 ### For Decision Makers (CTOs, VPs)
-1. [Introducing DLog](1-introducing-dlog.md) - Understand the value proposition
+1. [Introducing Pyralog](1-introducing-dlog.md) - Understand the value proposition
 2. [28 Billion Ops/Sec](4-28-billion-ops.md) - See the performance benefits
 3. [Quantum-Resistant Networking](10-wireguard-networking.md) - Security features
 4. [Building in Rust](5-rust-infrastructure.md) - Understand technology choices
@@ -241,7 +241,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### For Architects
-1. [Introducing DLog](1-introducing-dlog.md) - System overview
+1. [Introducing Pyralog](1-introducing-dlog.md) - System overview
 2. [Pharaoh Network](3-pharaoh-network.md) - Scaling pattern
 3. [28 Billion Ops/Sec](4-28-billion-ops.md) - Complete architecture
 4. [Multi-Model Database](7-multi-model-database.md) - Category theory foundation
@@ -284,7 +284,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### For Rust Developers
-1. [Introducing DLog](1-introducing-dlog.md) - What we're building
+1. [Introducing Pyralog](1-introducing-dlog.md) - What we're building
 2. [Building in Rust](5-rust-infrastructure.md) - Rust-specific insights
 3. [Obelisk Sequencer](2-obelisk-sequencer.md) - Code example
 4. [Cryptographic Verification](6-cryptographic-verification.md) - BLAKE3 in Rust
@@ -295,7 +295,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 ---
 
 ### Complete Series (For Deep Dive)
-Read all 10 posts in order for the complete DLog story—from primitives to quantum-resistant networking.
+Read all 10 posts in order for the complete Pyralog story—from primitives to quantum-resistant networking.
 
 **Time**: ~5 hours
 **Audience**: Anyone building or evaluating distributed systems
@@ -339,7 +339,7 @@ Read all 10 posts in order for the complete DLog story—from primitives to quan
 **Found these useful?**
 - ⭐ Star us on [GitHub](https://github.com/dlog/dlog)
 - 💬 Join [Discord](https://discord.gg/dlog)
-- 🐦 Share on [Twitter](https://twitter.com/intent/tweet?text=Check%20out%20DLog%27s%20blog%20series)
+- 🐦 Share on [Twitter](https://twitter.com/intent/tweet?text=Check%20out%20Pyralog%27s%20blog%20series)
 - 📧 Email us: hello@dlog.io
 
 **Questions or corrections?**
@@ -363,14 +363,14 @@ You're free to:
 
 ## ✍️ Authors
 
-**DLog Team**
+**Pyralog Team**
 - Engineers, researchers, and open-source contributors
 - Building the future of distributed data infrastructure
 - Passionate about Rust, distributed systems, and performance
 
 ---
 
-**Want to write a guest post about using DLog?** Contact us: hello@dlog.io
+**Want to write a guest post about using Pyralog?** Contact us: hello@dlog.io
 
 ---
 

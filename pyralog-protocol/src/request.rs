@@ -1,5 +1,5 @@
 use bytes::{Bytes, BytesMut};
-use dlog_core::{Result, DLogError};
+use pyralog_core::{Result, DLogError};
 use serde::{Deserialize, Serialize};
 
 /// Wire format for requests
@@ -8,7 +8,7 @@ pub enum Request {
     Produce(crate::api::ProduceRequest),
     Consume(crate::api::ConsumeRequest),
     CreateLog(crate::api::CreateLogRequest),
-    DeleteLog(dlog_core::LogId),
+    DeleteLog(pyralog_core::LogId),
     ListLogs,
 }
 

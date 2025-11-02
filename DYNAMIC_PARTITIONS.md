@@ -1,6 +1,6 @@
-# Dynamic Partitions in DLog
+# Dynamic Partitions in Pyralog
 
-Design document for adding dynamic partition splitting and merging to DLog.
+Design document for adding dynamic partition splitting and merging to Pyralog.
 
 ## Table of Contents
 
@@ -424,7 +424,7 @@ impl SplittingPartition {
             
             SplitState::Complete => {
                 // Split done, shouldn't reach here
-                Err(DLogError::PartitionSplit)
+                Err(PyralogError::PartitionSplit)
             }
         }
     }
@@ -610,7 +610,7 @@ pub struct DynamicRoutingClient {
 
 impl DynamicRoutingClient {
     pub async fn produce(&self, log_id: LogId, record: Record) -> Result<LogOffset> {
-        let key = record.key.as_ref().ok_or(DLogError::MissingKey)?;
+        let key = record.key.as_ref().ok_or(PyralogError::MissingKey)?;
         
         loop {
             // 1. Find partition by key range
@@ -621,13 +621,13 @@ impl DynamicRoutingClient {
             match self.send_to_partition(partition, record.clone()).await {
                 Ok(offset) => return Ok(offset),
                 
-                Err(DLogError::PartitionSplitting { new_partitions }) => {
+                Err(PyralogError::PartitionSplitting { new_partitions }) => {
                     // Partition is splitting, refresh metadata
                     self.refresh_metadata(log_id).await?;
                     continue;
                 }
                 
-                Err(DLogError::WrongPartition { correct_partition }) => {
+                Err(PyralogError::WrongPartition { correct_partition }) => {
                     // Stale metadata, update cache
                     self.update_partition_cache(correct_partition).await?;
                     continue;
@@ -646,7 +646,7 @@ pub struct MetadataCache {
 
 impl MetadataCache {
     pub fn find_partition_by_key(&self, log_id: LogId, key: &[u8]) -> Result<&PartitionMetadata> {
-        let log = self.logs.get(&log_id).ok_or(DLogError::LogNotFound)?;
+        let log = self.logs.get(&log_id).ok_or(PyralogError::LogNotFound)?;
         
         // Binary search through sorted partitions
         log.partitions
@@ -660,7 +660,7 @@ impl MetadataCache {
                 }
             })
             .map(|idx| &log.partitions[idx])
-            .map_err(|_| DLogError::NoPartitionForKey)
+            .map_err(|_| PyralogError::NoPartitionForKey)
     }
 }
 ```
@@ -888,30 +888,30 @@ Dynamic mode:
 
 ### Similarities
 
-Both DLog and TiKV use dynamic sharding:
+Both Pyralog and TiKV use dynamic sharding:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│   DLog Dynamic Partitions vs TiKV Regions               │
+│   Pyralog Dynamic Partitions vs TiKV Regions               │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  Concept:                                               │
-│    DLog: Partitions with key ranges                    │
+│    Pyralog: Partitions with key ranges                    │
 │    TiKV: Regions with key ranges                       │
 │    Both: Split hot shards, merge cold ones              │
 │                                                         │
 │  Metadata:                                              │
-│    DLog: Global Raft cluster                           │
+│    Pyralog: Global Raft cluster                           │
 │    TiKV: PD (Placement Driver)                         │
 │    Both: Centralized metadata management                │
 │                                                         │
 │  Split triggers:                                        │
-│    DLog: Size, write rate, load imbalance              │
+│    Pyralog: Size, write rate, load imbalance              │
 │    TiKV: Size (96MB default), load (optional)          │
 │    Both: Automatic detection and execution              │
 │                                                         │
 │  Per-shard Raft:                                        │
-│    DLog: Per-partition Raft group                      │
+│    Pyralog: Per-partition Raft group                      │
 │    TiKV: Per-region Raft group                         │
 │    Both: Independent consensus domains                  │
 │                                                         │
@@ -926,29 +926,29 @@ Both DLog and TiKV use dynamic sharding:
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  Data model:                                            │
-│    DLog: Append-only log (records have offsets)        │
+│    Pyralog: Append-only log (records have offsets)        │
 │    TiKV: Mutable key-value (MVCC timestamps)           │
 │                                                         │
 │  Split granularity:                                     │
-│    DLog: Split point selected from log keys            │
+│    Pyralog: Split point selected from log keys            │
 │    TiKV: Split at any key in range                     │
 │                                                         │
 │  Migration:                                             │
-│    DLog: Copy log segments to children                 │
+│    Pyralog: Copy log segments to children                 │
 │    TiKV: Move RocksDB SSTables                         │
 │                                                         │
 │  Default threshold:                                     │
-│    DLog: 10GB or 100K writes/sec                       │
+│    Pyralog: 10GB or 100K writes/sec                       │
 │    TiKV: 96MB (much smaller, more aggressive)          │
 │                                                         │
 │  Order preservation:                                    │
-│    DLog: Must maintain offset order in children        │
+│    Pyralog: Must maintain offset order in children        │
 │    TiKV: No ordering constraint                        │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### Why DLog's Approach is Different
+### Why Pyralog's Approach is Different
 
 ```
 Log-specific considerations:
@@ -959,7 +959,7 @@ Log-specific considerations:
    → TiKV doesn't have this constraint
 
 2. Append-only workload
-   → DLog splits are less frequent (write-once)
+   → Pyralog splits are less frequent (write-once)
    → TiKV regions split more often (updates)
 
 3. Time-series nature
@@ -1132,5 +1132,5 @@ Deliverable: Production-ready dynamic partitions
 
 ---
 
-**Dynamic partitions make DLog truly elastic, combining the best of Kafka's simplicity with TiKV's scalability!** 🚀
+**Dynamic partitions make Pyralog truly elastic, combining the best of Kafka's simplicity with TiKV's scalability!** 🚀
 

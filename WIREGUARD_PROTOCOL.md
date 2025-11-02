@@ -1,4 +1,4 @@
-# WireGuard as Universal Protocol for DLog
+# WireGuard as Universal Protocol for Pyralog
 
 **Unified, zero-trust networking with cryptographic authentication for all communication**
 
@@ -16,7 +16,7 @@
    - [Admin → Cluster](#4-admin--cluster)
 5. [Security Model](#security-model)
    - [Cryptographic Primitives](#cryptographic-primitives)
-   - [DLog's Complete Encryption Strategy](#dlogs-complete-encryption-strategy)
+   - [Pyralog's Complete Encryption Strategy](#dlogs-complete-encryption-strategy)
    - [Zero-Trust Architecture](#zero-trust-architecture)
    - [Key Rotation](#key-rotation)
    - [DPI (Deep Packet Inspection) Resistance](#dpi-deep-packet-inspection-resistance)
@@ -58,7 +58,7 @@
 
 ## Overview
 
-DLog uses **WireGuard as its universal protocol** for all communication - client-to-cluster, node-to-node, cluster-to-cluster, and administrative access. This eliminates the complexity of TLS certificate management while providing superior performance and built-in zero-trust security.
+Pyralog uses **WireGuard as its universal protocol** for all communication - client-to-cluster, node-to-node, cluster-to-cluster, and administrative access. This eliminates the complexity of TLS certificate management while providing superior performance and built-in zero-trust security.
 
 ### What is WireGuard?
 
@@ -70,7 +70,7 @@ DLog uses **WireGuard as its universal protocol** for all communication - client
 - **Zero Configuration**: Automatic key exchange and connection management
 - **Stealth**: Silent protocol - doesn't respond to unauthorized traffic
 
-### Key Advantages for DLog
+### Key Advantages for Pyralog
 
 | Feature | WireGuard | TLS/mTLS |
 |---------|-----------|----------|
@@ -145,7 +145,7 @@ Node Private Key → Node Public Key
 
 ### Unified WireGuard Mesh
 
-DLog creates a **fully-meshed WireGuard network** where every node and client is a peer:
+Pyralog creates a **fully-meshed WireGuard network** where every node and client is a peer:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -223,7 +223,7 @@ let client = Client::builder()
 **WireGuard:**
 ```rust
 // Client connects through WireGuard interface
-let client = DLogClient::new("10.0.0.1:9092").await?;
+let client = PyralogClient::new("10.0.0.1:9092").await?;
 
 // Traffic automatically encrypted via wg0 interface
 // No certificate management required
@@ -367,9 +367,9 @@ WireGuard uses state-of-the-art cryptography:
 | **Authentication** | Poly1305 | MAC authentication |
 | **Hashing** | BLAKE2s | Key derivation |
 
-#### DLog's Complete Encryption Strategy
+#### Pyralog's Complete Encryption Strategy
 
-DLog provides **consistent cryptography** across all layers:
+Pyralog provides **consistent cryptography** across all layers:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -587,7 +587,7 @@ Server → Client: Encrypted handshake response
 
 #### Traffic Analysis Resistance
 
-| Attack Vector | Traditional VPN | WireGuard | DLog with WireGuard |
+| Attack Vector | Traditional VPN | WireGuard | Pyralog with WireGuard |
 |--------------|----------------|-----------|---------------------|
 | **Protocol Fingerprinting** | ❌ Easy (TLS patterns) | ✅ Impossible | ✅ Impossible |
 | **Port-Based Blocking** | ❌ Common ports blocked | ⚠️ Can change port | ✅ Any port, dynamic |
@@ -595,7 +595,7 @@ Server → Client: Encrypted handshake response
 | **Timing Analysis** | ⚠️ Vulnerable | ⚠️ Somewhat vulnerable | ✅ Traffic shaping |
 | **Statistical Analysis** | ❌ Detectable | ⚠️ Difficult | ✅ Padding + noise |
 
-#### DLog Enhancements for DPI Evasion
+#### Pyralog Enhancements for DPI Evasion
 
 ```rust
 pub struct DPIEvasionConfig {
@@ -690,7 +690,7 @@ impl DPIResistantWireGuard {
     
     async fn send_decoy_packets(&self) -> Result<()> {
         // Send random-looking packets to other ports
-        // Makes it harder to identify actual DLog traffic
+        // Makes it harder to identify actual Pyralog traffic
         let decoy_count = rand::random::<u8>() % 3 + 1;
         
         for _ in 0..decoy_count {
@@ -749,8 +749,8 @@ impl PortHoppingStrategy {
     }
 }
 
-// Configure DLog to hop ports
-pub async fn configure_port_hopping(client: &mut DLogClient) -> Result<()> {
+// Configure Pyralog to hop ports
+pub async fn configure_port_hopping(client: &mut PyralogClient) -> Result<()> {
     let mut strategy = PortHoppingStrategy::new((1024, 65535));
     
     loop {
@@ -859,10 +859,10 @@ enabled = true
 decoy_rate_pct = 10  # 10% fake traffic
 ```
 
-#### Benefits for DLog
+#### Benefits for Pyralog
 
 **1. Censorship Resistance**
-- Deploy DLog in restrictive environments
+- Deploy Pyralog in restrictive environments
 - Cross-border cluster communication
 - Resistance to state-level censorship
 
@@ -872,12 +872,12 @@ decoy_rate_pct = 10  # 10% fake traffic
 - Looks like normal encrypted web traffic
 
 **3. ISP Throttling Prevention**
-- ISPs can't identify DLog traffic to throttle
+- ISPs can't identify Pyralog traffic to throttle
 - Maintain full bandwidth
 - No "VPN tax" on performance
 
 **4. Enhanced Privacy**
-- Observers can't tell you're using DLog
+- Observers can't tell you're using Pyralog
 - Traffic analysis becomes much harder
 - Metadata protection
 
@@ -889,11 +889,11 @@ Coming feature - tunnel WireGuard through CDN edge servers:
 // Route WireGuard through Cloudflare/Fastly CDN
 pub struct DomainFrontingConfig {
     frontend_domain: String,  // e.g., "cdn.example.com"
-    backend_domain: String,   // Actual DLog endpoint
+    backend_domain: String,   // Actual Pyralog endpoint
 }
 
 // DPI sees: HTTPS to cdn.example.com (allowed)
-// Reality: Tunneling WireGuard to DLog cluster (hidden)
+// Reality: Tunneling WireGuard to Pyralog cluster (hidden)
 ```
 
 **Ultimate DPI resistance** - indistinguishable from normal CDN traffic.
@@ -921,7 +921,7 @@ WireGuard's current cryptography is **NOT quantum-resistant**, but several exten
 
 ```
 ┌─────────────────────────────────────────┐
-│  Application Layer (DLog)               │
+│  Application Layer (Pyralog)               │
 └─────────────────────────────────────────┘
               ↓
 ┌─────────────────────────────────────────┐
@@ -952,7 +952,7 @@ An attacker needs to break BOTH classical AND post-quantum crypto
 (extremely unlikely even with quantum computers)
 ```
 
-##### 2. DLog Integration with Rosenpass
+##### 2. Pyralog Integration with Rosenpass
 
 ```rust
 use rosenpass::{RosenpassPeer, RosenpassConfig};
@@ -1245,10 +1245,10 @@ Application → PQ Crypto Layer → WireGuard → Network
 | **Government** | WireGuard + Rosenpass + Dilithium | Meet CNSA 2.0 requirements |
 | **Long-term secrets** | Full PQ stack | Data encrypted today, broken in 15 years |
 
-#### DLog Quantum-Resistant Stack
+#### Pyralog Quantum-Resistant Stack
 
 ```rust
-pub struct DLogQuantumSecureConnection {
+pub struct PyralogQuantumSecureConnection {
     // Layer 1: Post-quantum key exchange
     rosenpass: RosenpassPeer,
     
@@ -1259,7 +1259,7 @@ pub struct DLogQuantumSecureConnection {
     dilithium_keys: DilithiumKeyPair,
 }
 
-impl DLogQuantumSecureConnection {
+impl PyralogQuantumSecureConnection {
     pub async fn establish(&mut self) -> Result<()> {
         // 1. Rosenpass PQ key exchange
         let pq_psk = self.rosenpass.exchange_keys().await?;
@@ -1323,7 +1323,7 @@ mod quantum_tests {
 - Requires quantum-resistant algorithms by **2030** for National Security Systems
 - Recommends hybrid mode during transition
 
-**DLog compliance:**
+**Pyralog compliance:**
 ```toml
 [compliance]
 # Meet CNSA 2.0 requirements
@@ -1344,7 +1344,7 @@ Proposed WireGuard v2 Protocol:
 - Timeline: 2025-2027
 ```
 
-**DLog strategy:** Support both Rosenpass (now) and native PQ WireGuard (future)
+**Pyralog strategy:** Support both Rosenpass (now) and native PQ WireGuard (future)
 
 ### Replay Protection
 
@@ -1433,7 +1433,7 @@ WireGuard is **significantly more CPU-efficient**:
 
 ### Automatic Bootstrap
 
-DLog includes **automatic WireGuard configuration** on first boot:
+Pyralog includes **automatic WireGuard configuration** on first boot:
 
 ```rust
 pub struct WireGuardBootstrap {
@@ -1646,7 +1646,7 @@ impl KeyDistribution {
 
 ```yaml
 # Ansible playbook
-- name: Deploy DLog with WireGuard
+- name: Deploy Pyralog with WireGuard
   hosts: dlog_cluster
   tasks:
     - name: Generate WireGuard keys
@@ -1715,17 +1715,17 @@ dlog-admin wireguard rotate-key \
 
 ### Rust Integration
 
-DLog uses **wireguard-rs** for native Rust integration:
+Pyralog uses **wireguard-rs** for native Rust integration:
 
 ```rust
 use wireguard_rs::{WireGuardDevice, PeerConfig};
 
-pub struct DLogWireGuard {
+pub struct PyralogWireGuard {
     device: WireGuardDevice,
     interface_name: String,
 }
 
-impl DLogWireGuard {
+impl PyralogWireGuard {
     pub fn new(config: WireGuardConfig) -> Result<Self> {
         // Create WireGuard device
         let device = WireGuardDevice::new(&config.interface.name)?;
@@ -1757,13 +1757,13 @@ impl DLogWireGuard {
 
 ### BoringTun: Userspace WireGuard in Rust
 
-**BoringTun** is Cloudflare's userspace implementation of WireGuard written in Rust. DLog can use BoringTun as an alternative to the kernel module, providing several advantages for specific deployment scenarios.
+**BoringTun** is Cloudflare's userspace implementation of WireGuard written in Rust. Pyralog can use BoringTun as an alternative to the kernel module, providing several advantages for specific deployment scenarios.
 
 #### What is BoringTun?
 
 BoringTun implements the complete WireGuard protocol in pure Rust userspace code:
 
-- **Written in Rust**: Same language as DLog, easier integration
+- **Written in Rust**: Same language as Pyralog, easier integration
 - **Userspace**: No kernel module required
 - **Cross-Platform**: Works anywhere Rust compiles (Linux, macOS, Windows, BSD)
 - **Memory Safe**: Rust's guarantees prevent common vulnerabilities
@@ -1802,7 +1802,7 @@ modinfo wireguard
 ```
 
 **Performance:** 9.5 Gbps single stream, 35+ Gbps multi-stream
-**Recommendation:** ✅ **Use for production DLog deployments**
+**Recommendation:** ✅ **Use for production Pyralog deployments**
 
 ##### FreeBSD (Native Kernel Support)
 ```bash
@@ -1817,7 +1817,7 @@ ifconfig wg0 wgpeer <peer-public-key> wgendpoint 10.0.0.2:51820
 ```
 
 **Performance:** 8 Gbps (WireGuard-go based implementation)
-**Recommendation:** ✅ **Good for FreeBSD-based DLog deployments**
+**Recommendation:** ✅ **Good for FreeBSD-based Pyralog deployments**
 
 ##### OpenBSD (Native Implementation)
 ```bash
@@ -1847,7 +1847,7 @@ wg-quick up wg0
 ```
 
 **Performance:** 8.5 Gbps (Wintun is very efficient)
-**Recommendation:** ✅ **Best option for Windows DLog nodes**
+**Recommendation:** ✅ **Best option for Windows Pyralog nodes**
 
 ##### macOS (No Kernel Extension)
 ```bash
@@ -1889,7 +1889,7 @@ ifconfig wg0 create
 | **Windows Support** | ❌ No (use Wintun) | ✅ Yes |
 | **Containers** | Requires NET_ADMIN | Works unprivileged |
 
-#### DLog Recommendations by Platform
+#### Pyralog Recommendations by Platform
 
 | Platform | Primary Choice | Alternative | Rationale |
 |----------|---------------|-------------|-----------|
@@ -1909,7 +1909,7 @@ ifconfig wg0 create
 - ✅ Running in unprivileged containers
 - ✅ Don't have kernel module access (managed hosting)
 - ✅ Need easier debugging and monitoring
-- ✅ Want native Rust integration with DLog
+- ✅ Want native Rust integration with Pyralog
 - ✅ Require cross-platform consistency
 - ✅ Performance < 8 Gbps is acceptable
 - ✅ Development/testing environment
@@ -1921,19 +1921,19 @@ ifconfig wg0 create
 - ✅ Large-scale production deployment
 - ✅ OS has mature kernel support (Linux 5.6+, FreeBSD 13+, OpenBSD 6.8+)
 
-#### DLog Integration with BoringTun
+#### Pyralog Integration with BoringTun
 
 ```rust
 use boringtun::noise::{Tunn, TunnResult};
 use boringtun::x25519::{PublicKey, StaticSecret};
 
-pub struct DLogBoringTun {
+pub struct PyralogBoringTun {
     tunnel: Tunn,
     socket: UdpSocket,
     peer_endpoint: SocketAddr,
 }
 
-impl DLogBoringTun {
+impl PyralogBoringTun {
     pub fn new(
         private_key: StaticSecret,
         peer_public_key: PublicKey,
@@ -1995,7 +1995,7 @@ impl DLogBoringTun {
 
 #### Hybrid Deployment
 
-DLog can **automatically choose** between kernel module and BoringTun:
+Pyralog can **automatically choose** between kernel module and BoringTun:
 
 ```rust
 pub enum WireGuardBackend {
@@ -2019,9 +2019,9 @@ impl WireGuardBackend {
     }
 }
 
-pub struct DLogWireGuardFactory;
+pub struct PyralogWireGuardFactory;
 
-impl DLogWireGuardFactory {
+impl PyralogWireGuardFactory {
     pub fn create(config: WireGuardConfig) -> Result<Box<dyn WireGuardInterface>> {
         match WireGuardBackend::detect_best() {
             WireGuardBackend::KernelModule => {
@@ -2052,12 +2052,12 @@ Tested on AWS c5.4xlarge (16 vCPU, 32GB RAM):
 
 **Analysis:**
 - BoringTun is ~20-30% slower than kernel module
-- Still fast enough for most DLog deployments (<8 Gbps)
+- Still fast enough for most Pyralog deployments (<8 Gbps)
 - Trade-off: portability and ease of use vs raw performance
 
 #### Configuration
 
-Enable BoringTun in DLog configuration:
+Enable BoringTun in Pyralog configuration:
 
 ```toml
 # /etc/dlog/wireguard.toml
@@ -2080,7 +2080,7 @@ threads = 4              # Number of crypto threads
 ring_capacity = 2048     # Packet ring buffer size
 ```
 
-#### Advantages for DLog
+#### Advantages for Pyralog
 
 **1. Unified Rust Codebase**
 ```rust
@@ -2319,7 +2319,7 @@ impl WireGuardHealthChecker {
 
 ### 1. Multi-Cloud Deployment
 
-**Scenario:** DLog cluster spanning AWS, GCP, and Azure
+**Scenario:** Pyralog cluster spanning AWS, GCP, and Azure
 
 ```rust
 pub struct MultiCloudCluster {
@@ -2545,7 +2545,7 @@ pub async fn determine_external_endpoint(&self) -> Result<SocketAddr> {
 
 ## Summary
 
-**WireGuard as DLog's universal protocol provides:**
+**WireGuard as Pyralog's universal protocol provides:**
 
 ✅ **Simplicity:** No certificate management, 95% less complexity
 ✅ **Performance:** 0.2ms overhead vs 1-2ms for TLS, 60% less CPU
@@ -2553,7 +2553,7 @@ pub async fn determine_external_endpoint(&self) -> Result<SocketAddr> {
 ✅ **Operations:** Automatic configuration, self-healing, easy troubleshooting
 ✅ **Cost:** 76% TCO reduction over TLS/mTLS
 
-**DLog becomes the first database to use WireGuard as its native protocol** - setting a new standard for secure, high-performance distributed systems.
+**Pyralog becomes the first database to use WireGuard as its native protocol** - setting a new standard for secure, high-performance distributed systems.
 
 ---
 

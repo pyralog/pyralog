@@ -14,7 +14,7 @@
 6. [Trust & Verification](#trust--verification)
 7. [Smart Contracts for Databases](#smart-contracts-for-databases)
 8. [Economic Incentives](#economic-incentives)
-9. [DLog as DADBS](#dlog-as-dadbs)
+9. [Pyralog as DADBS](#dlog-as-dadbs)
 10. [Use Cases](#use-cases)
 11. [Implementation Patterns](#implementation-patterns)
 12. [Performance Considerations](#performance-considerations)
@@ -299,7 +299,7 @@ DADBS requires consensus for:
 
 #### 1. Raft (Crash Fault Tolerant)
 
-**DLog's Default**: Fast, simple, proven
+**Pyralog's Default**: Fast, simple, proven
 
 ```rust
 pub struct RaftConsensus {
@@ -1197,11 +1197,11 @@ pub fn distribute_rewards(nodes: &[Node], total_reward: TokenAmount) -> HashMap<
 
 ---
 
-## DLog as DADBS
+## Pyralog as DADBS
 
-### DLog's DADBS Features
+### Pyralog's DADBS Features
 
-DLog implements many DADBS principles:
+Pyralog implements many DADBS principles:
 
 **Decentralization** ✅:
 - Multi-node Raft cluster
@@ -1219,12 +1219,12 @@ DLog implements many DADBS principles:
 - Time-travel queries (audit trail)
 - ACID transactions (guaranteed consistency)
 
-### Enhancing DLog for Full DADBS
+### Enhancing Pyralog for Full DADBS
 
 ```rust
-pub struct DLogDADBS {
-    // Existing DLog core
-    dlog: DLogServer,
+pub struct PyralogDADBS {
+    // Existing Pyralog core
+    dlog: PyralogServer,
     
     // DADBS extensions
     autonomy_controller: AutonomyController,
@@ -1235,9 +1235,9 @@ pub struct DLogDADBS {
     consensus: ConsensusProtocol,
 }
 
-impl DLogDADBS {
+impl PyralogDADBS {
     pub async fn new(config: DADBSConfig) -> Result<Self> {
-        let dlog = DLogServer::new(config.dlog_config).await?;
+        let dlog = PyralogServer::new(config.dlog_config).await?;
         
         let autonomy_controller = AutonomyController::new(
             config.autonomy_policies,
@@ -1795,7 +1795,7 @@ impl Governance {
 ✅ **Trustlessness**: Cryptographic verification, no trusted parties  
 ✅ **Economic Alignment**: Incentives ensure correct behavior  
 
-**DLog's Position**: Strong foundation with Raft consensus, cryptographic verification, and distributed architecture. Can be extended into full DADBS with smart contracts, economic incentives, and enhanced autonomy.
+**Pyralog's Position**: Strong foundation with Raft consensus, cryptographic verification, and distributed architecture. Can be extended into full DADBS with smart contracts, economic incentives, and enhanced autonomy.
 
 **Future of Databases**: 
 - Increasing decentralization

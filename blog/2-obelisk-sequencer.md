@@ -40,7 +40,7 @@ fn increment(&mut self) -> Result<u64> {
 
 **Problem**: `fsync()` takes 1-10 milliseconds on modern SSDs. That's **only 100-1000 ops/sec**.
 
-For DLog's transaction coordinators generating 4 million IDs per second, this is 4,000× too slow.
+For Pyralog's transaction coordinators generating 4 million IDs per second, this is 4,000× too slow.
 
 ### Approach 2: Periodic Snapshots
 
@@ -60,7 +60,7 @@ fn increment(&mut self) -> Result<u64> {
 
 **Problem**: On crash, you lose up to 999 increments. After restart, you might generate **duplicate IDs**.
 
-For DLog's exactly-once semantics, duplicate IDs are unacceptable.
+For Pyralog's exactly-once semantics, duplicate IDs are unacceptable.
 
 ### Approach 3: Memory-Mapped Files
 
@@ -234,7 +234,7 @@ Let's benchmark against alternatives:
 
 **Obelisk Sequencer is the only method that is both fast AND crash-safe.**
 
-For DLog's use case (generating IDs for Pharaoh Network), 500K ops/sec per counter is plenty—we run **1024 coordinators in parallel** for 500M+ ops/sec total.
+For Pyralog's use case (generating IDs for Pharaoh Network), 500K ops/sec per counter is plenty—we run **1024 coordinators in parallel** for 500M+ ops/sec total.
 
 ## Recovery Speed
 
@@ -254,7 +254,7 @@ Total: ~1 microsecond downtime ✅
 
 **Instant recovery** means instant failover for Pharaoh Network.
 
-## Real-World Usage in DLog
+## Real-World Usage in Pyralog
 
 ### Use Case 1: Distributed Timestamp Oracle
 
@@ -349,7 +349,7 @@ PostgreSQL sequence (single node):
 - Distributed: No
 - Recovery: WAL replay (seconds)
 
-DLog Obelisk Sequencer (1024 distributed):
+Pyralog Obelisk Sequencer (1024 distributed):
 - Throughput: 500K/sec × 1024 = 512M/sec ✅
 - Crash-safe: Yes ✅
 - Distributed: Yes ✅
@@ -365,7 +365,7 @@ Redis INCR (single node):
 - Distributed: Requires Redis Cluster (complex)
 - Recovery: AOF replay (slow)
 
-DLog Obelisk Sequencer:
+Pyralog Obelisk Sequencer:
 - Throughput: 512M/sec (distributed) ✅
 - Crash-safe: Always ✅
 - Distributed: Native ✅
@@ -381,7 +381,7 @@ Zookeeper counter (Raft-based):
 - Distributed: Yes (but slow)
 - Recovery: Raft snapshot + log replay
 
-DLog Obelisk Sequencer:
+Pyralog Obelisk Sequencer:
 - Throughput: 512M/sec ✅
 - Crash-safe: Yes ✅
 - Distributed: Yes (and fast) ✅
@@ -394,7 +394,7 @@ DLog Obelisk Sequencer:
 
 **1. High-Frequency Counters (>1M/sec per counter)**
 - fsync is the bottleneck (~500K ops/sec max)
-- Solution: Run multiple counters in parallel (which DLog does)
+- Solution: Run multiple counters in parallel (which Pyralog does)
 
 **2. Non-Monotonic Counters**
 - Can only increment (append-only)
@@ -415,7 +415,7 @@ DLog Obelisk Sequencer:
 
 ## A Standalone Crate?
 
-The Obelisk Sequencer is useful beyond DLog. We're considering releasing it as a standalone Rust crate:
+The Obelisk Sequencer is useful beyond Pyralog. We're considering releasing it as a standalone Rust crate:
 
 ```toml
 [dependencies]
@@ -452,7 +452,7 @@ By leveraging sparse files—a feature present in every modern filesystem—we b
 - 📦 **Minimal storage** (~4KB for billions of IDs)
 - 🎯 **Simple** (~50 lines of code)
 
-This primitive enables DLog's Pharaoh Network to achieve **28 billion operations per second** without central bottlenecks.
+This primitive enables Pyralog's Pharaoh Network to achieve **28 billion operations per second** without central bottlenecks.
 
 In the next post, we'll show how combining Obelisk Sequencers with Scarab IDs eliminates ALL coordinators in distributed systems.
 
@@ -466,6 +466,6 @@ In the next post, we'll show how combining Obelisk Sequencers with Scarab IDs el
 
 ---
 
-*← [Previous: Introducing DLog](1-introducing-dlog.md)*
+*← [Previous: Introducing Pyralog](1-introducing-dlog.md)*
 *→ [Next: Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)*
 

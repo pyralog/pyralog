@@ -1,4 +1,4 @@
-use dlog_core::LogOffset;
+use pyralog_core::LogOffset;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

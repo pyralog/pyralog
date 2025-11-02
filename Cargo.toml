@@ -1,5 +1,5 @@
 [package]
-name = "dlog"
+name = "pyralog"
 version = "0.1.0"
 edition = "2021"
 authors = ["Your Name"]
@@ -7,14 +7,14 @@ description = "High-performance distributed log system inspired by Redpanda and 
 license = "MIT-0"
 
 [workspace]
-members = [".", "dlog-core", "dlog-storage", "dlog-consensus", "dlog-replication", "dlog-protocol"]
+members = [".", "pyralog-core", "pyralog-storage", "pyralog-consensus", "pyralog-replication", "pyralog-protocol"]
 
 [dependencies]
-dlog-core = { path = "dlog-core" }
-dlog-storage = { path = "dlog-storage" }
-dlog-consensus = { path = "dlog-consensus" }
-dlog-replication = { path = "dlog-replication" }
-dlog-protocol = { path = "dlog-protocol" }
+pyralog-core = { path = "pyralog-core" }
+pyralog-storage = { path = "pyralog-storage" }
+pyralog-consensus = { path = "pyralog-consensus" }
+pyralog-replication = { path = "pyralog-replication" }
+pyralog-protocol = { path = "pyralog-protocol" }
 
 tokio = { version = "1.35", features = ["full"] }
 tracing = "0.1"

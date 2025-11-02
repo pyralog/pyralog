@@ -1,4 +1,4 @@
-use dlog_core::{Result, DLogError};
+use pyralog_core::{Result, DLogError};
 use parking_lot::RwLock;
 use std::path::{Path, PathBuf};
 use std::fs::{File, OpenOptions};

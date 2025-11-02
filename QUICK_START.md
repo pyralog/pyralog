@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get DLog up and running in 5 minutes!
+Get Pyralog up and running in 5 minutes!
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ cargo new my-dlog-app
 cd my-dlog-app
 ```
 
-Add DLog to your `Cargo.toml`:
+Add Pyralog to your `Cargo.toml`:
 
 ```toml
 [dependencies]
@@ -57,8 +57,8 @@ use bytes::Bytes;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Connect to DLog
-    let client = DLogClient::new("localhost:9092");
+    // Connect to Pyralog
+    let client = PyralogClient::new("localhost:9092");
     client.connect().await?;
 
     // Create a log
@@ -69,7 +69,7 @@ async fn main() -> Result<()> {
     let offset = client.produce(
         log_id,
         Some(Bytes::from("key1")),
-        Bytes::from("Hello, DLog!"),
+        Bytes::from("Hello, Pyralog!"),
     ).await?;
 
     println!("Message written at offset: {}", offset);
@@ -264,8 +264,8 @@ Create a `config.json`:
 Load the configuration:
 
 ```rust
-let config = DLogConfig::from_file("config.json")?;
-let server = DLogServer::new(config).await?;
+let config = PyralogConfig::from_file("config.json")?;
+let server = PyralogServer::new(config).await?;
 ```
 
 ## Troubleshooting

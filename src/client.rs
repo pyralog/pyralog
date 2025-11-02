@@ -1,6 +1,6 @@
 use bytes::Bytes;
-use dlog_core::{LogId, LogOffset, PartitionId, Record, Result, DLogError};
-use dlog_protocol::{api::*, request::Request, response::Response};
+use pyralog_core::{LogId, LogOffset, PartitionId, Record, Result, DLogError};
+use pyralog_protocol::{api::*, request::Request, response::Response};
 use std::sync::Arc;
 use tokio::net::TcpStream;
 

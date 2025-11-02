@@ -16,11 +16,11 @@ pub mod client;
 pub mod cluster;
 pub mod config;
 
-pub use dlog_core as core;
-pub use dlog_storage as storage;
-pub use dlog_consensus as consensus;
-pub use dlog_replication as replication;
-pub use dlog_protocol as protocol;
+pub use pyralog_core as core;
+pub use pyralog_storage as storage;
+pub use pyralog_consensus as consensus;
+pub use pyralog_replication as replication;
+pub use pyralog_protocol as protocol;
 
 pub use server::DLogServer;
 pub use client::DLogClient;

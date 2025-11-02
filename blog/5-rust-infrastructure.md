@@ -8,7 +8,7 @@
 
 ## Why Rust for Data Infrastructure?
 
-When we started building DLog, choosing Rust was controversial.
+When we started building Pyralog, choosing Rust was controversial.
 
 The conventional wisdom:
 - **Java/Scala**: Kafka, Flink, Spark (established ecosystems)
@@ -17,7 +17,7 @@ The conventional wisdom:
 
 Why add another language to the mix?
 
-After building DLog and achieving **28 billion ops/sec**, we can definitively say: **Rust was the right choice.**
+After building Pyralog and achieving **28 billion ops/sec**, we can definitively say: **Rust was the right choice.**
 
 Here's why—and what we learned along the way.
 
@@ -81,10 +81,10 @@ fn unsafe_access() {
 
 Compiler catches the bug **before it runs**. No runtime checks. No performance cost.
 
-**Result**: DLog has **predictable sub-millisecond latencies** with zero GC pauses.
+**Result**: Pyralog has **predictable sub-millisecond latencies** with zero GC pauses.
 
 ```
-DLog latency profile:
+Pyralog latency profile:
   p50:  0.5ms ✓
   p99:  1ms   ✓
   p999: 2ms   ✓  ← No GC pauses!
@@ -143,7 +143,7 @@ Rust forces you to be explicit about concurrency. This seems painful at first, b
 
 ### Tokio for Async I/O
 
-DLog uses Tokio for async I/O:
+Pyralog uses Tokio for async I/O:
 
 ```rust
 #[tokio::main]
@@ -191,7 +191,7 @@ When we started, there was concern: "Is the Rust ecosystem ready for production?
 
 **Answer: Yes, absolutely.**
 
-Here are the crates DLog relies on:
+Here are the crates Pyralog relies on:
 
 ### Core Infrastructure
 
@@ -248,7 +248,7 @@ fn create_batch() -> RecordBatch {
 **Zero serialization cost**. The data is already in Arrow format—just send it directly:
 
 ```rust
-// DLog client in Python
+// Pyralog client in Python
 import pyarrow.flight as flight
 
 client = flight.FlightClient("localhost:9092")
@@ -413,7 +413,7 @@ Run with `cargo test`. Simple and fast.
 
 ```rust
 // tests/integration_test.rs
-use dlog::DLogClient;
+use dlog::PyralogClient;
 
 #[tokio::test]
 async fn test_end_to_end() {
@@ -421,7 +421,7 @@ async fn test_end_to_end() {
     let server = start_test_server().await;
     
     // Connect client
-    let client = DLogClient::connect(server.addr()).await.unwrap();
+    let client = PyralogClient::connect(server.addr()).await.unwrap();
     
     // Write records
     client.produce("test-log", vec![
@@ -615,7 +615,7 @@ error[E0502]: cannot borrow `log` as mutable because it is also borrowed as immu
 ⚠️ **Teams new to systems programming** (steep learning curve)
 ⚠️ **Projects with tight deadlines** (first Rust project will be slower)
 
-For DLog (distributed data infrastructure), Rust was the **perfect choice**.
+For Pyralog (distributed data infrastructure), Rust was the **perfect choice**.
 
 ---
 
@@ -681,7 +681,7 @@ Rustaceans are friendly and helpful!
 
 ## Conclusion
 
-Building DLog in Rust was the right choice:
+Building Pyralog in Rust was the right choice:
 
 ✅ **Memory safety** eliminated entire classes of bugs
 ✅ **Zero GC pauses** enabled predictable sub-millisecond latencies
@@ -696,9 +696,9 @@ Rust is the future of systems programming. If you're building high-performance i
 
 ---
 
-## What's Next for DLog?
+## What's Next for Pyralog?
 
-We're open-sourcing DLog under MIT-0 (code) and CC0-1.0 (documentation) licenses. Join us:
+We're open-sourcing Pyralog under MIT-0 (code) and CC0-1.0 (documentation) licenses. Join us:
 
 **GitHub**: [github.com/dlog/dlog](https://github.com/dlog/dlog)
 **Discord**: [discord.gg/dlog](https://discord.gg/dlog)
@@ -716,7 +716,7 @@ Let's build the future of data infrastructure together—in Rust! 🦀
 ---
 
 **Blog Series**:
-1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
@@ -730,7 +730,7 @@ Let's build the future of data infrastructure together—in Rust! 🦀
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 

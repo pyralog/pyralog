@@ -1,8 +1,8 @@
-# DLog Design Document
+# Pyralog Design Document
 
 ## Executive Summary
 
-DLog is a high-performance distributed log system built in Rust, combining the best ideas from **Redpanda** and **LogDevice** to create a modern, fast, and reliable foundation for distributed systems.
+Pyralog is a high-performance distributed log system built in Rust, combining the best ideas from **Redpanda** and **LogDevice** to create a modern, fast, and reliable foundation for distributed systems.
 
 ## Research Summary
 
@@ -26,9 +26,9 @@ From the research, LogDevice's key innovations include:
 4. **Hierarchical Storage**: Multi-tier storage for cost optimization
 5. **Paxos-based Consensus**: Strong consistency with flexible quorum sizes
 
-## DLog's Design Philosophy
+## Pyralog's Design Philosophy
 
-DLog synthesizes these ideas into a cohesive design:
+Pyralog synthesizes these ideas into a cohesive design:
 
 ### 1. Performance First
 
@@ -164,7 +164,7 @@ Based on the research and modern hardware capabilities:
 
 ## Innovation Points
 
-While inspired by existing systems, DLog adds:
+While inspired by existing systems, Pyralog adds:
 
 1. **Rust Safety**: Memory safety without garbage collection overhead
 2. **Modern Async**: Native async/await for cleaner code
@@ -204,7 +204,7 @@ While inspired by existing systems, DLog adds:
 
 ## Success Criteria
 
-DLog will be considered successful when:
+Pyralog will be considered successful when:
 
 1. **Performance**: Matches or exceeds Kafka/Redpanda benchmarks
 2. **Reliability**: 99.99% uptime in production
@@ -214,9 +214,9 @@ DLog will be considered successful when:
 
 ## Conclusion
 
-DLog represents a synthesis of proven distributed systems techniques (Redpanda, LogDevice) implemented in a modern systems language (Rust). By focusing on performance, reliability, and operational simplicity, DLog aims to be the distributed log of choice for the next generation of applications.
+Pyralog represents a synthesis of proven distributed systems techniques (Redpanda, LogDevice) implemented in a modern systems language (Rust). By focusing on performance, reliability, and operational simplicity, Pyralog aims to be the distributed log of choice for the next generation of applications.
 
 The modular architecture ensures that each component can be optimized independently while maintaining clean interfaces. The flexible configuration options allow users to tune the system for their specific workload characteristics.
 
-Most importantly, DLog is built on solid theoretical foundations (Raft, flexible quorums, log-structured storage) that have been proven in large-scale production systems.
+Most importantly, Pyralog is built on solid theoretical foundations (Raft, flexible quorums, log-structured storage) that have been proven in large-scale production systems.
 

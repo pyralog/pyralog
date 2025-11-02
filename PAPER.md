@@ -1,10 +1,10 @@
-# DLog: A High-Performance Distributed Log System with Novel Coordination Primitives
+# Pyralog: A High-Performance Distributed Log System with Novel Coordination Primitives
 
 **Abstract**
 
-We present DLog, a unified distributed data platform that introduces several novel architectural innovations to achieve unprecedented scalability and performance. DLog eliminates traditional coordination bottlenecks through a new primitive called the Obelisk Sequencer, enabling Pharaoh Network that scale linearly without central points of contention. Combined with a Dual Raft architecture, per-record CopySet replication, cryptographic verification with BLAKE3, multi-model database support grounded in category theory, and a pure functional query system, DLog achieves 28+ billion operations per second across all service types—orders of magnitude higher than existing systems. 
+We present Pyralog, a unified distributed data platform that introduces several novel architectural innovations to achieve unprecedented scalability and performance. Pyralog eliminates traditional coordination bottlenecks through a new primitive called the Obelisk Sequencer, enabling Pharaoh Network that scale linearly without central points of contention. Combined with a Dual Raft architecture, per-record CopySet replication, cryptographic verification with BLAKE3, multi-model database support grounded in category theory, and a pure functional query system, Pyralog achieves 28+ billion operations per second across all service types—orders of magnitude higher than existing systems. 
 
-We demonstrate how DLog's architecture enables it to serve simultaneously as a high-throughput distributed log, a transactional data store, a multi-model database (supporting relational, graph, document, key-value, and RDF models), an immutable knowledge database with temporal queries, a tamper-proof cryptographically verified log, a stream processing platform with functional programming primitives, and an observability backend—all while maintaining strong consistency guarantees, exactly-once semantics, and mathematical rigor through category theory. DLog includes Batuta, a novel programming language that combines Lisp macros, Elixir-style actor model, Zig-style explicit error handling, and Pony-style reference capabilities, compiling to both native code and WebAssembly for universal deployment. Implemented in Rust and built on Apache Arrow, DLog represents a new generation of distributed systems that unify traditionally separate infrastructure components into a single, mathematically sound, cryptographically verifiable platform with a type-safe, high-level programming language.
+We demonstrate how Pyralog's architecture enables it to serve simultaneously as a high-throughput distributed log, a transactional data store, a multi-model database (supporting relational, graph, document, key-value, and RDF models), an immutable knowledge database with temporal queries, a tamper-proof cryptographically verified log, a stream processing platform with functional programming primitives, and an observability backend—all while maintaining strong consistency guarantees, exactly-once semantics, and mathematical rigor through category theory. Pyralog includes Batuta, a novel programming language that combines Lisp macros, Elixir-style actor model, Zig-style explicit error handling, and Pony-style reference capabilities, compiling to both native code and WebAssembly for universal deployment. Implemented in Rust and built on Apache Arrow, Pyralog represents a new generation of distributed systems that unify traditionally separate infrastructure components into a single, mathematically sound, cryptographically verifiable platform with a type-safe, high-level programming language.
 
 **Keywords**: Distributed Systems, Append-Only Logs, Consensus Protocols, Coordination Primitives, Columnar Storage, Stream Processing, Category Theory, Cryptographic Verification, Multi-Model Databases, Functional Programming, Actor Model, Reference Capabilities, WebAssembly
 
@@ -24,7 +24,7 @@ Modern distributed applications require high-throughput, fault-tolerant logging 
 
 4. **Limited Scalability**: Most systems scale to millions of operations per second but struggle beyond that threshold.
 
-DLog addresses these limitations through a fundamentally new approach to distributed system coordination and data management.
+Pyralog addresses these limitations through a fundamentally new approach to distributed system coordination and data management.
 
 ### 1.2 Contributions
 
@@ -70,7 +70,7 @@ This paper makes the following contributions:
 
 13. **Integrated Analytics and Observability**: Native integration of distributed logging, transactional processing, stream analytics, time-travel queries, and observability into a single coherent system built on Apache Arrow's columnar format.
 
-We demonstrate that DLog achieves:
+We demonstrate that Pyralog achieves:
 - 4+ billion transactions per second (8,000× faster than TiKV)
 - 4+ billion timestamp allocations per second across all coordinators
 - 28+ billion total operations per second across all service types
@@ -84,7 +84,7 @@ We demonstrate that DLog achieves:
 
 ### 1.3 Paper Organization
 
-The remainder of this paper is organized as follows: Section 2 surveys related work. Section 3 presents DLog's core architecture. Section 4 details coordination primitives. Section 5 describes consensus and replication. Section 6 covers transactions and exactly-once semantics. Section 7 presents cryptographic verification with BLAKE3. Section 8 details the multi-model database with category theory. Section 9 describes the functional relational algebra system. Section 10 presents the actor model and topology-level reactivity. Section 11 covers tensor database for ML/AI workloads. Section 12 presents decentralized autonomous database systems. Section 13 covers storage and analytics integration. Section 14 presents performance evaluation. Section 15 discusses implementation lessons. Section 16 explores future work. Section 17 compares with related systems. Section 18 concludes.
+The remainder of this paper is organized as follows: Section 2 surveys related work. Section 3 presents Pyralog's core architecture. Section 4 details coordination primitives. Section 5 describes consensus and replication. Section 6 covers transactions and exactly-once semantics. Section 7 presents cryptographic verification with BLAKE3. Section 8 details the multi-model database with category theory. Section 9 describes the functional relational algebra system. Section 10 presents the actor model and topology-level reactivity. Section 11 covers tensor database for ML/AI workloads. Section 12 presents decentralized autonomous database systems. Section 13 covers storage and analytics integration. Section 14 presents performance evaluation. Section 15 discusses implementation lessons. Section 16 explores future work. Section 17 compares with related systems. Section 18 concludes.
 
 ---
 
@@ -136,7 +136,7 @@ This fragmentation leads to:
 - Inconsistent semantics across systems
 - High infrastructure costs
 
-DLog addresses this gap by unifying these capabilities in a single, coherent architecture.
+Pyralog addresses this gap by unifying these capabilities in a single, coherent architecture.
 
 ---
 
@@ -144,21 +144,21 @@ DLog addresses this gap by unifying these capabilities in a single, coherent arc
 
 ### 3.1 Core Design Principles
 
-DLog's architecture is guided by five core principles:
+Pyralog's architecture is guided by five core principles:
 
-1. **Eliminate Coordination Bottlenecks**: Every centralized coordinator is a potential bottleneck and single point of failure. DLog distributes all coordination using novel primitives.
+1. **Eliminate Coordination Bottlenecks**: Every centralized coordinator is a potential bottleneck and single point of failure. Pyralog distributes all coordination using novel primitives.
 
-2. **Embrace Modern Hardware**: Modern servers have abundant CPU cores, fast NVMe storage, and high-bandwidth networks. DLog's architecture exploits these resources through columnar storage, parallel processing, and zero-copy data paths.
+2. **Embrace Modern Hardware**: Modern servers have abundant CPU cores, fast NVMe storage, and high-bandwidth networks. Pyralog's architecture exploits these resources through columnar storage, parallel processing, and zero-copy data paths.
 
-3. **Unify Storage and Compute**: Separating storage and compute creates network bottlenecks. DLog co-locates computation with data using Apache Arrow's in-memory columnar format.
+3. **Unify Storage and Compute**: Separating storage and compute creates network bottlenecks. Pyralog co-locates computation with data using Apache Arrow's in-memory columnar format.
 
-4. **Provide Flexible Consistency**: Different use cases have different consistency requirements. DLog supports tunable consistency through flexible quorums and configurable replication strategies.
+4. **Provide Flexible Consistency**: Different use cases have different consistency requirements. Pyralog supports tunable consistency through flexible quorums and configurable replication strategies.
 
 5. **Rust for Safety and Performance**: Memory safety without garbage collection, zero-cost abstractions, and fearless concurrency make Rust ideal for distributed systems infrastructure.
 
 ### 3.2 System Overview
 
-DLog employs a layered architecture:
+Pyralog employs a layered architecture:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -197,7 +197,7 @@ Each layer addresses specific concerns while maintaining loose coupling through 
 
 ### 3.3 Data Model
 
-DLog organizes data in a three-level hierarchy:
+Pyralog organizes data in a three-level hierarchy:
 
 **Logs**: Logical append-only sequences, analogous to Kafka topics or database tables. Each log has a unique identifier and configuration (retention policy, replication factor, partitioning strategy).
 
@@ -214,7 +214,7 @@ This hierarchy enables flexible data organization while maintaining strong order
 
 ### 3.4 Client Architecture
 
-DLog employs the **Smart Client Pattern**: clients discover cluster topology, cache partition metadata, and route requests directly to appropriate nodes. This eliminates proxy overhead and enables linear scalability.
+Pyralog employs the **Smart Client Pattern**: clients discover cluster topology, cache partition metadata, and route requests directly to appropriate nodes. This eliminates proxy overhead and enables linear scalability.
 
 Clients maintain:
 - **Metadata Cache**: Partition leader locations, replica sets, coordinator assignments
@@ -267,7 +267,7 @@ Properties:
 - Globally unique: Unique across all workers
 - High throughput: 4096 IDs per millisecond per worker
 
-Traditional Scarab implementations store sequence numbers in memory, losing crash-safety. DLog combines Scarab IDs with Obelisk Sequencers:
+Traditional Scarab implementations store sequence numbers in memory, losing crash-safety. Pyralog combines Scarab IDs with Obelisk Sequencers:
 
 ```
 [41 bits: timestamp_ms] [10 bits: coordinator_id] [13 bits: durable_sequence]
@@ -282,7 +282,7 @@ This combination enables Pharaoh Network without coordination.
 
 ### 4.3 ☀️ Pharaoh Network Pattern
 
-Traditional distributed systems rely on centralized coordinators elected through Paxos or Raft. These create bottlenecks and single points of failure. DLog eliminates them entirely.
+Traditional distributed systems rely on centralized coordinators elected through Paxos or Raft. These create bottlenecks and single points of failure. Pyralog eliminates them entirely.
 
 **Core Insight**: If coordinators can generate globally unique, monotonically increasing IDs without communication, they require no coordination.
 
@@ -302,7 +302,7 @@ Traditional distributed systems rely on centralized coordinators elected through
 - **No Cross-Coordinator Communication**: Each operates independently
 - **Crash-Safe**: Obelisk Sequencer ensures no ID reuse
 
-This pattern applies to all DLog coordinators:
+This pattern applies to all Pyralog coordinators:
 - Transaction coordinators (4B tx/sec)
 - Timestamp oracles (4B timestamps/sec)
 - Session managers (4B sessions/sec)
@@ -316,17 +316,17 @@ Total capacity: **28+ billion operations per second** across all coordinator typ
 
 **vs. Kafka's Zookeeper**:
 - Kafka: Centralized, 10K ops/sec, complex failure recovery
-- DLog: Distributed, 4B+ ops/sec per coordinator type, instant failover
+- Pyralog: Distributed, 4B+ ops/sec per coordinator type, instant failover
 
 **vs. TiKV's TSO**:
 - TiKV: Centralized, 500K timestamps/sec, complex Raft election
-- DLog: Distributed, 4B+ timestamps/sec, no elections
+- Pyralog: Distributed, 4B+ timestamps/sec, no elections
 
 **vs. Cassandra's Leaderless**:
 - Cassandra: No coordination, eventual consistency, conflict resolution
-- DLog: Distributed coordination, strong consistency, no conflicts
+- Pyralog: Distributed coordination, strong consistency, no conflicts
 
-DLog achieves the best of all approaches: strong consistency without central bottlenecks.
+Pyralog achieves the best of all approaches: strong consistency without central bottlenecks.
 
 ---
 
@@ -334,7 +334,7 @@ DLog achieves the best of all approaches: strong consistency without central bot
 
 ### 5.1 Dual Raft Architecture
 
-Most Multi-Raft systems (like TiKV) use per-partition Raft groups but still require global consensus for cluster-wide operations. DLog employs a Dual Raft architecture:
+Most Multi-Raft systems (like TiKV) use per-partition Raft groups but still require global consensus for cluster-wide operations. Pyralog employs a Dual Raft architecture:
 
 **Global Raft Cluster**:
 - All nodes participate
@@ -361,11 +361,11 @@ Most Multi-Raft systems (like TiKV) use per-partition Raft groups but still requ
 4. **Consistency**: Global changes (like adding nodes) are strongly consistent
 5. **Efficiency**: Small Raft groups (3-5 nodes) achieve consensus faster
 
-This architecture enables DLog to scale to thousands of partitions across hundreds of nodes while maintaining strong consistency and fast failover.
+This architecture enables Pyralog to scale to thousands of partitions across hundreds of nodes while maintaining strong consistency and fast failover.
 
 ### 5.2 Epochs and Safe Leadership Transfer
 
-DLog adopts LogDevice's epoch mechanism for safe leadership transfer:
+Pyralog adopts LogDevice's epoch mechanism for safe leadership transfer:
 
 **Epochs**: Monotonically increasing numbers representing leadership generations for a partition. Each epoch has:
 - Epoch number (64-bit integer)
@@ -389,7 +389,7 @@ This decoupling enables **millions of writes per second per partition** while ma
 
 ### 5.3 Flexible Quorum Replication
 
-DLog supports configurable write and read quorums following Dynamo-style quorum systems:
+Pyralog supports configurable write and read quorums following Dynamo-style quorum systems:
 
 - **R**: Read quorum size
 - **W**: Write quorum size
@@ -409,7 +409,7 @@ This flexibility allows users to tune consistency and performance based on appli
 
 ### 5.4 CopySet Replication Strategies
 
-DLog supports two replication strategies:
+Pyralog supports two replication strategies:
 
 **Per-Partition CopySet (Kafka-style)**:
 - Fixed replica set for entire partition
@@ -450,7 +450,7 @@ Trade-offs:
 - Slightly higher write latency (+1-2ms)
 - Replicas must handle reads without leader
 
-DLog makes this configurable per log, allowing users to choose based on workload characteristics.
+Pyralog makes this configurable per log, allowing users to choose based on workload characteristics.
 
 ---
 
@@ -458,12 +458,12 @@ DLog makes this configurable per log, allowing users to choose based on workload
 
 ### 6.1 Percolator Protocol Integration
 
-DLog implements distributed transactions using Google's Percolator protocol, which provides:
+Pyralog implements distributed transactions using Google's Percolator protocol, which provides:
 - **Snapshot Isolation**: Transactions see consistent snapshots
 - **Multi-version Concurrency Control (MVCC)**: No locking for reads
 - **Two-Phase Commit (2PC)**: Atomic multi-partition writes
 
-Traditional Percolator implementations (like TiKV) suffer from a centralized Timestamp Oracle bottleneck. DLog eliminates this through distributed TSOs using Scarab IDs.
+Traditional Percolator implementations (like TiKV) suffer from a centralized Timestamp Oracle bottleneck. Pyralog eliminates this through distributed TSOs using Scarab IDs.
 
 **Transaction Lifecycle**:
 
@@ -491,9 +491,9 @@ Performance:
 
 ### 6.2 Distributed Transaction Coordinators
 
-Similarly, DLog deploys 1024 Transaction Coordinator instances, each managing disjoint sets of transactions using Scarab transaction IDs.
+Similarly, Pyralog deploys 1024 Transaction Coordinator instances, each managing disjoint sets of transactions using Scarab transaction IDs.
 
-Coordinators are stateless—they only coordinate the 2PC protocol. Transaction state is stored in DLog partitions as:
+Coordinators are stateless—they only coordinate the 2PC protocol. Transaction state is stored in Pyralog partitions as:
 - Transaction metadata log
 - Participant list per transaction
 - Commit status
@@ -507,7 +507,7 @@ Performance:
 
 ### 6.3 Exactly-Once Semantics
 
-DLog provides exactly-once semantics (EOS) through three mechanisms:
+Pyralog provides exactly-once semantics (EOS) through three mechanisms:
 
 **1. Idempotent Producers**:
 
@@ -541,11 +541,11 @@ Performance:
 
 ### 7.1 Tamper-Proof Merkle Trees
 
-DLog implements cryptographic verification to ensure data integrity and enable zero-trust architectures. Unlike traditional systems that rely on access control alone, DLog provides cryptographic proof that data has not been tampered with.
+Pyralog implements cryptographic verification to ensure data integrity and enable zero-trust architectures. Unlike traditional systems that rely on access control alone, Pyralog provides cryptographic proof that data has not been tampered with.
 
 **BLAKE3 Hash Function**:
 
-DLog uses BLAKE3 instead of SHA256 for all cryptographic operations:
+Pyralog uses BLAKE3 instead of SHA256 for all cryptographic operations:
 
 | Property | SHA256 | BLAKE3 | Advantage |
 |----------|--------|--------|-----------|
@@ -558,7 +558,7 @@ BLAKE3's performance advantage is critical for high-throughput systems. With BLA
 
 **Merkle Tree Architecture**:
 
-DLog implements two-level Merkle trees:
+Pyralog implements two-level Merkle trees:
 
 1. **Segment-Level**: Each log segment (default 1GB) has a Merkle tree over its records
 2. **Partition-Level**: Aggregates segment roots into partition-wide tree
@@ -576,7 +576,7 @@ This enables clients to verify data integrity without trusting the server.
 
 ### 7.2 Zero-Trust Client Architecture
 
-Traditional databases require clients to trust servers. DLog enables **zero-trust** through cryptographic verification:
+Traditional databases require clients to trust servers. Pyralog enables **zero-trust** through cryptographic verification:
 
 **Trust Model**:
 1. Client obtains signed root hash from Raft cluster (quorum-based trust)
@@ -598,7 +598,7 @@ Signatures provide:
 
 **Byzantine Fault Tolerance**:
 
-With cryptographic verification, DLog tolerates Byzantine failures:
+With cryptographic verification, Pyralog tolerates Byzantine failures:
 - Malicious servers cannot forge proofs
 - Clients detect and reject tampered data
 - No degradation in safety guarantees
@@ -607,7 +607,7 @@ This is critical for multi-organization deployments and regulatory compliance.
 
 ### 7.3 Notarization API
 
-DLog provides a notarization service for timestamping external data:
+Pyralog provides a notarization service for timestamping external data:
 
 **Use Cases**:
 - Copyright protection (timestamp creative works)
@@ -617,7 +617,7 @@ DLog provides a notarization service for timestamping external data:
 
 **Protocol**:
 1. Client computes SHA256(data)
-2. Submit hash to DLog notarization log
+2. Submit hash to Pyralog notarization log
 3. Receive cryptographic receipt with:
    - Timestamp from distributed TSO
    - Merkle inclusion proof
@@ -631,7 +631,7 @@ DLog provides a notarization service for timestamping external data:
 
 ### 7.4 Auditor Mode
 
-DLog supports independent auditor nodes that continuously verify log integrity:
+Pyralog supports independent auditor nodes that continuously verify log integrity:
 
 **Architecture**:
 - Read-only replicas
@@ -663,11 +663,11 @@ BLAKE3 enables cryptographic verification with minimal performance impact.
 
 ### 8.1 Mathematical Foundation
 
-DLog extends beyond traditional log semantics to support multiple data models through category theory—a branch of mathematics that provides universal abstractions for structure and transformation.
+Pyralog extends beyond traditional log semantics to support multiple data models through category theory—a branch of mathematics that provides universal abstractions for structure and transformation.
 
 **Schema as Category**:
 
-A DLog schema is a category C where:
+A Pyralog schema is a category C where:
 - **Objects**: Data types (User, Post, Edge, Triple, etc.)
 - **Morphisms**: Relationships (foreign keys, graph edges, RDF predicates)
 - **Composition**: Transitive relationships follow morphism composition laws
@@ -689,7 +689,7 @@ A database instance is a functor F: C → Set:
 
 ### 8.2 Supported Data Models
 
-DLog natively supports five data models, all stored in Apache Arrow format:
+Pyralog natively supports five data models, all stored in Apache Arrow format:
 
 **1. Relational (SQL)**:
 - Traditional tables with rows and columns
@@ -725,7 +725,7 @@ All models share the same replication, consensus, and transaction infrastructure
 
 ### 8.3 Multi-Model Joins
 
-Traditional systems require ETL to join data across models. DLog supports native multi-model joins using category-theoretic pullback semantics:
+Traditional systems require ETL to join data across models. Pyralog supports native multi-model joins using category-theoretic pullback semantics:
 
 **Pullback as Join**:
 
@@ -749,7 +749,7 @@ GROUP BY u.name
 - Zero-copy between models (shared Arrow format)
 - Unified query optimizer
 
-DLog supports all combinations: Relational ⟕ Graph, Document ⟕ Relational, Graph ⟕ Graph, RDF ⟕ Relational, etc.
+Pyralog supports all combinations: Relational ⟕ Graph, Document ⟕ Relational, Graph ⟕ Graph, RDF ⟕ Relational, etc.
 
 ### 8.4 Schema Evolution as Functors
 
@@ -765,7 +765,7 @@ Schema v1 → Schema v2 is a functor F: C₁ → C₂ that:
 
 **Verification**:
 
-DLog verifies functor laws before applying migrations:
+Pyralog verifies functor laws before applying migrations:
 - Identity preservation: Ensures unchanged objects remain valid
 - Composition preservation: Ensures relationships stay consistent
 
@@ -773,14 +773,14 @@ This provides mathematical proof that migrations are correct.
 
 ### 8.5 Performance Characteristics
 
-| Data Model | Traditional System | DLog | Speedup |
+| Data Model | Traditional System | Pyralog | Speedup |
 |------------|-------------------|------|---------|
-| Relational (SQL) | PostgreSQL | DLog | 10-100× |
-| Graph (Cypher) | Neo4j | DLog | 10-50× |
-| Document (JSON) | MongoDB | DLog | 5-10× |
-| RDF (SPARQL) | Apache Jena | DLog | 20-100× |
+| Relational (SQL) | PostgreSQL | Pyralog | 10-100× |
+| Graph (Cypher) | Neo4j | Pyralog | 10-50× |
+| Document (JSON) | MongoDB | Pyralog | 5-10× |
+| RDF (SPARQL) | Apache Jena | Pyralog | 20-100× |
 
-DLog achieves superior performance through:
+Pyralog achieves superior performance through:
 - Columnar Arrow format
 - Zero-copy multi-model joins
 - Unified query optimizer
@@ -792,7 +792,7 @@ DLog achieves superior performance through:
 
 ### 9.1 Pure Function Operators
 
-DLog provides a functional programming interface for queries based on pure relational algebra:
+Pyralog provides a functional programming interface for queries based on pure relational algebra:
 
 **Core Operators** (all pure functions, no side effects):
 - **Select (σ)**: Filter rows by predicate
@@ -809,7 +809,7 @@ DLog provides a functional programming interface for queries based on pure relat
 
 ### 9.2 Monad-Based Query DSL
 
-DLog implements queries as monads, enabling elegant composition:
+Pyralog implements queries as monads, enabling elegant composition:
 
 **Query Monad**:
 ```
@@ -833,7 +833,7 @@ Query<T> with:
 
 ### 9.3 Applicative Functors for Parallelism
 
-For independent queries, DLog uses applicative functors to enable automatic parallelization:
+For independent queries, Pyralog uses applicative functors to enable automatic parallelization:
 
 **Applicative Query**:
 - Execute multiple independent queries in parallel
@@ -844,7 +844,7 @@ For independent queries, DLog uses applicative functors to enable automatic para
 
 ### 9.4 Lazy Evaluation and Optimization
 
-DLog uses lazy evaluation to defer query execution:
+Pyralog uses lazy evaluation to defer query execution:
 
 **Lazy Query Builder**:
 1. Build query as tree of operations (no execution)
@@ -864,7 +864,7 @@ DLog uses lazy evaluation to defer query execution:
 
 ### 9.5 Type-Level Query Safety
 
-DLog uses Rust's type system for compile-time query validation:
+Pyralog uses Rust's type system for compile-time query validation:
 
 **Typed Schemas**:
 - Each table has compile-time type
@@ -912,7 +912,7 @@ Net result: Faster execution + compile-time safety + better code quality.
 
 ### 10.1 Apache Arrow Foundation
 
-DLog uses Apache Arrow as its foundational data format:
+Pyralog uses Apache Arrow as its foundational data format:
 
 **Arrow RecordBatches**:
 - Columnar in-memory representation
@@ -928,7 +928,7 @@ DLog uses Apache Arrow as its foundational data format:
 
 ### 10.2 Persistent Storage Format
 
-DLog stores data in Parquet segments:
+Pyralog stores data in Parquet segments:
 - Columnar on-disk format (same logical structure as Arrow)
 - Excellent compression (50-70% space savings vs JSON/CSV)
 - Predicate pushdown for efficient queries
@@ -960,12 +960,12 @@ This architecture enables both high-throughput sequential writes and efficient a
 
 ### 10.3 Native SQL and DataFrame APIs
 
-DLog integrates Apache DataFusion (SQL) and Polars (DataFrames) as first-class query interfaces:
+Pyralog integrates Apache DataFusion (SQL) and Polars (DataFrames) as first-class query interfaces:
 
 **DataFusion Integration**:
-- Native SQL queries on DLog logs
+- Native SQL queries on Pyralog logs
 - Streaming and batch execution modes
-- Custom table providers for DLog partitions
+- Custom table providers for Pyralog partitions
 - Predicate pushdown to storage layer
 - Windowing functions (tumbling, sliding, session windows)
 - Stream-stream joins
@@ -990,7 +990,7 @@ Both DataFusion and Polars operate on the same underlying Arrow data, enabling:
 - Precomputed aggregations
 - Auto-refresh on writes or timer-based
 - 100-1000× faster dashboard queries
-- Stored as DLog logs for durability
+- Stored as Pyralog logs for durability
 
 **External Tables**:
 - Zero-copy queries on S3/GCS Parquet files
@@ -1017,7 +1017,7 @@ Both DataFusion and Polars operate on the same underlying Arrow data, enabling:
 - Query historical data at any point in time
 - 2-5ms to locate exact record in billions
 
-These features enable DLog to serve as both a high-throughput log and a modern data warehouse.
+These features enable Pyralog to serve as both a high-throughput log and a modern data warehouse.
 
 ---
 
@@ -1039,13 +1039,13 @@ All experiments conducted on:
 
 | System | Records/sec | MB/sec | Latency p99 |
 |--------|-------------|--------|-------------|
-| DLog (Per-Record CopySet) | 15.2M | 15,200 | 12ms |
-| DLog (Per-Partition CopySet) | 12.8M | 12,800 | 8ms |
+| Pyralog (Per-Record CopySet) | 15.2M | 15,200 | 12ms |
+| Pyralog (Per-Partition CopySet) | 12.8M | 12,800 | 8ms |
 | Kafka | 3.2M | 3,200 | 45ms |
 | Pulsar | 4.1M | 4,100 | 38ms |
 | Redpanda | 8.5M | 8,500 | 15ms |
 
-**Analysis**: DLog achieves 4.8× higher throughput than Kafka and 1.8× higher than Redpanda. Per-record CopySet distributes I/O across more nodes, increasing total cluster throughput at the cost of slightly higher latency.
+**Analysis**: Pyralog achieves 4.8× higher throughput than Kafka and 1.8× higher than Redpanda. Per-record CopySet distributes I/O across more nodes, increasing total cluster throughput at the cost of slightly higher latency.
 
 ### 11.3 Read Throughput
 
@@ -1053,12 +1053,12 @@ All experiments conducted on:
 
 | System | Records/sec | MB/sec | Latency p99 |
 |--------|-------------|--------|-------------|
-| DLog (Arrow) | 45.2M | 45,200 | 3ms |
+| Pyralog (Arrow) | 45.2M | 45,200 | 3ms |
 | Kafka | 8.1M | 8,100 | 15ms |
 | Pulsar | 6.8M | 6,800 | 22ms |
 | Redpanda | 12.3M | 12,300 | 8ms |
 
-**Analysis**: DLog's columnar Arrow format and zero-copy reads provide 5.6× higher throughput than Kafka. Read replicas can serve traffic without leader involvement, further increasing scalability.
+**Analysis**: Pyralog's columnar Arrow format and zero-copy reads provide 5.6× higher throughput than Kafka. Read replicas can serve traffic without leader involvement, further increasing scalability.
 
 ### 11.4 Transaction Throughput
 
@@ -1066,24 +1066,24 @@ All experiments conducted on:
 
 | System | Transactions/sec | Latency p99 |
 |--------|-----------------|-------------|
-| DLog (Distributed TSO) | 4.2M | 28ms |
+| Pyralog (Distributed TSO) | 4.2M | 28ms |
 | TiKV (Centralized TSO) | 0.52K | 45ms |
 | Kafka (Simple TX) | 0.1K | 250ms |
 
-**Analysis**: DLog's distributed TSO achieves 8,000× higher throughput than TiKV and 42,000× higher than Kafka. Distributed coordinators eliminate the central bottleneck entirely.
+**Analysis**: Pyralog's distributed TSO achieves 8,000× higher throughput than TiKV and 42,000× higher than Kafka. Distributed coordinators eliminate the central bottleneck entirely.
 
 ### 11.5 Analytical Query Performance
 
 **Configuration**: Queries on 1 billion records (500GB), 10 partitions
 
-| Query Type | DLog (DataFusion) | ClickHouse | Spark |
+| Query Type | Pyralog (DataFusion) | ClickHouse | Spark |
 |------------|-------------------|------------|-------|
 | Full scan with filter | 2.3s | 3.1s | 15.2s |
 | Group by + aggregation | 3.8s | 4.2s | 22.5s |
 | Window function | 5.1s | 6.8s | 31.2s |
 | Join (2 logs) | 8.2s | 9.5s | 45.8s |
 
-**Analysis**: DLog's native Arrow integration and DataFusion optimization provide competitive analytical performance while maintaining real-time write capability. Unlike ClickHouse, DLog supports transactions and exactly-once semantics.
+**Analysis**: Pyralog's native Arrow integration and DataFusion optimization provide competitive analytical performance while maintaining real-time write capability. Unlike ClickHouse, Pyralog supports transactions and exactly-once semantics.
 
 ### 11.6 Scalability Analysis
 
@@ -1096,33 +1096,33 @@ All experiments conducted on:
 | 20 | 200 | 30,100 | 99.5% |
 | 50 | 500 | 74,800 | 98.8% |
 
-**Analysis**: DLog demonstrates near-linear scalability to 50 nodes. Per-record CopySet and Pharaoh Network eliminate traditional bottlenecks, enabling efficient utilization of large clusters.
+**Analysis**: Pyralog demonstrates near-linear scalability to 50 nodes. Per-record CopySet and Pharaoh Network eliminate traditional bottlenecks, enabling efficient utilization of large clusters.
 
 ### 11.7 Failover Recovery Time
 
 **Configuration**: Kill random leader node, measure recovery time
 
-| Metric | DLog | Kafka | Pulsar |
+| Metric | Pyralog | Kafka | Pulsar |
 |--------|------|-------|--------|
 | Detection time | 300ms | 2s | 1.5s |
 | Epoch activation | 150ms | N/A | N/A |
 | Leader election | 200ms | 8s | 5s |
 | Total downtime | 650ms | 10s | 6.5s |
 
-**Analysis**: DLog's epoch mechanism and per-partition Raft enable sub-second failover—15× faster than Kafka. Clients can resume writes to new leader immediately after epoch activation.
+**Analysis**: Pyralog's epoch mechanism and per-partition Raft enable sub-second failover—15× faster than Kafka. Clients can resume writes to new leader immediately after epoch activation.
 
 ### 11.8 Resource Utilization
 
 **Configuration**: 10 nodes, 100 partitions, 80% sustained write throughput
 
-| Metric | DLog | Kafka | Redpanda |
+| Metric | Pyralog | Kafka | Redpanda |
 |--------|------|-------|----------|
 | CPU utilization | 65% | 78% | 72% |
 | Memory usage | 42GB | 35GB | 55GB |
 | Disk IOPS | 85K | 120K | 95K |
 | Network BW | 8.2Gbps | 6.5Gbps | 7.8Gbps |
 
-**Analysis**: DLog achieves higher throughput with lower CPU and disk IOPS due to Arrow's columnar format and efficient serialization. Memory usage is higher due to Arrow's columnar buffers, but this enables dramatically faster query performance.
+**Analysis**: Pyralog achieves higher throughput with lower CPU and disk IOPS due to Arrow's columnar format and efficient serialization. Memory usage is higher due to Arrow's columnar buffers, but this enables dramatically faster query performance.
 
 ---
 
@@ -1144,11 +1144,11 @@ The Obelisk Sequencer provides an elegant solution to persistent atomic counters
 - Filesystem-dependent behavior (requires sparse file support)
 - Not suitable for high-frequency counters (>1M/sec)
 
-For DLog's use case—generating monotonic IDs for coordinators—these limitations are acceptable. The ~1-2 microsecond overhead per ID generation is negligible compared to network and storage latency.
+For Pyralog's use case—generating monotonic IDs for coordinators—these limitations are acceptable. The ~1-2 microsecond overhead per ID generation is negligible compared to network and storage latency.
 
 ### 12.2 Pharaoh Network vs. Consensus
 
-Traditional distributed systems use consensus (Paxos, Raft) to elect leaders for critical services like timestamp oracles and transaction coordinators. DLog's approach eliminates consensus for coordinators entirely.
+Traditional distributed systems use consensus (Paxos, Raft) to elect leaders for critical services like timestamp oracles and transaction coordinators. Pyralog's approach eliminates consensus for coordinators entirely.
 
 **Key Insight**: Consensus is needed only when multiple nodes must agree on a single value. If nodes can independently generate unique values that are globally comparable, consensus becomes unnecessary.
 
@@ -1160,11 +1160,11 @@ Scarab IDs enable this by encoding coordinator identity in the ID itself. Combin
 - **Availability**: No single point of failure; any coordinator can serve requests
 - **Ordering**: IDs are only globally ordered at millisecond granularity (good enough for most use cases)
 
-For applications requiring global ordering at microsecond granularity, traditional consensus may still be necessary. However, most distributed systems operate at millisecond or coarser granularity, making DLog's approach widely applicable.
+For applications requiring global ordering at microsecond granularity, traditional consensus may still be necessary. However, most distributed systems operate at millisecond or coarser granularity, making Pyralog's approach widely applicable.
 
 ### 12.3 Per-Record CopySet Considerations
 
-LogDevice pioneered per-record CopySet replication for maximum load distribution. DLog extends this with leader-as-coordinator mode.
+LogDevice pioneered per-record CopySet replication for maximum load distribution. Pyralog extends this with leader-as-coordinator mode.
 
 **Benefits at Scale**:
 - Uniform load distribution across 100+ storage nodes
@@ -1178,7 +1178,7 @@ LogDevice pioneered per-record CopySet replication for maximum load distribution
 - **Debugging**: Harder to reason about data location
 - **Client Logic**: More complex client implementation
 
-DLog addresses these through:
+Pyralog addresses these through:
 - Smart client libraries that cache CopySet information
 - Deterministic CopySet computation (hash-based) for predictability
 - Configurable per-log (some logs use per-partition, others per-record)
@@ -1200,11 +1200,11 @@ Choosing Apache Arrow as the foundational data format was a critical architectur
 - Schema evolution more complex than schemaless formats
 - Overkill for simple key-value workloads
 
-Despite challenges, Arrow's benefits far outweigh costs for DLog's use case—a system that spans logging, analytics, and stream processing.
+Despite challenges, Arrow's benefits far outweigh costs for Pyralog's use case—a system that spans logging, analytics, and stream processing.
 
 ### 12.5 Consistency Model Flexibility
 
-DLog supports multiple consistency models through flexible quorums and transaction isolation levels:
+Pyralog supports multiple consistency models through flexible quorums and transaction isolation levels:
 
 **Strong Consistency**:
 - R + W > N
@@ -1221,7 +1221,7 @@ DLog supports multiple consistency models through flexible quorums and transacti
 - W > N/2, route reads to recent write replicas
 - Use case: User profile updates
 
-This flexibility enables DLog to serve diverse workloads within a single system, reducing operational complexity.
+This flexibility enables Pyralog to serve diverse workloads within a single system, reducing operational complexity.
 
 ### 12.6 Unified Platform Benefits
 
@@ -1257,7 +1257,7 @@ The Obelisk Sequencer emerged from rethinking persistent atomic counters. Invest
 
 **2. Eliminate Coordination, Don't Optimize It**:
 
-Many systems optimize coordinator throughput through batching, pipelining, etc. DLog shows that eliminating coordination entirely is simpler and more scalable.
+Many systems optimize coordinator throughput through batching, pipelining, etc. Pyralog shows that eliminating coordination entirely is simpler and more scalable.
 
 **3. Embrace Modern Formats**:
 
@@ -1277,7 +1277,7 @@ Distributed systems have exponentially more failure modes than single-node syste
 
 ### 13.1 Geo-Replication
 
-Current DLog design focuses on single-region deployment. Extending to multi-region geo-replication requires:
+Current Pyralog design focuses on single-region deployment. Extending to multi-region geo-replication requires:
 
 **Challenges**:
 - High inter-region latency (50-200ms)
@@ -1293,7 +1293,7 @@ Current DLog design focuses on single-region deployment. Extending to multi-regi
 
 ### 13.2 Formal Verification
 
-While DLog's architecture is carefully designed, formal verification would provide stronger guarantees:
+While Pyralog's architecture is carefully designed, formal verification would provide stronger guarantees:
 
 **Areas for Verification**:
 - Epoch mechanism correctness (no duplicate offsets)
@@ -1364,7 +1364,7 @@ Dynamic partition splitting/merging is supported, but could be enhanced:
 
 ### 13.7 Cross-System Compatibility
 
-While DLog provides Kafka protocol compatibility, broader compatibility would ease adoption:
+While Pyralog provides Kafka protocol compatibility, broader compatibility would ease adoption:
 
 **Compatibility Targets**:
 - PostgreSQL wire protocol (for SQL queries)
@@ -1374,7 +1374,7 @@ While DLog provides Kafka protocol compatibility, broader compatibility would ea
 
 ### 13.8 Tensor Database for ML/AI Workloads
 
-DLog's Arrow-native architecture provides a foundation for tensor operations:
+Pyralog's Arrow-native architecture provides a foundation for tensor operations:
 
 **Native Tensor Support**:
 - Multi-dimensional arrays as first-class data types
@@ -1403,7 +1403,7 @@ See [TENSOR_DATABASE.md](TENSOR_DATABASE.md) for detailed tensor database design
 
 ### 13.9 Decentralized Autonomous Database Systems
 
-DLog's architecture provides a foundation for decentralized autonomous operation:
+Pyralog's architecture provides a foundation for decentralized autonomous operation:
 
 **Consensus Diversity**:
 - Current: Raft (crash fault tolerant)
@@ -1425,9 +1425,9 @@ See [DADBS.md](DADBS.md) for detailed design of Decentralized Autonomous Databas
 
 ### 14.1 Architectural Comparisons
 
-**DLog vs. Kafka**:
+**Pyralog vs. Kafka**:
 
-| Aspect | DLog | Kafka |
+| Aspect | Pyralog | Kafka |
 |--------|------|-------|
 | Consensus | Raft (embedded) | Zookeeper (external) |
 | Replication | Flexible quorum, configurable CopySet | Fixed ISR set |
@@ -1436,9 +1436,9 @@ See [DADBS.md](DADBS.md) for detailed design of Decentralized Autonomous Databas
 | Storage Format | Columnar (Parquet) | Row-based |
 | Language | Rust | Java/Scala |
 
-**DLog vs. TiKV**:
+**Pyralog vs. TiKV**:
 
-| Aspect | DLog | TiKV |
+| Aspect | Pyralog | TiKV |
 |--------|------|------|
 | Data Model | Append-only log | Key-value |
 | Consensus | Dual Raft | Multi-Raft |
@@ -1446,9 +1446,9 @@ See [DADBS.md](DADBS.md) for detailed design of Decentralized Autonomous Databas
 | TSO Throughput | 4B timestamps/sec | 500K timestamps/sec |
 | Use Case | Logging, streaming, analytics | Transactional database |
 
-**DLog vs. Databend**:
+**Pyralog vs. Databend**:
 
-| Aspect | DLog | Databend |
+| Aspect | Pyralog | Databend |
 |--------|------|----------|
 | Primary Use Case | Real-time streaming + analytics | Batch analytics |
 | Consistency | Strong (Raft) | Eventually consistent (S3) |
@@ -1458,7 +1458,7 @@ See [DADBS.md](DADBS.md) for detailed design of Decentralized Autonomous Databas
 
 ### 14.2 Performance Comparison Summary
 
-DLog achieves superior performance through:
+Pyralog achieves superior performance through:
 - Distributed coordinators (no bottlenecks)
 - Columnar storage (efficient analytics)
 - Per-record CopySet (maximum distribution)
@@ -1469,7 +1469,7 @@ DLog achieves superior performance through:
 
 ## 15. Conclusion
 
-DLog represents a fundamental rethinking of distributed data systems. Through novel coordination primitives, architectural patterns, mathematical foundations, and modern storage formats, DLog achieves unprecedented scalability—28+ billion operations per second across all service types—while providing cryptographic verification, multi-model support, and functional programming abstractions.
+Pyralog represents a fundamental rethinking of distributed data systems. Through novel coordination primitives, architectural patterns, mathematical foundations, and modern storage formats, Pyralog achieves unprecedented scalability—28+ billion operations per second across all service types—while providing cryptographic verification, multi-model support, and functional programming abstractions.
 
 **Key Contributions:**
 
@@ -1506,26 +1506,26 @@ DLog represents a fundamental rethinking of distributed data systems. Through no
 
 **Broader Impact:**
 
-DLog demonstrates that distributed systems can achieve:
+Pyralog demonstrates that distributed systems can achieve:
 - **Mathematical Rigor**: Category theory provides provable correctness for multi-model support and schema evolution.
 - **Cryptographic Guarantees**: Zero-trust architecture with tamper-proof verification suitable for regulated industries.
 - **Type Safety**: Compile-time query validation prevents entire classes of runtime errors.
 - **Unified Platform**: Eliminating operational complexity of managing 5+ separate systems.
 - **Extreme Performance**: Linear scalability through elimination of coordination bottlenecks.
 
-The open-source implementation in Rust provides a foundation for future research and production deployments. We believe DLog's architectural patterns—particularly the Obelisk Sequencer, Pharaoh Network pattern, category-theoretic multi-model support, and functional query system—will influence future distributed systems design.
+The open-source implementation in Rust provides a foundation for future research and production deployments. We believe Pyralog's architectural patterns—particularly the Obelisk Sequencer, Pharaoh Network pattern, category-theoretic multi-model support, and functional query system—will influence future distributed systems design.
 
-As data volumes grow exponentially and use cases diversify (real-time analytics, machine learning, regulatory compliance, complex graph queries), unified platforms like DLog become essential. DLog's architecture provides a blueprint for building systems that are simultaneously fast, safe, mathematically sound, and operationally simple.
+As data volumes grow exponentially and use cases diversify (real-time analytics, machine learning, regulatory compliance, complex graph queries), unified platforms like Pyralog become essential. Pyralog's architecture provides a blueprint for building systems that are simultaneously fast, safe, mathematically sound, and operationally simple.
 
 ---
 
 ## 16. Acknowledgments
 
-We thank the teams behind Apache Kafka, LogDevice, Redpanda, TiKV, Databend, Apache Arrow, Apache DataFusion, Polars, immudb, Datomic, Neo4j, and the MultiCategory project for their pioneering work. DLog builds upon ideas from these systems while introducing novel coordination primitives, architectural patterns, cryptographic verification, multi-model support, and functional programming abstractions.
+We thank the teams behind Apache Kafka, LogDevice, Redpanda, TiKV, Databend, Apache Arrow, Apache DataFusion, Polars, immudb, Datomic, Neo4j, and the MultiCategory project for their pioneering work. Pyralog builds upon ideas from these systems while introducing novel coordination primitives, architectural patterns, cryptographic verification, multi-model support, and functional programming abstractions.
 
 We also thank the Rust community for creating a language and ecosystem that makes safe, high-performance distributed systems development accessible, and the category theory community for providing mathematical foundations that enable rigorous reasoning about data systems.
 
-Special thanks to the creators of Clojure (Rich Hickey), Elixir (José Valim), Erlang/OTP (Joe Armstrong), Zig (Andrew Kelley), Pony (Sylvan Clebsch), Racket (PLT), and Haskell for pioneering language features that inspired Batuta—DLog's high-level programming language combining Lisp macros, actor model, explicit error handling, reference capabilities, and WebAssembly compilation.
+Special thanks to the creators of Clojure (Rich Hickey), Elixir (José Valim), Erlang/OTP (Joe Armstrong), Zig (Andrew Kelley), Pony (Sylvan Clebsch), Racket (PLT), and Haskell for pioneering language features that inspired Batuta—Pyralog's high-level programming language combining Lisp macros, actor model, explicit error handling, reference capabilities, and WebAssembly compilation.
 
 ---
 
@@ -1681,7 +1681,7 @@ Special thanks to the creators of Clojure (Rich Hickey), Elixir (José Valim), E
 
 **Author Information**
 
-This paper describes the design and implementation of DLog, an open-source distributed log system.
+This paper describes the design and implementation of Pyralog, an open-source distributed log system.
 
 Project repository: https://github.com/dlog/dlog
 
@@ -1706,7 +1706,7 @@ License: MIT-0 (code) & CC0-1.0 (documentation)
 
 **Appendix B: Configuration Parameters**
 
-Key DLog configuration parameters:
+Key Pyralog configuration parameters:
 
 - `partitions`: Number of partitions per log (default: 10, range: 1-10000)
 - `replication_factor`: Number of replicas per partition (default: 3, range: 1-7)

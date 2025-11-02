@@ -1,6 +1,6 @@
-# DLog as an Immutable Knowledge Database
+# Pyralog as an Immutable Knowledge Database
 
-**How DLog's architecture makes it ideal for temporal, immutable knowledge systems**
+**How Pyralog's architecture makes it ideal for temporal, immutable knowledge systems**
 
 ---
 
@@ -8,7 +8,7 @@
 
 1. [What is an Immutable Knowledge Database?](#what-is-an-immutable-knowledge-database)
 2. [Why Immutable Knowledge Databases?](#why-immutable-knowledge-databases)
-3. [DLog's Perfect Fit](#dlogs-perfect-fit)
+3. [Pyralog's Perfect Fit](#dlogs-perfect-fit)
 4. [Architecture for Knowledge Databases](#architecture-for-knowledge-databases)
 5. [Data Model](#data-model)
 6. [Use Cases](#use-cases)
@@ -117,15 +117,15 @@ ML models need:
 
 ---
 
-## DLog's Perfect Fit
+## Pyralog's Perfect Fit
 
-DLog was designed with these use cases in mind, even though it's primarily a distributed log system.
+Pyralog was designed with these use cases in mind, even though it's primarily a distributed log system.
 
 ### Core Properties
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog Properties for Immutable Knowledge Databases         │
+│  Pyralog Properties for Immutable Knowledge Databases         │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  1. Append-Only Log                                        │
@@ -164,7 +164,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 
 ### Why Not Traditional Databases?
 
-| Feature | PostgreSQL | MySQL | MongoDB | Cassandra | **DLog** |
+| Feature | PostgreSQL | MySQL | MongoDB | Cassandra | **Pyralog** |
 |---------|------------|-------|---------|-----------|----------|
 | Immutable history | No (manual) | No (manual) | No | No | **Yes** ✅ |
 | Time-travel queries | Limited (pg_audit) | No | No | No | **Native** ✅ |
@@ -181,7 +181,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  Immutable Knowledge Database on DLog                      │
+│  Immutable Knowledge Database on Pyralog                      │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  APPLICATION LAYER                                         │
@@ -193,7 +193,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 │  │  • Provenance tracking                           │    │
 │  └──────────────────────────────────────────────────┘    │
 │                          ▼                                 │
-│  TRANSACTION LAYER (DLog Transactions)                     │
+│  TRANSACTION LAYER (Pyralog Transactions)                     │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  • Percolator protocol (MVCC)                    │    │
 │  │  • Distributed TSO (Scarab IDs)               │    │
@@ -201,7 +201,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 │  │  • 512M tx/sec capacity                          │    │
 │  └──────────────────────────────────────────────────┘    │
 │                          ▼                                 │
-│  STORAGE LAYER (DLog Partitions)                           │
+│  STORAGE LAYER (Pyralog Partitions)                           │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  Fact Store (Arrow/Parquet)                      │    │
 │  │  [entity, attribute, value, tx, operation]       │    │
@@ -230,7 +230,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 
 ### Entity-Attribute-Value-Time (EAVT) Model
 
-Inspired by Datomic, but optimized for DLog's columnar storage:
+Inspired by Datomic, but optimized for Pyralog's columnar storage:
 
 ```rust
 pub struct Fact {
@@ -303,11 +303,11 @@ tx3.commit().await?;
 - Query: "What papers cited X in year Y?"
 - Full provenance (who added what, when)
 
-**DLog Implementation**:
+**Pyralog Implementation**:
 
 ```rust
 pub struct ScientificKB {
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl ScientificKB {
@@ -437,11 +437,11 @@ GROUP BY entity;
 - Versions preserved (original + all amendments)
 - Compliance (prove document state at time of signing)
 
-**DLog Implementation**:
+**Pyralog Implementation**:
 
 ```rust
 pub struct LegalDocSystem {
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl LegalDocSystem {
@@ -561,11 +561,11 @@ impl LegalDocSystem {
 - Corrections without losing original (medical-legal)
 - Time-travel: "What was patient's diagnosis on date X?"
 
-**DLog Implementation**:
+**Pyralog Implementation**:
 
 ```rust
 pub struct MedicalRecordsSystem {
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl MedicalRecordsSystem {
@@ -632,7 +632,7 @@ impl MedicalRecordsSystem {
         start: DateTime<Utc>,
         end: DateTime<Utc>,
     ) -> Result<Vec<AccessLog>> {
-        // DLog's transaction log IS the audit trail
+        // Pyralog's transaction log IS the audit trail
         let query = format!(
             "SELECT tx, entity, attribute, value
              FROM facts
@@ -662,11 +662,11 @@ impl MedicalRecordsSystem {
 - Blame/attribution (who changed what)
 - Drift detection (compare current vs desired)
 
-**DLog Implementation**:
+**Pyralog Implementation**:
 
 ```rust
 pub struct InfrastructureDB {
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl InfrastructureDB {
@@ -766,9 +766,9 @@ impl InfrastructureDB {
 ### Pattern 1: Entity-Attribute-Value Storage
 
 ```rust
-// Store facts in DLog partitions (partitioned by entity for locality)
+// Store facts in Pyralog partitions (partitioned by entity for locality)
 pub struct FactStore {
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl FactStore {
@@ -800,7 +800,7 @@ impl FactStore {
 
 ### Pattern 2: Multiple Indexes
 
-DLog's columnar storage makes multiple indexes efficient:
+Pyralog's columnar storage makes multiple indexes efficient:
 
 ```rust
 // EAVT index (primary): Find all facts about entity
@@ -1011,7 +1011,7 @@ ORDER BY f.tx;
 
 ### vs. Datomic
 
-| Feature | Datomic | DLog |
+| Feature | Datomic | Pyralog |
 |---------|---------|------|
 | Data model | EAVT | **EAVT** ✓ |
 | Immutability | Yes | **Yes** ✓ |
@@ -1022,11 +1022,11 @@ ORDER BY f.tx;
 | Language | Datalog | **SQL + DataFrames** ✅ |
 | Open source | No | **Yes** ✅ |
 
-**DLog advantage**: Distributed architecture, 50,000× higher throughput.
+**Pyralog advantage**: Distributed architecture, 50,000× higher throughput.
 
 ### vs. Crux (XTDB)
 
-| Feature | Crux | DLog |
+| Feature | Crux | Pyralog |
 |---------|------|------|
 | Data model | EAVT | **EAVT** ✓ |
 | Immutability | Yes | **Yes** ✓ |
@@ -1036,11 +1036,11 @@ ORDER BY f.tx;
 | Throughput | ~100K writes/sec | **500M writes/sec** ✅ |
 | Query language | Datalog | **SQL + DataFrames** ✅ |
 
-**DLog advantage**: Higher throughput, SQL familiarity, better distribution.
+**Pyralog advantage**: Higher throughput, SQL familiarity, better distribution.
 
 ### vs. PostgreSQL (with audit tables)
 
-| Feature | PostgreSQL + Audit | DLog |
+| Feature | PostgreSQL + Audit | Pyralog |
 |---------|-------------------|------|
 | Immutability | Manual (triggers) | **Native** ✅ |
 | Time-travel | Complex queries | **Native** ✅ |
@@ -1049,11 +1049,11 @@ ORDER BY f.tx;
 | Throughput | ~10K tx/sec | **512M tx/sec** ✅ |
 | Audit trail | Manual | **Automatic** ✅ |
 
-**DLog advantage**: Immutability is native, not bolted-on.
+**Pyralog advantage**: Immutability is native, not bolted-on.
 
 ### vs. MongoDB (with change streams)
 
-| Feature | MongoDB | DLog |
+| Feature | MongoDB | Pyralog |
 |---------|---------|------|
 | Immutability | No | **Yes** ✅ |
 | Time-travel | No | **Yes** ✅ |
@@ -1062,7 +1062,7 @@ ORDER BY f.tx;
 | Throughput | ~100K writes/sec | **500M writes/sec** ✅ |
 | Consistency | Eventual | **Strong** ✅ |
 
-**DLog advantage**: Immutability, time-travel, strong consistency.
+**Pyralog advantage**: Immutability, time-travel, strong consistency.
 
 ---
 
@@ -1212,7 +1212,7 @@ let friends = kb.query("
 
 ## Conclusion
 
-DLog's architecture makes it uniquely suited for immutable knowledge databases:
+Pyralog's architecture makes it uniquely suited for immutable knowledge databases:
 
 ✅ **Append-only by nature** - immutability is fundamental, not bolted-on
 ✅ **ACID transactions** - related facts always consistent
@@ -1231,13 +1231,13 @@ Whether you're building:
 - Audit systems
 - Version control
 
-**DLog provides the foundation for temporal, immutable knowledge at scale.**
+**Pyralog provides the foundation for temporal, immutable knowledge at scale.**
 
 ---
 
 ## Further Reading
 
-- [PAPER.md](PAPER.md) - Research paper on DLog's architecture
+- [PAPER.md](PAPER.md) - Research paper on Pyralog's architecture
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Transactions and time-travel details
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System internals
 - [EXAMPLES.md](EXAMPLES.md) - Code examples

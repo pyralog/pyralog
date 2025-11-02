@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use dlog_core::PartitionId;
+use pyralog_core::PartitionId;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 

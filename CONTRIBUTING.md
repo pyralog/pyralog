@@ -1,6 +1,6 @@
-# Contributing to DLog
+# Contributing to Pyralog
 
-Thank you for your interest in contributing to DLog! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Pyralog! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -541,11 +541,11 @@ Contributors are recognized:
 
 ## License
 
-By contributing to DLog, you agree that your contributions will be licensed under:
+By contributing to Pyralog, you agree that your contributions will be licensed under:
 - **Code contributions**: MIT-0 (MIT No Attribution)
 - **Documentation contributions**: CC0-1.0 (Public Domain)
 
 ---
 
-Thank you for contributing to DLog! Your efforts make this project better for everyone. 🚀
+Thank you for contributing to Pyralog! Your efforts make this project better for everyone. 🚀
 

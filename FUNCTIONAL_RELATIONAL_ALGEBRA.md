@@ -1,4 +1,4 @@
-# Functional Relational Algebra in DLog
+# Functional Relational Algebra in Pyralog
 
 **Pure functional programming meets relational databases**
 
@@ -24,13 +24,13 @@
 
 ## Overview
 
-DLog already provides:
+Pyralog already provides:
 - ✅ Category theory foundation (functors, morphisms)
 - ✅ Fold-function queries
 - ✅ Multi-model support
 - ✅ DataFusion SQL integration
 
-By adding **functional relational algebra**, DLog gains:
+By adding **functional relational algebra**, Pyralog gains:
 - 🎯 **Pure function operators** (immutable, no side effects)
 - 🎯 **Monad-based DSL** (composable queries with `flatMap`)
 - 🎯 **Applicative functors** (parallel query execution)
@@ -1656,7 +1656,7 @@ impl Cost {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  Functional Relational Algebra in DLog                    │
+│  Functional Relational Algebra in Pyralog                    │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  USER API LAYER                                            │
@@ -1858,7 +1858,7 @@ Verdict: Functional rewrite rules enable massive speedups.
 - Parallel execution for dashboards
 - Type safety for regulatory compliance
 
-**DLog Solution**:
+**Pyralog Solution**:
 
 ```rust
 // Type-safe schema
@@ -1888,7 +1888,7 @@ let result = high_value_suspicious
 - Parallel preprocessing
 - Reproducible pipelines
 
-**DLog Solution**:
+**Pyralog Solution**:
 
 ```rust
 // Lazy query (doesn't execute until needed)
@@ -1917,7 +1917,7 @@ let (train, val, test) = ApplicativeQuery::par_sequence(vec![
 - Auditability (pure functions)
 - Error handling
 
-**DLog Solution**:
+**Pyralog Solution**:
 
 ```rust
 // Point-free style pipeline
@@ -1946,7 +1946,7 @@ let result = etl_pipeline(input_path)?;
 
 ## Conclusion
 
-By adding **functional relational algebra** to DLog, we achieve:
+By adding **functional relational algebra** to Pyralog, we achieve:
 
 ✅ **Pure functions**: Immutable, no side effects, testable  
 ✅ **Monads**: Composable queries with `flatMap`  
@@ -1957,7 +1957,7 @@ By adding **functional relational algebra** to DLog, we achieve:
 ✅ **Type-level safety**: Compile-time schema validation  
 ✅ **Functional rewrite rules**: Provably correct optimizations  
 
-**Plus DLog's existing strengths**:
+**Plus Pyralog's existing strengths**:
 - ✅ 500M writes/sec (high throughput)
 - ✅ ACID transactions (Percolator protocol)
 - ✅ Multi-model support (relational, graph, document, key-value, RDF)
@@ -1971,7 +1971,7 @@ By adding **functional relational algebra** to DLog, we achieve:
 ## Further Reading
 
 - [MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md) - Category theory and multi-model support
-- [PAPER.md](PAPER.md) - DLog research paper
+- [PAPER.md](PAPER.md) - Pyralog research paper
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Transactions, stream processing
 

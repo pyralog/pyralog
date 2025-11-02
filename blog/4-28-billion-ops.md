@@ -1,6 +1,6 @@
 # 28 Billion Operations Per Second: Architectural Deep-Dive
 
-**How DLog's architecture achieves unprecedented scale by eliminating every bottleneck**
+**How Pyralog's architecture achieves unprecedented scale by eliminating every bottleneck**
 
 *Published: November 1, 2025*
 
@@ -21,7 +21,7 @@ Existing systems force you to choose:
 - TiKV: Transactions OR high throughput (not both)
 - Cassandra: High availability OR strong consistency (not both)
 
-**DLog achieves all of these simultaneously.**
+**Pyralog achieves all of these simultaneously.**
 
 Let's see how.
 
@@ -31,7 +31,7 @@ Let's see how.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                      DLog Platform                           │
+│                      Pyralog Platform                           │
 │                  (All Numbers: ops/sec)                      │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
@@ -127,7 +127,7 @@ Total latency overhead: 2ms
 Bottleneck: Single leader
 ```
 
-**DLog Approach**:
+**Pyralog Approach**:
 ```
 Client → Hash(key) → Direct RPC to Coordinator[hash % 1024]
          [100µs]      [Handle immediately]
@@ -211,7 +211,7 @@ As cluster grows:
 Result: Does NOT scale ✗
 ```
 
-**DLog Dual Raft**:
+**Pyralog Dual Raft**:
 
 **Global Raft** (cluster-wide metadata):
 ```
@@ -259,7 +259,7 @@ Latency: 5-10ms (Raft consensus)
 Throughput: ~10K writes/sec per partition
 ```
 
-DLog with Epochs:
+Pyralog with Epochs:
 
 ```
 Write flow (epoch-based):
@@ -303,7 +303,7 @@ Leader becomes bottleneck:
 Result: ~3M writes/sec per leader
 ```
 
-**DLog Per-Record CopySet + Leader-as-Coordinator**:
+**Pyralog Per-Record CopySet + Leader-as-Coordinator**:
 
 ```
 Leader receives write
@@ -341,7 +341,7 @@ Traditional (Per-Partition CopySet):
 Load: Concentrated on 3 nodes per partition
 ```
 
-DLog (Per-Record CopySet):
+Pyralog (Per-Record CopySet):
 ```
 Every record goes to different CopySet:
   Record 1: [N1, N3, N7]
@@ -378,7 +378,7 @@ CPU: 1M deserializations (slow)
 Memory: Load entire records (wasteful)
 ```
 
-**Columnar Format** (DLog with Arrow):
+**Columnar Format** (Pyralog with Arrow):
 ```
 Column 1: [timestamp, timestamp, ...] (1M values)
 Column 2: [user_id, user_id, ...] (1M values)
@@ -440,7 +440,7 @@ Serialize → Deserialize → Serialize → Deserialize
 Network bandwidth becomes bottleneck!
 ```
 
-**DLog** (unified):
+**Pyralog** (unified):
 ```
 Storage (Arrow) → DataFusion (Arrow) → Results (Arrow)
                   ↑
@@ -469,7 +469,7 @@ LIMIT 100;
 ```
 
 Traditional systems: 10-30 seconds (network + serialization overhead)
-DLog: 100-500 milliseconds (zero-copy, native processing) ✅
+Pyralog: 100-500 milliseconds (zero-copy, native processing) ✅
 
 **30-60× faster!**
 
@@ -583,7 +583,7 @@ DLog: 100-500 milliseconds (zero-copy, native processing) ✅
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog System Capacity (ops/sec)                            │
+│  Pyralog System Capacity (ops/sec)                            │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  COORDINATOR LAYER (1024 instances each):                  │
@@ -620,7 +620,7 @@ DLog: 100-500 milliseconds (zero-copy, native processing) ✅
 
 ### 1. Eliminate Centralization
 
-Every centralized component is a bottleneck. DLog distributes:
+Every centralized component is a bottleneck. Pyralog distributes:
 - Coordinators (1024 instances each)
 - Consensus (per-partition Raft)
 - Data (per-record CopySet)
@@ -665,7 +665,7 @@ Batch everything: writes, reads, RPC, consensus.
 
 ## Comparison with Other Systems
 
-| Metric | Kafka | TiKV | Cassandra | DLog |
+| Metric | Kafka | TiKV | Cassandra | Pyralog |
 |--------|-------|------|-----------|------|
 | Write throughput | 3.2M/s | 500K/s | 5M/s | **500M/s** ✅ |
 | Transaction throughput | 100K/s | 500/s | N/A | **512M/s** ✅ |
@@ -700,7 +700,7 @@ In the final post, we'll share lessons learned from building modern data infrast
 
 ---
 
-**Try DLog**:
+**Try Pyralog**:
 - [GitHub Repository](https://github.com/dlog/dlog)
 - [Research Paper](../PAPER.md)
 - [Join Discord](https://discord.gg/dlog)

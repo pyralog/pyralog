@@ -19,7 +19,7 @@
 
 ## Overview
 
-Memory-Only Mode allows DLog to operate entirely in RAM without any disk I/O. This provides:
+Memory-Only Mode allows Pyralog to operate entirely in RAM without any disk I/O. This provides:
 
 - **10-100× faster writes** (no fsync overhead)
 - **Sub-microsecond latency** (pure memory access)
@@ -50,9 +50,9 @@ Memory-Only Mode allows DLog to operate entirely in RAM without any disk I/O. Th
 ### Basic Configuration
 
 ```rust
-use dlog::{DLogConfig, StorageMode};
+use dlog::{PyralogConfig, StorageMode};
 
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::MemoryOnly,
         // All disk-related settings ignored in memory-only mode
@@ -61,13 +61,13 @@ let config = DLogConfig {
     ..Default::default()
 };
 
-let server = DLogServer::new(config).await?;
+let server = PyralogServer::new(config).await?;
 ```
 
 ### Advanced Configuration
 
 ```rust
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::MemoryOnly,
         
@@ -94,7 +94,7 @@ let config = DLogConfig {
 
 ```rust
 // Memory-only for hot data, disk for cold data
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::Hybrid {
             memory_ttl: Duration::from_secs(3600), // 1 hour in memory
@@ -166,8 +166,8 @@ Memory-only mode scales linearly with RAM:
 ```rust
 #[tokio::test]
 async fn test_event_processing() {
-    // In-memory DLog instance
-    let dlog = DLogServer::memory_only().await?;
+    // In-memory Pyralog instance
+    let dlog = PyralogServer::memory_only().await?;
     
     // Test logic
     dlog.produce("events", event).await?;
@@ -191,7 +191,7 @@ async fn test_event_processing() {
 **Solution**: Instant startup with memory-only mode
 
 ```bash
-# Start DLog in memory-only mode for development
+# Start Pyralog in memory-only mode for development
 dlog serve --memory-only --max-memory 4GB
 
 # Instant startup (no recovery)
@@ -234,7 +234,7 @@ let stream = dlog.stream_sql(r#"
 ### 4. Caching Layer (Redis Replacement)
 
 **Problem**: Need distributed cache with strong consistency  
-**Solution**: Memory-only DLog as high-performance cache
+**Solution**: Memory-only Pyralog as high-performance cache
 
 ```rust
 // Session store
@@ -273,7 +273,7 @@ dlog.put("query_cache", cache_key, result).await?;
 
 ```rust
 // Disaster recovery simulation
-let dlog = DLogServer::memory_only().await?;
+let dlog = PyralogServer::memory_only().await?;
 
 // Replay from S3 archive
 dlog.replay_from_archive(
@@ -329,7 +329,7 @@ for batch in features.batches() {
 
 ```rust
 // IoT edge node configuration
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::MemoryOnly,
         max_memory_bytes: 512 * 1024 * 1024, // 512MB
@@ -414,10 +414,10 @@ dlog.append_chat(lobby_id, ChatMessage {
 ### 10. Serverless Functions
 
 **Problem**: Need state between invocations  
-**Solution**: Memory-only DLog as serverless cache
+**Solution**: Memory-only Pyralog as serverless cache
 
 ```rust
-// AWS Lambda with DLog sidecar (memory-only)
+// AWS Lambda with Pyralog sidecar (memory-only)
 async fn handler(event: Event) -> Response {
     let dlog = get_or_create_dlog_sidecar().await;
     
@@ -513,7 +513,7 @@ let pending = dlog.query_sql(r#"
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   Memory-Only DLog                       │
+│                   Memory-Only Pyralog                       │
 ├─────────────────────────────────────────────────────────┤
 │                                                           │
 │  ┌───────────────────────────────────────────────────┐  │
@@ -599,7 +599,7 @@ pub enum EvictionPolicy {
 Example:
 
 ```rust
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::MemoryOnly,
         max_memory_bytes: 8 * 1024 * 1024 * 1024, // 8GB
@@ -677,7 +677,7 @@ dlog.produce_with_ttl(
 
 ```rust
 // Fallback to disk if memory full
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::Hybrid {
             memory_first: true,
@@ -696,7 +696,7 @@ let config = DLogConfig {
 
 ```rust
 // Hot data in memory, cold data on disk
-let config = DLogConfig {
+let config = PyralogConfig {
     storage: StorageConfig {
         mode: StorageMode::Hybrid {
             memory_ttl: Duration::from_secs(3600), // 1 hour hot
@@ -721,10 +721,10 @@ let config = DLogConfig {
 
 ```rust
 // Memory-only cluster for writes
-let fast_cluster = DLogCluster::memory_only(vec!["node1", "node2", "node3"]);
+let fast_cluster = PyralogCluster::memory_only(vec!["node1", "node2", "node3"]);
 
 // Persistent cluster for archival
-let durable_cluster = DLogCluster::persistent(vec!["node4", "node5", "node6", "node7", "node8"]);
+let durable_cluster = PyralogCluster::persistent(vec!["node4", "node5", "node6", "node7", "node8"]);
 
 // Async replication
 fast_cluster.replicate_to(durable_cluster, ReplicationMode::Async).await?;
@@ -802,7 +802,7 @@ client.create_log("metrics", LogConfig {
 
 Memory-Only Mode provides **10-100× performance improvement** for workloads that don't require durability. Combined with replication and optional snapshots, it offers a flexible balance between speed and reliability.
 
-**Key takeaway**: For ephemeral data, memory-only mode eliminates the disk bottleneck entirely, enabling DLog to reach its theoretical performance limits.
+**Key takeaway**: For ephemeral data, memory-only mode eliminates the disk bottleneck entirely, enabling Pyralog to reach its theoretical performance limits.
 
 ---
 

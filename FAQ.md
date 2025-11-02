@@ -1,36 +1,36 @@
-# DLog Frequently Asked Questions
+# Pyralog Frequently Asked Questions
 
 ## General Questions
 
-### What is DLog?
+### What is Pyralog?
 
-DLog is a high-performance distributed log system built in Rust, inspired by Redpanda and LogDevice. It provides low-latency, durable, and scalable log storage for distributed systems.
+Pyralog is a high-performance distributed log system built in Rust, inspired by Redpanda and LogDevice. It provides low-latency, durable, and scalable log storage for distributed systems.
 
 ### Why another distributed log system?
 
-DLog combines the best ideas from existing systems:
+Pyralog combines the best ideas from existing systems:
 - **Redpanda**: Write caching, no ZooKeeper, Kafka compatibility
 - **LogDevice**: Flexible quorums, epochs, CopySet replication
 - **Rust**: Memory safety, modern concurrency, zero-cost abstractions
 
-### Is DLog production-ready?
+### Is Pyralog production-ready?
 
-DLog is currently in **active development**. Core features are complete, but we recommend:
+Pyralog is currently in **active development**. Core features are complete, but we recommend:
 - ✅ Use for development and testing
 - ✅ Use for non-critical production workloads
 - ⚠️ Wait for v1.0 for mission-critical systems
 
-### How does DLog compare to Kafka?
+### How does Pyralog compare to Kafka?
 
 See our [detailed comparison guide](COMPARISON.md). In short:
-- **DLog advantages**: Lower latency, simpler ops, no ZooKeeper
+- **Pyralog advantages**: Lower latency, simpler ops, no ZooKeeper
 - **Kafka advantages**: More mature, larger ecosystem, enterprise support
 
 ## Architecture Questions
 
-### What consensus protocol does DLog use?
+### What consensus protocol does Pyralog use?
 
-DLog uses **Raft** for cluster coordination and metadata management. Raft was chosen for:
+Pyralog uses **Raft** for cluster coordination and metadata management. Raft was chosen for:
 - Simplicity and understandability
 - Proven in production (etcd, Consul)
 - Strong consistency guarantees
@@ -47,7 +47,7 @@ See [EPOCHS.md](EPOCHS.md) for details.
 
 ### How does replication work?
 
-DLog uses **flexible quorum-based replication** inspired by LogDevice:
+Pyralog uses **flexible quorum-based replication** inspired by LogDevice:
 - Configure: Replication Factor (R), Write Quorum (W), Read Quorum (R)
 - Constraint: W + R > RF (ensures consistency)
 - Examples: (R=3, W=2, R=2) for balanced, (R=3, W=1, R=3) for writes
@@ -110,7 +110,7 @@ Key factors:
 - 5 nodes: Medium deployments (tolerates 2 failures)
 - 7+ nodes: Large deployments
 
-### How do I deploy DLog?
+### How do I deploy Pyralog?
 
 Multiple options:
 1. **Bare metal**: Direct binary installation
@@ -122,9 +122,9 @@ See [OPERATIONS.md](OPERATIONS.md) for detailed guides.
 
 ### Do I need ZooKeeper?
 
-**No!** DLog has built-in Raft consensus. This is a major operational simplification compared to Kafka.
+**No!** Pyralog has built-in Raft consensus. This is a major operational simplification compared to Kafka.
 
-### How do I monitor DLog?
+### How do I monitor Pyralog?
 
 Monitor key metrics:
 - Write/read latency (p50, p99, p999)
@@ -135,7 +135,7 @@ Monitor key metrics:
 
 Integration with Prometheus/Grafana coming soon.
 
-### How do I backup DLog?
+### How do I backup Pyralog?
 
 Options:
 1. **Filesystem backup**: Stop node, copy data directory
@@ -146,9 +146,9 @@ See [OPERATIONS.md](OPERATIONS.md) for backup strategies.
 
 ## Compatibility Questions
 
-### Is DLog Kafka-compatible?
+### Is Pyralog Kafka-compatible?
 
-**Yes**, DLog provides a Kafka-compatible API. Existing Kafka clients should work with minimal changes.
+**Yes**, Pyralog provides a Kafka-compatible API. Existing Kafka clients should work with minimal changes.
 
 **Compatibility level**:
 - ✅ Core produce/consume APIs
@@ -159,7 +159,7 @@ See [OPERATIONS.md](OPERATIONS.md) for backup strategies.
 ### Can I migrate from Kafka?
 
 Yes! Migration path:
-1. Deploy DLog cluster
+1. Deploy Pyralog cluster
 2. Dual-write to both systems
 3. Migrate consumers
 4. Decommission Kafka
@@ -177,7 +177,7 @@ Currently:
 
 ## Development Questions
 
-### What language is DLog written in?
+### What language is Pyralog written in?
 
 **Rust** - chosen for:
 - Memory safety without GC
@@ -250,27 +250,27 @@ Some settings:
 
 ## Feature Questions
 
-### Does DLog support transactions?
+### Does Pyralog support transactions?
 
 **Not yet.** Transactions are planned for Phase 3. Currently available:
 - Atomic batch writes
 - Idempotent produces (via epochs)
 
-### Does DLog support log compaction?
+### Does Pyralog support log compaction?
 
 **Not yet.** Compaction is planned for Phase 3. Currently available:
 - Time-based retention
 - Size-based retention
 
-### Does DLog support stream processing?
+### Does Pyralog support stream processing?
 
 **Not yet.** Stream processing is planned for Phase 4. Currently available:
 - Basic consume API
 - Consumer groups (simple implementation)
 
-### Does DLog support tiered storage?
+### Does Pyralog support tiered storage?
 
-**Yes!** DLog supports tiered storage to:
+**Yes!** Pyralog supports tiered storage to:
 - S3 (AWS)
 - Azure Blob Storage
 - Google Cloud Storage
@@ -301,7 +301,7 @@ Common causes:
 
 ### How do I recover from node failure?
 
-DLog handles this automatically:
+Pyralog handles this automatically:
 1. Cluster detects failure
 2. New leader elected
 3. Replicas catch up
@@ -318,14 +318,14 @@ Default locations:
 
 ## Security Questions
 
-### Does DLog support authentication?
+### Does Pyralog support authentication?
 
 **Not yet.** Authentication is planned for Phase 2. Coming soon:
 - mTLS for node-to-node
 - Token-based for clients
 - RBAC for access control
 
-### Does DLog support encryption?
+### Does Pyralog support encryption?
 
 **Partial**. Currently:
 - ✅ TLS for client connections (planned)
@@ -343,7 +343,7 @@ Current best practices:
 
 ## Licensing Questions
 
-### What license is DLog under?
+### What license is Pyralog under?
 
 **Dual licensed**: MIT-0 (code) and CC0-1.0 (documentation)
 
@@ -352,13 +352,13 @@ Current best practices:
 
 This provides maximum freedom and flexibility for both commercial and open-source use.
 
-### Can I use DLog commercially?
+### Can I use Pyralog commercially?
 
-**Yes!** Both MIT-0 and CC0-1.0 are maximally permissive licenses. You can use DLog in any commercial product without attribution requirements.
+**Yes!** Both MIT-0 and CC0-1.0 are maximally permissive licenses. You can use Pyralog in any commercial product without attribution requirements.
 
 ### Do I need to open-source my application?
 
-**No!** Neither MIT-0 nor CC0-1.0 are copyleft licenses. You can use DLog in proprietary software without any obligation to share your code or even mention DLog.
+**No!** Neither MIT-0 nor CC0-1.0 are copyleft licenses. You can use Pyralog in proprietary software without any obligation to share your code or even mention Pyralog.
 
 ## Community Questions
 
@@ -375,7 +375,7 @@ Multiple channels:
 1. Check if already reported
 2. Create GitHub issue
 3. Include:
-   - DLog version
+   - Pyralog version
    - Configuration
    - Steps to reproduce
    - Expected vs actual behavior

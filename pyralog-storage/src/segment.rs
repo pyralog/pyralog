@@ -1,5 +1,5 @@
 use bytes::{Bytes, BytesMut};
-use dlog_core::{LogOffset, Result, DLogError};
+use pyralog_core::{LogOffset, Result, DLogError};
 use memmap2::{Mmap, MmapMut};
 use parking_lot::RwLock;
 use std::fs::{File, OpenOptions};

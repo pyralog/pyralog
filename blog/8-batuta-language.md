@@ -1,10 +1,10 @@
 # Batuta: A New Language for Data Processing
 
-**Part 8 of the DLog Blog Series**
+**Part 8 of the Pyralog Blog Series**
 
 What if querying data felt as natural as conducting an orchestra? What if your queries could run anywhere—servers, browsers, edge devices—without rewriting code? What if the compiler prevented data races at compile time?
 
-Meet **Batuta**: DLog's programming language named after the conductor's baton.
+Meet **Batuta**: Pyralog's programming language named after the conductor's baton.
 
 Batuta combines:
 - **Clojure's** elegant Lisp syntax and immutable data structures
@@ -259,12 +259,12 @@ Like Elixir, Batuta has **first-class actors**:
 
 ---
 
-## DLog Integration: Native Queries
+## Pyralog Integration: Native Queries
 
-Batuta is **native to DLog**:
+Batuta is **native to Pyralog**:
 
 ```clojure
-; Query DLog directly
+; Query Pyralog directly
 (use dlog.core)
 
 ; Simple query
@@ -293,7 +293,7 @@ Batuta is **native to DLog**:
     :on [= id user-id user-id]))
 ```
 
-**Batuta understands DLog's data models** natively.
+**Batuta understands Pyralog's data models** natively.
 
 ---
 
@@ -550,7 +550,7 @@ fastly compute publish query.wasm
 | No exceptions | ❌ | ❌ | ✅ | ❌ | ✅ |
 | Reference capabilities | ❌ | ❌ | ❌ | ✅ | ✅ |
 | WASM compilation | ❌ | ❌ | ✅ | ❌ | ✅ |
-| DLog integration | ❌ | ❌ | ❌ | ❌ | **✅** |
+| Pyralog integration | ❌ | ❌ | ❌ | ❌ | **✅** |
 | Gradual typing | ✅ | ❌ | ❌ | ❌ | ✅ |
 
 **Batuta combines the best features** of four great languages.
@@ -619,7 +619,7 @@ Batuta 0.1.0 REPL
     ...]
 
 λ (doc query)
-=> "Execute a DLog query..."
+=> "Execute a Pyralog query..."
 
 λ (source query)
 => (defn query [table & clauses] ...)
@@ -637,7 +637,7 @@ Batuta 0.1.0 REPL
 4. **Explicit Errors**: Zig-style error handling, no exceptions
 5. **Reference Capabilities**: Pony-style compile-time safety
 6. **WebAssembly**: Run anywhere—server, browser, edge
-7. **DLog Native**: First-class integration with all data models
+7. **Pyralog Native**: First-class integration with all data models
 8. **Gradual Typing**: Start dynamic, add types as needed
 
 **Batuta makes data processing elegant, safe, and universal.**
@@ -646,14 +646,14 @@ Batuta 0.1.0 REPL
 
 ## What's Next?
 
-In the next post, we'll explore **Actor-Based Concurrency** in DLog, showing how the actor model enables massively parallel distributed query execution with supervision trees and topology-level reactivity.
+In the next post, we'll explore **Actor-Based Concurrency** in Pyralog, showing how the actor model enables massively parallel distributed query execution with supervision trees and topology-level reactivity.
 
 **Next**: [Actor-Based Concurrency: Distributed Query Execution →](9-actor-concurrency.md)
 
 ---
 
 **Blog Series**:
-1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
@@ -668,7 +668,7 @@ In the next post, we'll explore **Actor-Based Concurrency** in DLog, showing how
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 

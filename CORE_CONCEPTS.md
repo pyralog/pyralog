@@ -1,6 +1,6 @@
-# DLog Core Concepts
+# Pyralog Core Concepts
 
-Fundamental concepts and terminology in DLog.
+Fundamental concepts and terminology in Pyralog.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ Fundamental concepts and terminology in DLog.
 
 ### Overview
 
-A **LogId** is the unique identifier for a log in DLog, similar to a "topic" in Kafka or a "stream" in other systems.
+A **LogId** is the unique identifier for a log in Pyralog, similar to a "topic" in Kafka or a "stream" in other systems.
 
 ```rust
 pub struct LogId(String);
@@ -86,7 +86,7 @@ Service-based:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│   DLog Cluster                                  │
+│   Pyralog Cluster                                  │
 ├─────────────────────────────────────────────────┤
 │                                                 │
 │  Log: "user-events"                             │
@@ -138,11 +138,11 @@ LogMetadata {
 **Via client:**
 
 ```rust
-use dlog_client::DLogClient;
+use dlog_client::PyralogClient;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     // Create log with default configuration
     client.create_log("user-events").await?;
@@ -354,15 +354,15 @@ client.produce(&log_id, record).await?;
 
 **Python:**
 ```python
-from dlog import DLogClient
+from dlog import PyralogClient
 
-client = DLogClient("localhost:9092")
+client = PyralogClient("localhost:9092")
 client.produce("user-events", record)
 ```
 
 **Java:**
 ```java
-DLogClient client = new DLogClient("localhost:9092");
+PyralogClient client = new PyralogClient("localhost:9092");
 client.produce("user-events", record);
 ```
 
@@ -478,7 +478,7 @@ LogId::new("events-2025-03")
 │   LogId Equivalents                             │
 ├─────────────────────────────────────────────────┤
 │                                                 │
-│  DLog:       LogId                              │
+│  Pyralog:       LogId                              │
 │  Kafka:      Topic                              │
 │  Pulsar:     Topic                              │
 │  Kinesis:    Stream                             │
@@ -491,11 +491,11 @@ LogId::new("events-2025-03")
 ### Example: Complete Log Setup
 
 ```rust
-use dlog_client::{DLogClient, LogConfig, RetentionConfig};
+use dlog_client::{PyralogClient, LogConfig, RetentionConfig};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     // 1. Create log
     let log_id = "user-events";
@@ -627,7 +627,7 @@ pub struct Record {
 // Minimal record (no key)
 let record = Record::new(
     None,
-    b"Hello, DLog!".to_vec(),
+    b"Hello, Pyralog!".to_vec(),
 );
 
 // Record with key

@@ -1,6 +1,6 @@
-# DLog Architecture
+# Pyralog Architecture
 
-This document provides a deep dive into DLog's architecture, design decisions, and implementation details.
+This document provides a deep dive into Pyralog's architecture, design decisions, and implementation details.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ This document provides a deep dive into DLog's architecture, design decisions, a
 
 ## Overview
 
-DLog is a distributed log system designed for:
+Pyralog is a distributed log system designed for:
 - **High throughput**: Millions of writes per second
 - **Low latency**: Sub-millisecond write latencies
 - **Strong durability**: Configurable replication and persistence
@@ -178,7 +178,7 @@ Write Cache
 
 **Key Question**: Do we need one global Raft cluster or per-partition Raft clusters?
 
-**Answer**: DLog uses **BOTH** (dual Raft clusters):
+**Answer**: Pyralog uses **BOTH** (dual Raft clusters):
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -483,7 +483,7 @@ pub struct MultiRaftManager {
 
 ### CopySet Selection Strategies
 
-DLog supports **two CopySet selection strategies**, configurable based on your needs:
+Pyralog supports **two CopySet selection strategies**, configurable based on your needs:
 
 #### Strategy 1: Per-Partition CopySet (Kafka-style)
 
@@ -848,7 +848,7 @@ impl Reader {
             }
         }
         
-        Err(DLogError::RecordNotFound(offset))
+        Err(PyralogError::RecordNotFound(offset))
     }
 }
 ```
@@ -1321,7 +1321,7 @@ Partition 0:
 
 ### Smart Client Architecture
 
-DLog uses the **smart client pattern** where clients fetch metadata and connect directly to partition leaders, avoiding proxy hops:
+Pyralog uses the **smart client pattern** where clients fetch metadata and connect directly to partition leaders, avoiding proxy hops:
 
 ```
 ┌────────────────────────────────────────────────┐
@@ -1498,7 +1498,7 @@ With tiered storage:
 
 ### The Leader Bottleneck Problem
 
-DLog uses a **leader-based architecture** where all writes for a partition must go through a single leader node. This creates a potential bottleneck:
+Pyralog uses a **leader-based architecture** where all writes for a partition must go through a single leader node. This creates a potential bottleneck:
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -1532,7 +1532,7 @@ DLog uses a **leader-based architecture** where all writes for a partition must 
 
 ### Solution 1: Distributed Leadership via Partitioning
 
-DLog distributes leadership across the cluster through partitioning:
+Pyralog distributes leadership across the cluster through partitioning:
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -1610,7 +1610,7 @@ config.read_policy = ReadPolicy::Quorum(2);
 
 ### Solution 3: CopySet Distribution
 
-DLog uses **non-deterministic replica placement** to distribute load:
+Pyralog uses **non-deterministic replica placement** to distribute load:
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -1627,7 +1627,7 @@ DLog uses **non-deterministic replica placement** to distribute load:
 └──────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────┐
-│   CopySet Replication (DLog) ✅                  │
+│   CopySet Replication (Pyralog) ✅                  │
 ├──────────────────────────────────────────────────┤
 │                                                  │
 │  Each partition uses different copysets:         │
@@ -1854,11 +1854,11 @@ Read Throughput (from any replica):
 
 ### The Fundamental Trade-off
 
-DLog's leader-based architecture is a deliberate choice:
+Pyralog's leader-based architecture is a deliberate choice:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│   LEADER-BASED (DLog, Kafka)                        │
+│   LEADER-BASED (Pyralog, Kafka)                        │
 ├─────────────────────────────────────────────────────┤
 │  Advantages:                                        │
 │    ✅ Strong consistency per partition              │
@@ -1895,7 +1895,7 @@ DLog's leader-based architecture is a deliberate choice:
 └─────────────────────────────────────────────────────┘
 ```
 
-**DLog chooses leader-based because:**
+**Pyralog chooses leader-based because:**
 1. Distributed logs require ordering (fundamental requirement)
 2. Strong consistency simplifies application logic
 3. Kafka compatibility demands leader-based model
@@ -1944,7 +1944,7 @@ config.read_policy = ReadPolicy::AnyReplica;
 
 **Solution: Dynamic Partitions**
 
-DLog supports **dynamic partition splitting and merging** (similar to TiKV's regions):
+Pyralog supports **dynamic partition splitting and merging** (similar to TiKV's regions):
 
 ```
 Static Partitions (original):
@@ -2131,7 +2131,7 @@ Key metrics:
 
 ## Conclusion
 
-DLog's architecture represents a synthesis of the best ideas from modern distributed log systems, designed for extreme performance and scalability.
+Pyralog's architecture represents a synthesis of the best ideas from modern distributed log systems, designed for extreme performance and scalability.
 
 ### Key Architectural Innovations
 
@@ -2249,7 +2249,7 @@ Availability:      Tolerates RF-W node failures
 
 **Learning from the Best:**
 
-DLog synthesizes innovations from:
+Pyralog synthesizes innovations from:
 - **LogDevice** (Facebook): Epochs, CopySet, flexible quorums, hierarchical storage
 - **Kafka** (LinkedIn): Smart clients, partitioning, ISR, log-structured storage
 - **Redpanda** (Vectorized): Write caching, zero-copy I/O, thread-per-core
@@ -2290,7 +2290,7 @@ DLog synthesizes innovations from:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│   Why DLog's Architecture Succeeds                  │
+│   Why Pyralog's Architecture Succeeds                  │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
 │  Traditional Distributed Log:                       │
@@ -2300,7 +2300,7 @@ DLog synthesizes innovations from:
 │    ❌ Follower bottleneck                           │
 │    ❌ Fixed consistency model                       │
 │                                                     │
-│  DLog's Solution:                                   │
+│  Pyralog's Solution:                                   │
 │    ✅ Distributed leadership (partitioning)         │
 │    ✅ Consensus per epoch (100x faster)             │
 │    ✅ Smart clients (direct routing)                │
@@ -2315,7 +2315,7 @@ DLog synthesizes innovations from:
 
 ### Final Thoughts
 
-DLog isn't just another distributed log - it's a **synthesis of proven innovations** that complement each other perfectly:
+Pyralog isn't just another distributed log - it's a **synthesis of proven innovations** that complement each other perfectly:
 
 1. **Epochs** make high throughput possible (remove consensus bottleneck)
 2. **Smart clients** make it scalable (remove proxy bottleneck)
@@ -2327,7 +2327,7 @@ Each innovation solves a specific bottleneck. Together, they create a system wit
 
 **This is the power of learning from a decade of production distributed log systems and combining their best ideas in a modern, Rust-based implementation.**
 
-The modular design allows for easy extension and customization while maintaining strong guarantees about data durability and consistency. Whether you need strong consistency for financial transactions or high availability for analytics, DLog's architecture can be configured to meet your requirements.
+The modular design allows for easy extension and customization while maintaining strong guarantees about data durability and consistency. Whether you need strong consistency for financial transactions or high availability for analytics, Pyralog's architecture can be configured to meet your requirements.
 
 **Welcome to the next generation of distributed logs.** 🚀
 

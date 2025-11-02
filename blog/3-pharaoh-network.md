@@ -159,7 +159,7 @@ Next ID:      Same timestamp, same machine_id, sequence=0
 Result:       DUPLICATE ID! ✗
 ```
 
-For DLog's exactly-once semantics, duplicate IDs break correctness.
+For Pyralog's exactly-once semantics, duplicate IDs break correctness.
 
 ## The Solution: Scarab + Obelisk Sequencer
 
@@ -228,7 +228,7 @@ impl DistributedTimestampOracle {
 **Client-side routing**:
 
 ```rust
-impl DLogClient {
+impl PyralogClient {
     pub fn get_timestamp(&self) -> Result<Timestamp> {
         // Hash-based routing: pick TSO based on thread ID
         let tso_id = (thread::current().id().as_u64() % 1024) as usize;
@@ -266,12 +266,12 @@ impl DLogClient {
 | System | Architecture | Throughput | Scalability |
 |--------|--------------|-----------|-------------|
 | **TiKV TSO** | Centralized (Raft leader) | 500K ts/sec | **No** (single node) |
-| **DLog TSO** | Distributed (1024 nodes) | 512M ts/sec | **Yes** (linear) |
+| **Pyralog TSO** | Distributed (1024 nodes) | 512M ts/sec | **Yes** (linear) |
 | **Speedup** | | **1024×** | ✅ |
 
 ## Applying to ALL Coordinators
 
-The pattern extends to every coordinator in DLog:
+The pattern extends to every coordinator in Pyralog:
 
 ### 1. Transaction Coordinators
 
@@ -370,7 +370,7 @@ let event_id = generators[generator_id].next_event_id();
 
 ```
 ┌────────────────────────────────────────────────┐
-│  DLog ☀️ Pharaoh Network Capacity             │
+│  Pyralog ☀️ Pharaoh Network Capacity             │
 ├────────────────────────────────────────────────┤
 │                                                │
 │  Timestamp Oracles:      512M ts/sec          │
@@ -399,7 +399,7 @@ Kafka Coordinators:
 └─ Consumer Coordinator:     50K ops/sec
     Total:                   ~160K ops/sec
 
-DLog Coordinators:
+Pyralog Coordinators:
 ├─ All services:            4B ops/sec
     Speedup:                25,000× faster ✅
 ```
@@ -412,7 +412,7 @@ TiKV Coordinators:
 └─ PD (placement):           50K ops/sec
     Total:                  ~550K ops/sec
 
-DLog Coordinators:
+Pyralog Coordinators:
 ├─ All services:           4B ops/sec
     Speedup:               7,300× faster ✅
 ```
@@ -423,7 +423,7 @@ DLog Coordinators:
 Raft Leader (etcd, Consul):
 └─ Single leader:           10K ops/sec
 
-DLog Distributed:
+Pyralog Distributed:
 └─ 1024 nodes:             512M ops/sec
     Speedup:               51,200× faster ✅
 ```
@@ -441,7 +441,7 @@ Traditional:
  Node-1 elected (others idle)
 ```
 
-DLog:
+Pyralog:
 ```
 [TSO-0, TSO-1, ..., TSO-1023]
      ↓
@@ -458,9 +458,9 @@ Traditional coordinators store state:
 
 On failure, this state must be recovered (slow).
 
-DLog coordinators are **stateless**:
+Pyralog coordinators are **stateless**:
 - Only generate IDs (deterministic)
-- Actual state stored in DLog partitions
+- Actual state stored in Pyralog partitions
 - Any coordinator can handle any request
 
 **Failover**: Client just routes to different coordinator. Instant.
@@ -469,11 +469,11 @@ DLog coordinators are **stateless**:
 
 Traditional: Clients discover leader, all traffic funnels to one node.
 
-DLog: Clients hash-route requests to any coordinator.
+Pyralog: Clients hash-route requests to any coordinator.
 
 ```rust
 // Client library
-impl DLogClient {
+impl PyralogClient {
     fn route_request<T>(&self, key: &[u8], request: Request) -> Result<T> {
         // Deterministic routing
         let coordinator_id = hash(key) % self.coordinator_count;
@@ -522,7 +522,7 @@ Resume operations
 Total downtime: 12-65 seconds
 ```
 
-DLog:
+Pyralog:
 ```
 TSO-42 fails
   ↓
@@ -548,7 +548,7 @@ Cluster has no quorum
 System UNAVAILABLE until partition heals
 ```
 
-DLog:
+Pyralog:
 ```
 Partition isolates TSO-42
   ↓
@@ -608,7 +608,7 @@ By combining:
 2. **Obelisk Sequencers** (crash-safe persistent counters)
 3. **Client-side routing** (hash-based coordinator selection)
 
-We've eliminated **every centralized coordinator** in DLog.
+We've eliminated **every centralized coordinator** in Pyralog.
 
 **Result**:
 - ✅ 4+ billion operations per second
@@ -620,7 +620,7 @@ We've eliminated **every centralized coordinator** in DLog.
 
 This is a **fundamental rethinking** of how distributed systems handle coordination.
 
-In the next post, we'll show how all these innovations come together to achieve **28 billion operations per second** across the entire DLog platform.
+In the next post, we'll show how all these innovations come together to achieve **28 billion operations per second** across the entire Pyralog platform.
 
 ---
 

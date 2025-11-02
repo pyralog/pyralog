@@ -1,12 +1,12 @@
 # Actor-Based Concurrency: Distributed Query Execution at Scale
 
-**Part 9 of the DLog Blog Series**
+**Part 9 of the Pyralog Blog Series**
 
 What if every query partition was an independent actor? What if crashes didn't bring down your entire cluster? What if your database could automatically discover and coordinate across thousands of nodes—without a central coordinator?
 
-**This is the actor model.** Born from Carl Hewitt's 1973 paper, refined by Erlang and Akka, now perfected in DLog.
+**This is the actor model.** Born from Carl Hewitt's 1973 paper, refined by Erlang and Akka, now perfected in Pyralog.
 
-DLog's actor-based architecture enables:
+Pyralog's actor-based architecture enables:
 - **Massively parallel queries** across thousands of actors
 - **Fault isolation**: Actor crashes don't cascade
 - **Supervision trees**: Automatic recovery
@@ -48,7 +48,7 @@ Problems:
 Actors change everything:
 
 ```
-Actor-Based Database (DLog):
+Actor-Based Database (Pyralog):
 ┌─────────────────────────────────────┐
 │  Actors (millions possible)         │
 │  ├─ PartitionActor1 ↔ Message       │
@@ -76,12 +76,12 @@ Benefits:
 
 ---
 
-## DLog's Actor Architecture
+## Pyralog's Actor Architecture
 
 ### Three Actor Types
 
 ```rust
-pub enum DLogActor {
+pub enum PyralogActor {
     // 1. Partition Actor: Manages data for one partition
     PartitionActor {
         partition_id: PartitionId,
@@ -256,7 +256,7 @@ User queries during recovery:
 
 ## Topology-Level Reactivity: Stella-Inspired
 
-DLog includes **topology-level reactivity** inspired by the Stella language:
+Pyralog includes **topology-level reactivity** inspired by the Stella language:
 
 ### Flocks: Automatic Peer Discovery
 
@@ -360,7 +360,7 @@ Problems:
 - Sequential execution
 ```
 
-### Actor Approach (DLog)
+### Actor Approach (Pyralog)
 
 ```rust
 // Define analytics flock
@@ -401,7 +401,7 @@ println!("Daily Active Users: {}", dau);
 
 ## Typed Actors: Compile-Time Safety
 
-DLog's actors are typed:
+Pyralog's actors are typed:
 
 ```rust
 // Define actor with typed messages
@@ -446,7 +446,7 @@ impl TypedActor for PartitionActor {
 |----------|-----------|---------------|---------|
 | OS Threads | 50K ops/sec | 500 ms | 8 GB |
 | Green Threads | 500K ops/sec | 50 ms | 2 GB |
-| **Actors (DLog)** | **28M ops/sec** | **1 ms** | **512 MB** |
+| **Actors (Pyralog)** | **28M ops/sec** | **1 ms** | **512 MB** |
 
 **Actors are 56× faster** than OS threads with **16× less memory**.
 
@@ -462,7 +462,7 @@ impl TypedActor for PartitionActor {
 
 ## Actor Persistence: Event Sourcing
 
-DLog actors can persist their message history:
+Pyralog actors can persist their message history:
 
 ```rust
 pub struct PersistentPartitionActor {
@@ -500,7 +500,7 @@ impl PersistentActor for PersistentPartitionActor {
 
 ## Reference Capabilities: Preventing Data Races
 
-DLog uses **Pony-style reference capabilities**:
+Pyralog uses **Pony-style reference capabilities**:
 
 ```rust
 // iso = isolated (unique, mutable, sendable)
@@ -529,9 +529,9 @@ actor.send(NotifyComplete { handle: opaque }).await?;  // OK: tag can be sent
 
 ---
 
-## Comparison: DLog vs Akka vs Erlang
+## Comparison: Pyralog vs Akka vs Erlang
 
-| Feature | Erlang/OTP | Akka (Scala) | **DLog** |
+| Feature | Erlang/OTP | Akka (Scala) | **Pyralog** |
 |---------|-----------|--------------|----------|
 | Actor model | ✅ | ✅ | ✅ |
 | Supervision trees | ✅ | ✅ | ✅ |
@@ -544,7 +544,7 @@ actor.send(NotifyComplete { handle: opaque }).await?;  // OK: tag can be sent
 | Native database integration | ❌ | ❌ | **✅** |
 | Performance (ops/sec) | ~1M | ~5M | **28M+** |
 
-**DLog combines** the best of Erlang, Akka, Pony, and Stella.
+**Pyralog combines** the best of Erlang, Akka, Pony, and Stella.
 
 ---
 
@@ -637,14 +637,14 @@ let total_users = cluster
 
 ## What's Next?
 
-In the final post of this series, we'll explore **DLog's quantum-resistant networking with WireGuard**, showing how post-quantum cryptography and DPI resistance enable secure communication in any environment.
+In the final post of this series, we'll explore **Pyralog's quantum-resistant networking with WireGuard**, showing how post-quantum cryptography and DPI resistance enable secure communication in any environment.
 
 **Next**: [Quantum-Resistant Networking with WireGuard →](10-wireguard-networking.md)
 
 ---
 
 **Blog Series**:
-1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
@@ -660,7 +660,7 @@ In the final post of this series, we'll explore **DLog's quantum-resistant netwo
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 

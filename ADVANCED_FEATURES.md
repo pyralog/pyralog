@@ -1,10 +1,10 @@
 # Advanced Features from Other Systems
 
-This document explores advanced features from other distributed log systems and how they could be implemented in DLog.
+This document explores advanced features from other distributed log systems and how they could be implemented in Pyralog.
 
-## DLog's Architectural Advantages
+## Pyralog's Architectural Advantages
 
-DLog's unique architecture provides significant advantages for implementing these features:
+Pyralog's unique architecture provides significant advantages for implementing these features:
 
 ### 🗿 Obelisk Sequencer Primitive
 
@@ -98,7 +98,7 @@ Transaction Protocol:
 - Commit/abort markers
 - Isolation levels (read_uncommitted, read_committed)
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Architecture
 
@@ -126,19 +126,19 @@ pub struct TransactionCoordinator {
 
 #### Protocol: Percolator with Scarab TSO
 
-**DLog uses TiKV's Percolator protocol, but eliminates the TSO bottleneck with Scarab IDs!**
+**Pyralog uses TiKV's Percolator protocol, but eliminates the TSO bottleneck with Scarab IDs!**
 
 **TiKV's Problem:**
 - Centralized TSO (Timestamp Oracle) - ~500K timestamps/sec bottleneck
 - Single-point, requires Raft election
 
-**DLog's Solution:**
+**Pyralog's Solution:**
 - Distributed TSO using Scarab IDs - 4+ billion timestamps/sec
 - 1024 independent TSO nodes, no election
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│   TiKV vs DLog Transaction Architecture                  │
+│   TiKV vs Pyralog Transaction Architecture                  │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
 │  TiKV (Percolator + Centralized TSO):                    │
@@ -147,7 +147,7 @@ pub struct TransactionCoordinator {
 │         → 2PC across regions                             │
 │         → Each region uses Raft internally               │
 │                                                          │
-│  DLog (Percolator + Scarab TSO): ⭐                       │
+│  Pyralog (Percolator + Scarab TSO): ⭐                       │
 │    Client → TSO[hash(key) % 1024]  (distributed!)       │
 │         → Get Scarab timestamp: 4B/sec                    │
 │         → 2PC across partitions                          │
@@ -451,17 +451,17 @@ tx.commit().await?; // Atomic across partitions
 let consumer = Consumer::new(ReadLevel::Committed);
 ```
 
-#### Integration with DLog Architecture
+#### Integration with Pyralog Architecture
 
-**Transactions leverage DLog's unique features:**
+**Transactions leverage Pyralog's unique features:**
 
 **1. Complete Architecture: Percolator + Distributed TSO + Scarab Coordinators** ⭐
 
-**DLog combines three complementary techniques:**
+**Pyralog combines three complementary techniques:**
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│        DLog Transaction Architecture (Complete)              │
+│        Pyralog Transaction Architecture (Complete)              │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │  1. Percolator Protocol (from TiKV):                         │
@@ -546,7 +546,7 @@ impl TransactionCoordinator {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│   TiKV vs DLog Transaction Architecture                      │
+│   TiKV vs Pyralog Transaction Architecture                      │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  TiKV (Industry Standard):                                  │
@@ -555,7 +555,7 @@ impl TransactionCoordinator {
 │    • Bottleneck on TSO                                      │
 │    • Requires TSO election (Raft)                           │
 │                                                             │
-│  DLog (Next Generation):                                    │
+│  Pyralog (Next Generation):                                    │
 │    • Percolator protocol ✅                                 │
 │    • 1024 DISTRIBUTED TSO nodes ✅ (4B timestamps/sec)      │
 │    • 1024 Pharaoh Network ✅ (4B tx/sec)           │
@@ -584,7 +584,7 @@ impl TransactionCoordinator {
 **2. Smart Client Routing to Coordinators:**
 
 ```rust
-impl DLogClient {
+impl PyralogClient {
     pub async fn begin_transaction(&self, key: Option<&[u8]>) -> Result<Transaction> {
         // Client-side coordinator selection (no proxy!)
         let coordinator_id = match key {
@@ -635,7 +635,7 @@ Each partition has its own Raft cluster:
 │    • ~100K tx/sec per coordinator                        │
 │    • Better, but still centralized per shard             │
 │                                                          │
-│  DLog (Scarab-powered): ⭐                            │
+│  Pyralog (Scarab-powered): ⭐                            │
 │    • 1024 independent coordinators                       │
 │    • 4M tx/sec per coordinator                           │
 │    • 4+ BILLION tx/sec total                             │
@@ -705,7 +705,7 @@ key=C val=4  (only version)
 - Merges segments, keeping latest per key
 - Tombstones (null values) for deletion
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Architecture
 
@@ -1092,7 +1092,7 @@ tx.commitTransaction();  // Atomic: writes + offsets!
 └────────────────────────────────────────────────────────────┘
 ```
 
-### DLog Implementation
+### Pyralog Implementation
 
 #### Phase 1: Idempotent Writes with Distributed Session Managers
 
@@ -1131,11 +1131,11 @@ impl ProducerSessionManager {
 pub struct IdempotentProducer {
     session_id: SessionId,
     sequence: AtomicU32,
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl IdempotentProducer {
-    pub async fn new(client: DLogClient) -> Result<Self> {
+    pub async fn new(client: PyralogClient) -> Result<Self> {
         // Client-side routing to distributed session managers
         let manager_id = rand::random::<u16>() % 1024;
         let session_id = client.session_managers[manager_id]
@@ -1320,7 +1320,7 @@ impl TransactionalProducer {
 
 ```rust
 pub struct ReadCommittedConsumer {
-    consumer: DLogConsumer,
+    consumer: PyralogConsumer,
     isolation_level: IsolationLevel,
 }
 
@@ -1359,12 +1359,12 @@ impl ReadCommittedConsumer {
 #[tokio::main]
 async fn main() -> Result<()> {
     // Create transactional producer
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     let mut producer = TransactionalProducer::new(client).await?;
     
     // Create read-committed consumer
     let mut consumer = ReadCommittedConsumer::new(
-        DLogConsumer::subscribe("orders", IsolationLevel::ReadCommitted).await?
+        PyralogConsumer::subscribe("orders", IsolationLevel::ReadCommitted).await?
     );
     
     loop {
@@ -1468,11 +1468,11 @@ Transactions:
 - Logs (idempotent processing)
 - Latency-sensitive workloads
 
-### DLog's Advantages
+### Pyralog's Advantages
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  Kafka vs DLog Exactly-Once Architecture                   │
+│  Kafka vs Pyralog Exactly-Once Architecture                   │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  Kafka:                                                    │
@@ -1480,7 +1480,7 @@ Transactions:
 │    • Manual producer ID assignment                         │
 │    • Complex dedup logic                                   │
 │                                                            │
-│  DLog:                                                     │
+│  Pyralog:                                                     │
 │    • Distributed coordinators (4B tx/sec) ⭐              │
 │    • Distributed session managers (4B sessions/sec) ⭐     │
 │    • Scarab IDs (no collisions, crash-safe)            │
@@ -1501,7 +1501,7 @@ Transactions:
 4. **Percolator Integration**: Production-grade MVCC from TiKV
 5. **Distributed TSO**: Eliminates TiKV's timestamp bottleneck
 
-### Integration with DLog's Architecture
+### Integration with Pyralog's Architecture
 
 **Leverages:**
 - **Epochs**: Natural producer epochs from sequencer generations
@@ -1561,13 +1561,13 @@ orders
 - ❌ Limited SIMD/vectorization
 - ❌ Complex deployment
 
-### DLog's Solution: Native Rust Stream Processing
+### Pyralog's Solution: Native Rust Stream Processing
 
-**DLog provides TWO first-class stream processing engines:**
+**Pyralog provides TWO first-class stream processing engines:**
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog Stream Processing Architecture                       │
+│  Pyralog Stream Processing Architecture                       │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  1. Apache DataFusion (SQL + DataFrame) ⭐                 │
@@ -1585,7 +1585,7 @@ orders
 │  Both:                                                     │
 │  • Apache Arrow native (zero-copy, SIMD)                   │
 │  • Rust performance (10-100x faster than JVM)              │
-│  • Native DLog integration                                 │
+│  • Native Pyralog integration                                 │
 │  • Exactly-once semantics                                  │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
@@ -1600,16 +1600,16 @@ orders
 ```rust
 use datafusion::prelude::*;
 use datafusion::arrow::datatypes::{DataType, Field, Schema};
-use dlog::datafusion::DLogStreamProvider;
+use dlog::datafusion::PyralogStreamProvider;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     // Create DataFusion session context
     let ctx = SessionContext::new();
     
-    // Register DLog as a streaming table source
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
-    let stream_provider = DLogStreamProvider::new(dlog_client);
+    // Register Pyralog as a streaming table source
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let stream_provider = PyralogStreamProvider::new(dlog_client);
     
     ctx.register_table("orders", Arc::new(stream_provider))?;
     
@@ -1635,7 +1635,7 @@ async fn main() -> Result<()> {
         let batch = batch?;
         println!("Batch: {} rows", batch.num_rows());
         
-        // Write results back to DLog
+        // Write results back to Pyralog
         dlog_client.produce("high_value_users", batch).await?;
     }
     
@@ -1647,15 +1647,15 @@ async fn main() -> Result<()> {
 
 ```rust
 use datafusion::prelude::*;
-use dlog::datafusion::DLogStreamProvider;
+use dlog::datafusion::PyralogStreamProvider;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let ctx = SessionContext::new();
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Register streaming source
-    let orders = DLogStreamProvider::new(dlog_client.clone())
+    let orders = PyralogStreamProvider::new(dlog_client.clone())
         .with_log("orders")
         .with_read_committed();  // Exactly-once!
     
@@ -1736,14 +1736,14 @@ let df = ctx.sql("
 
 ```rust
 use polars::prelude::*;
-use dlog::polars::DLogStreamReader;
+use dlog::polars::PyralogStreamReader;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Create streaming reader
-    let stream_reader = DLogStreamReader::new(dlog_client)
+    let stream_reader = PyralogStreamReader::new(dlog_client)
         .with_log("orders")
         .with_batch_size(10000)
         .with_read_committed()  // Exactly-once!
@@ -1779,17 +1779,17 @@ use dlog::polars::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Stream 1: Orders
-    let orders = DLogStreamReader::new(dlog_client.clone())
+    let orders = PyralogStreamReader::new(dlog_client.clone())
         .with_log("orders")
         .build()?
         .scan_log()?
         .lazy();
     
     // Stream 2: Payments
-    let payments = DLogStreamReader::new(dlog_client.clone())
+    let payments = PyralogStreamReader::new(dlog_client.clone())
         .with_log("payments")
         .build()?
         .scan_log()?
@@ -1811,7 +1811,7 @@ async fn main() -> Result<()> {
         ])
         .filter(col("difference").abs().gt(0.01));  // Find discrepancies
     
-    // Write back to DLog
+    // Write back to Pyralog
     let mut tx_producer = TransactionalProducer::new(dlog_client).await?;
     
     for batch in joined.collect_streaming()? {
@@ -1908,17 +1908,17 @@ let anomalies = df.collect()?;
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog + DataFusion/Polars Integration                      │
+│  Pyralog + DataFusion/Polars Integration                      │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│  DLog Consumer                                             │
+│  Pyralog Consumer                                             │
 │  ├── Epochs (track progress)                               │
 │  ├── Exactly-once (read committed)                         │
 │  ├── Batch fetching (configurable size)                    │
 │  └── Arrow RecordBatch output ⭐                           │
 │           ▼                                                │
 │  Zero-Copy Hand-off                                        │
-│  • DLog → Arrow native (no serialization!)                 │
+│  • Pyralog → Arrow native (no serialization!)                 │
 │  • Columnar format preserved                               │
 │  • SIMD operations                                         │
 │           ▼                                                │
@@ -1928,7 +1928,7 @@ let anomalies = df.collect()?;
 │  ├── Vectorized operations                                 │
 │  └── Streaming processing                                  │
 │           ▼                                                │
-│  Results → DLog Producer                                   │
+│  Results → Pyralog Producer                                   │
 │  ├── Transactional writes                                  │
 │  ├── Exactly-once output                                   │
 │  └── Offset commits in transaction                         │
@@ -1936,22 +1936,22 @@ let anomalies = df.collect()?;
 └────────────────────────────────────────────────────────────┘
 ```
 
-### DLog Native Integration
+### Pyralog Native Integration
 
 ```rust
 // dlog/src/datafusion.rs
 use datafusion::datasource::streaming::StreamingTable;
 use datafusion::physical_plan::RecordBatchStream;
 
-pub struct DLogStreamProvider {
-    client: DLogClient,
+pub struct PyralogStreamProvider {
+    client: PyralogClient,
     log_id: LogId,
     batch_size: usize,
     isolation_level: IsolationLevel,
 }
 
-impl DLogStreamProvider {
-    pub fn new(client: DLogClient) -> Self {
+impl PyralogStreamProvider {
+    pub fn new(client: PyralogClient) -> Self {
         Self {
             client,
             log_id: LogId::default(),
@@ -1972,7 +1972,7 @@ impl DLogStreamProvider {
 }
 
 #[async_trait]
-impl TableProvider for DLogStreamProvider {
+impl TableProvider for PyralogStreamProvider {
     async fn scan(
         &self,
         projection: Option<&Vec<usize>>,
@@ -1980,7 +1980,7 @@ impl TableProvider for DLogStreamProvider {
         limit: Option<usize>,
     ) -> Result<Arc<dyn ExecutionPlan>> {
         // Create streaming execution plan
-        Ok(Arc::new(DLogStreamExec {
+        Ok(Arc::new(PyralogStreamExec {
             consumer: self.client.subscribe(self.log_id).await?,
             projection: projection.cloned(),
             batch_size: self.batch_size,
@@ -1999,19 +1999,19 @@ impl TableProvider for DLogStreamProvider {
     }
 }
 
-struct DLogStreamExec {
-    consumer: DLogConsumer,
+struct PyralogStreamExec {
+    consumer: PyralogConsumer,
     projection: Option<Vec<usize>>,
     batch_size: usize,
 }
 
-impl ExecutionPlan for DLogStreamExec {
+impl ExecutionPlan for PyralogStreamExec {
     fn execute(
         &self,
         partition: usize,
         context: Arc<TaskContext>,
     ) -> Result<SendableRecordBatchStream> {
-        Ok(Box::pin(DLogRecordBatchStream {
+        Ok(Box::pin(PyralogRecordBatchStream {
             consumer: self.consumer.clone(),
             batch_size: self.batch_size,
             schema: self.schema(),
@@ -2019,23 +2019,23 @@ impl ExecutionPlan for DLogStreamExec {
     }
 }
 
-struct DLogRecordBatchStream {
-    consumer: DLogConsumer,
+struct PyralogRecordBatchStream {
+    consumer: PyralogConsumer,
     batch_size: usize,
     schema: SchemaRef,
 }
 
-impl Stream for DLogRecordBatchStream {
+impl Stream for PyralogRecordBatchStream {
     type Item = Result<RecordBatch>;
     
     fn poll_next(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<Self::Item>> {
-        // Poll DLog consumer
+        // Poll Pyralog consumer
         match self.consumer.poll_batch(self.batch_size) {
             Ok(records) if !records.is_empty() => {
-                // Convert DLog records to Arrow RecordBatch
+                // Convert Pyralog records to Arrow RecordBatch
                 let batch = records_to_arrow_batch(&records, &self.schema)?;
                 Poll::Ready(Some(Ok(batch)))
             }
@@ -2099,22 +2099,22 @@ use dlog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Create DataFusion context
     let ctx = SessionContext::new();
     
-    // Register DLog streams
+    // Register Pyralog streams
     ctx.register_table(
         "orders",
-        Arc::new(DLogStreamProvider::new(dlog_client.clone())
+        Arc::new(PyralogStreamProvider::new(dlog_client.clone())
             .with_log("orders")
             .with_read_committed())  // Read only committed transactions
     )?;
     
     ctx.register_table(
         "users",
-        Arc::new(DLogStreamProvider::new(dlog_client.clone())
+        Arc::new(PyralogStreamProvider::new(dlog_client.clone())
             .with_log("users")
             .with_read_committed())
     )?;
@@ -2150,7 +2150,7 @@ async fn main() -> Result<()> {
         while let Some(batch) = stream.next().await {
             let batch = batch?;
             
-            // Convert Arrow batch to DLog records
+            // Convert Arrow batch to Pyralog records
             for row_idx in 0..batch.num_rows() {
                 let record = Record::from_arrow_batch(&batch, row_idx)?;
                 producer.send(&mut tx, "regional_metrics", record).await?;
@@ -2174,15 +2174,15 @@ use dlog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Create stream readers
-    let orders_reader = DLogStreamReader::new(dlog_client.clone())
+    let orders_reader = PyralogStreamReader::new(dlog_client.clone())
         .with_log("orders")
         .with_read_committed()
         .build()?;
     
-    let users_reader = DLogStreamReader::new(dlog_client.clone())
+    let users_reader = PyralogStreamReader::new(dlog_client.clone())
         .with_log("users")
         .with_read_committed()
         .build()?;
@@ -2314,13 +2314,13 @@ Improvement: 50-70% less memory
 │    • Memory: 12 GB                                         │
 │    • GC pauses: 8% of time                                 │
 │                                                            │
-│  DLog + DataFusion (8 cores): ⭐                           │
+│  Pyralog + DataFusion (8 cores): ⭐                           │
 │    • Time: 5 minutes                                       │
 │    • Throughput: 3.3M records/sec                          │
 │    • Memory: 4 GB                                          │
 │    • GC pauses: 0%                                         │
 │                                                            │
-│  DLog + Polars (8 cores): ⭐                               │
+│  Pyralog + Polars (8 cores): ⭐                               │
 │    • Time: 4 minutes                                       │
 │    • Throughput: 4.2M records/sec                          │
 │    • Memory: 3.5 GB                                        │
@@ -2333,22 +2333,22 @@ Improvement: 50-70% less memory
 
 ### State Management
 
-Both DataFusion and Polars can use DLog for durable state:
+Both DataFusion and Polars can use Pyralog for durable state:
 
 ```rust
-// State backed by DLog changelog
-pub struct DLogBackedState<K, V> {
+// State backed by Pyralog changelog
+pub struct PyralogBackedState<K, V> {
     cache: RocksDB,
-    changelog: DLogProducer,
+    changelog: PyralogProducer,
     changelog_log: LogId,
 }
 
-impl<K, V> DLogBackedState<K, V> {
+impl<K, V> PyralogBackedState<K, V> {
     pub async fn put(&mut self, key: K, value: V) -> Result<()> {
         // 1. Write to local cache
         self.cache.put(&key, &value)?;
         
-        // 2. Write to DLog changelog for durability
+        // 2. Write to Pyralog changelog for durability
         let record = Record::new_state_change(key, value);
         self.changelog.produce(self.changelog_log, record).await?;
         
@@ -2360,8 +2360,8 @@ impl<K, V> DLogBackedState<K, V> {
     }
     
     pub async fn recover_from_changelog(&mut self) -> Result<()> {
-        // Rebuild local state from DLog changelog
-        let consumer = DLogConsumer::subscribe(self.changelog_log).await?;
+        // Rebuild local state from Pyralog changelog
+        let consumer = PyralogConsumer::subscribe(self.changelog_log).await?;
         
         while let Some(record) = consumer.poll().await? {
             let (key, value) = record.decode_state_change()?;
@@ -2377,7 +2377,7 @@ impl<K, V> DLogBackedState<K, V> {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  Why DataFusion/Polars + DLog > Kafka Streams/Flink       │
+│  Why DataFusion/Polars + Pyralog > Kafka Streams/Flink       │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  1. Performance: 10-100x faster (Arrow + Rust)             │
@@ -2388,7 +2388,7 @@ impl<K, V> DLogBackedState<K, V> {
 │  6. Ecosystem: Native Rust integration                     │
 │  7. SIMD: Automatic vectorization                          │
 │  8. Zero-Copy: Arrow format end-to-end                     │
-│  9. Exactly-Once: Native DLog integration                  │
+│  9. Exactly-Once: Native Pyralog integration                  │
 │  10. Simplicity: No complex cluster management             │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
@@ -2419,7 +2419,7 @@ Use Both:
 
 ### Integration Summary
 
-**DLog provides:**
+**Pyralog provides:**
 - ✅ Native Apache Arrow output (zero-copy to DataFusion/Polars)
 - ✅ Exactly-once semantics (transactional offsets + writes)
 - ✅ Epochs for progress tracking
@@ -2536,7 +2536,7 @@ Producer → Check Schema → Schema Registry
 Consumer ← Fetch Schema ← Schema Registry
 ```
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Schema Definition
 
@@ -2670,7 +2670,7 @@ Partition 2 → Consumer 3 (Group A)
 Rebalance on consumer join/leave
 ```
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Consumer Group Protocol
 
@@ -2723,7 +2723,7 @@ impl ConsumerGroupCoordinator {
 }
 ```
 
-**Integration with DLog Architecture:**
+**Integration with Pyralog Architecture:**
 
 **1. Dual Raft for Coordination:**
 ```
@@ -2834,11 +2834,11 @@ impl Consumer {
 ### Architecture
 
 ```
-Source Connector → DLog → Sink Connector
+Source Connector → Pyralog → Sink Connector
 (Database CDC)          (Elasticsearch)
 ```
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Connector API
 
@@ -2921,7 +2921,7 @@ impl SinkConnector for ElasticsearchSinkConnector {
 ```rust
 pub struct ConnectorRuntime {
     connectors: HashMap<String, Box<dyn Connector>>,
-    client: DLogClient,
+    client: PyralogClient,
 }
 
 impl ConnectorRuntime {
@@ -2940,7 +2940,7 @@ impl ConnectorRuntime {
                 continue;
             }
             
-            // Write to DLog
+            // Write to Pyralog
             self.client.produce_batch(target_log.clone(), records).await?;
             
             // Commit source offsets
@@ -2971,7 +2971,7 @@ impl ConnectorRuntime {
 2. **Trigger-based CDC**: Database triggers write to CDC table
 3. **Query-based CDC**: Poll for changes periodically
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### CDC Framework
 
@@ -2987,7 +2987,7 @@ pub trait CDCSource {
 
 pub struct CDCPipeline<S: CDCSource> {
     source: S,
-    sink: DLogClient,
+    sink: PyralogClient,
     target_log: LogId,
     offset_store: OffsetStore,
 }
@@ -3102,7 +3102,7 @@ impl CDCPipeline<PostgresCDC> {
                 .map(|c| self.change_to_event(c))
                 .collect();
             
-            // 3. Write to DLog with transaction
+            // 3. Write to Pyralog with transaction
             let tx = self.sink.begin_transaction().await?;
             for event in events {
                 tx.write(self.target_log.clone(), event).await?;
@@ -3177,7 +3177,7 @@ Hub-and-Spoke:
   DC2 DC3 DC4
 ```
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Replication Configuration
 
@@ -3213,7 +3213,7 @@ pub enum ReplicationTopology {
 ```rust
 pub struct GeoReplicator {
     local_dc: String,
-    remote_clients: HashMap<String, DLogClient>,
+    remote_clients: HashMap<String, PyralogClient>,
     replication_log: LogStorage,
 }
 
@@ -3375,7 +3375,7 @@ impl DisasterRecovery {
 - Analytics
 - "What if" analysis
 
-### DLog Design Proposal
+### Pyralog Design Proposal
 
 #### Temporal Queries
 
@@ -3386,7 +3386,7 @@ pub struct TemporalQuery {
     pub key: Option<Bytes>,
 }
 
-impl DLogClient {
+impl PyralogClient {
     /// Read state as of specific time
     pub async fn query_as_of(
         &self,
@@ -3420,7 +3420,7 @@ impl DLogClient {
 
 #### Timestamp Index: Hybrid Sparse + Arrow DataFusion
 
-**DLog uses a two-tier indexing strategy:**
+**Pyralog uses a two-tier indexing strategy:**
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -3572,9 +3572,9 @@ impl HybridTimestampIndex {
     pub async fn new(log_id: LogId, storage: Arc<LogStorage>) -> Result<Self> {
         let datafusion_ctx = SessionContext::new();
         
-        // Register DLog segments as Arrow tables
+        // Register Pyralog segments as Arrow tables
         for segment in storage.list_segments(log_id).await? {
-            let table = DLogSegmentTable::new(segment.clone())?;
+            let table = PyralogSegmentTable::new(segment.clone())?;
             datafusion_ctx.register_table(&segment.id.to_string(), Arc::new(table))?;
         }
         
@@ -3713,7 +3713,7 @@ struct Checkpoint {
 
 ```rust
 // Example: Find records at specific timestamp
-impl DLogClient {
+impl PyralogClient {
     pub async fn query_as_of(
         &self,
         log_id: LogId,
@@ -3747,8 +3747,8 @@ use datafusion::prelude::*;
 // Time-travel queries via SQL!
 let ctx = SessionContext::new();
 
-// Register DLog with timestamp index
-let dlog_table = DLogTableWithTimeTravel::new(
+// Register Pyralog with timestamp index
+let dlog_table = PyralogTableWithTimeTravel::new(
     dlog_client,
     log_id,
     HybridTimestampIndex::new(log_id, storage).await?
@@ -3783,7 +3783,7 @@ let results = df.collect().await?;
 │    • Must scan all segments (slow)                         │
 │    • No pruning optimization                               │
 │                                                            │
-│  Hybrid (DLog): ⭐                                         │
+│  Hybrid (Pyralog): ⭐                                         │
 │    • Tier 1: 480 KB (segment stats)                        │
 │    • Tier 2: 16 MB (sparse checkpoints)                    │
 │    • Total: ~16.5 MB RAM                                   │
@@ -4024,13 +4024,13 @@ impl HealthCheck {
 
 ---
 
-## DLog as OpenTelemetry Backend
+## Pyralog as OpenTelemetry Backend
 
 ### From: Jaeger, Tempo, Elasticsearch, Clickhouse
 
-**What it is**: Use DLog as a high-performance storage backend for OpenTelemetry traces, metrics, and logs.
+**What it is**: Use Pyralog as a high-performance storage backend for OpenTelemetry traces, metrics, and logs.
 
-**Why DLog is perfect for observability:**
+**Why Pyralog is perfect for observability:**
 - Append-only, immutable telemetry data (traces never change)
 - High write throughput (millions of spans/sec)
 - Time-series friendly (columnar Arrow format)
@@ -4043,7 +4043,7 @@ impl HealthCheck {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog as OpenTelemetry Backend                            │
+│  Pyralog as OpenTelemetry Backend                            │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  Application Instrumentation:                              │
@@ -4061,15 +4061,15 @@ impl HealthCheck {
 │  │  • Batch export                                   │    │
 │  └──────────────────────────────────────────────────┘    │
 │                              ▼                             │
-│  DLog OTLP Receiver:                                       │
+│  Pyralog OTLP Receiver:                                       │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  • Parse OTLP requests                            │    │
 │  │  • Convert to Arrow RecordBatch                   │    │
-│  │  • Write to DLog partitions                       │    │
+│  │  • Write to Pyralog partitions                       │    │
 │  │  • Exactly-once semantics                         │    │
 │  └──────────────────────────────────────────────────┘    │
 │                              ▼                             │
-│  DLog Storage:                                             │
+│  Pyralog Storage:                                             │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐         │
 │  │  Traces    │  │  Metrics   │  │  Logs      │         │
 │  │  Log       │  │  Log       │  │  Log       │         │
@@ -4110,8 +4110,8 @@ use opentelemetry_proto::tonic::collector::metrics::v1::{
 };
 use tonic::{Request, Response, Status};
 
-pub struct DLogOTLPReceiver {
-    dlog_client: DLogClient,
+pub struct PyralogOTLPReceiver {
+    dlog_client: PyralogClient,
     traces_log: LogId,
     metrics_log: LogId,
     logs_log: LogId,
@@ -4119,7 +4119,7 @@ pub struct DLogOTLPReceiver {
 }
 
 #[tonic::async_trait]
-impl TraceService for DLogOTLPReceiver {
+impl TraceService for PyralogOTLPReceiver {
     async fn export(
         &self,
         request: Request<ExportTraceServiceRequest>,
@@ -4136,7 +4136,7 @@ impl TraceService for DLogOTLPReceiver {
         let arrow_batch = self.arrow_converter.spans_to_arrow(&spans)
             .map_err(|e| Status::internal(e.to_string()))?;
         
-        // Write to DLog traces log
+        // Write to Pyralog traces log
         self.dlog_client
             .produce_arrow_batch(self.traces_log, arrow_batch)
             .await
@@ -4149,7 +4149,7 @@ impl TraceService for DLogOTLPReceiver {
 }
 
 #[tonic::async_trait]
-impl MetricsService for DLogOTLPReceiver {
+impl MetricsService for PyralogOTLPReceiver {
     async fn export(
         &self,
         request: Request<ExportMetricsServiceRequest>,
@@ -4166,7 +4166,7 @@ impl MetricsService for DLogOTLPReceiver {
         let arrow_batch = self.arrow_converter.metrics_to_arrow(&metrics)
             .map_err(|e| Status::internal(e.to_string()))?;
         
-        // Write to DLog metrics log
+        // Write to Pyralog metrics log
         self.dlog_client
             .produce_arrow_batch(self.metrics_log, arrow_batch)
             .await
@@ -4180,10 +4180,10 @@ impl MetricsService for DLogOTLPReceiver {
 
 // Start gRPC server
 pub async fn start_otlp_receiver(
-    dlog_client: DLogClient,
+    dlog_client: PyralogClient,
     addr: SocketAddr,
 ) -> Result<()> {
-    let receiver = DLogOTLPReceiver {
+    let receiver = PyralogOTLPReceiver {
         dlog_client,
         traces_log: LogId::from("otlp-traces"),
         metrics_log: LogId::from("otlp-metrics"),
@@ -4355,24 +4355,24 @@ impl ArrowConverter {
 ```rust
 use datafusion::prelude::*;
 
-pub struct DLogTracesQuery {
+pub struct PyralogTracesQuery {
     ctx: SessionContext,
-    dlog_client: DLogClient,
+    dlog_client: PyralogClient,
 }
 
-impl DLogTracesQuery {
-    pub async fn new(dlog_client: DLogClient) -> Result<Self> {
+impl PyralogTracesQuery {
+    pub async fn new(dlog_client: PyralogClient) -> Result<Self> {
         let ctx = SessionContext::new();
         
         // Register traces table
-        let traces_table = DLogStreamProvider::new(dlog_client.clone())
+        let traces_table = PyralogStreamProvider::new(dlog_client.clone())
             .with_log("otlp-traces")
             .with_schema(trace_schema());
         
         ctx.register_table("traces", Arc::new(traces_table))?;
         
         // Register metrics table
-        let metrics_table = DLogStreamProvider::new(dlog_client.clone())
+        let metrics_table = PyralogStreamProvider::new(dlog_client.clone())
             .with_log("otlp-metrics")
             .with_schema(metrics_schema());
         
@@ -4516,18 +4516,18 @@ use opentelemetry_otlp::WithExportConfig;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // 1. Start DLog
-    let dlog_server = DLogServer::new(config).await?;
+    // 1. Start Pyralog
+    let dlog_server = PyralogServer::new(config).await?;
     dlog_server.start().await?;
     
     // 2. Start OTLP receiver
-    let dlog_client = DLogClient::connect("localhost:9092").await?;
+    let dlog_client = PyralogClient::connect("localhost:9092").await?;
     tokio::spawn(start_otlp_receiver(
         dlog_client.clone(),
         "0.0.0.0:4317".parse()?,
     ));
     
-    // 3. Configure application to send traces to DLog
+    // 3. Configure application to send traces to Pyralog
     let tracer_provider = TracerProvider::builder()
         .with_batch_exporter(
             opentelemetry_otlp::new_exporter()
@@ -4551,7 +4551,7 @@ async fn main() -> Result<()> {
     span.end();
     
     // 5. Query traces with DataFusion
-    let query = DLogTracesQuery::new(dlog_client).await?;
+    let query = PyralogTracesQuery::new(dlog_client).await?;
     
     // Find slow requests
     let slow_traces = query.find_traces(
@@ -4587,7 +4587,7 @@ Traditional backends:
   • Jaeger (Cassandra): ~50K spans/sec/node
   • Tempo (S3): ~100K spans/sec/node
   
-DLog:
+Pyralog:
   • ~1-5M spans/sec/node ⭐
   • Arrow columnar format (SIMD)
   • Batched writes
@@ -4604,7 +4604,7 @@ Traditional backends:
   • Tempo: 1-10s (scan object storage)
   • Jaeger: 50-500ms (indexed queries)
   
-DLog + DataFusion:
+Pyralog + DataFusion:
   • 10-100ms for complex queries ⭐
   • Parquet column pruning
   • Predicate pushdown
@@ -4620,7 +4620,7 @@ Traditional backends:
   • Elasticsearch: ~3-5x data size (JSON + indexes)
   • Tempo: ~1.5x data size (Parquet blocks)
   
-DLog (Arrow/Parquet):
+Pyralog (Arrow/Parquet):
   • ~1.2-1.5x data size ⭐
   • Columnar compression
   • Dictionary encoding
@@ -4657,7 +4657,7 @@ Improvement: 50-70% less storage!
 │    ❌ Manual schema management                             │
 │    ❌ Complex operations                                   │
 │                                                            │
-│  DLog: ⭐                                                  │
+│  Pyralog: ⭐                                                  │
 │    ✅ Fastest writes (1-5M spans/sec)                      │
 │    ✅ Fast queries (DataFusion SQL)                        │
 │    ✅ Low memory usage (Rust + Arrow)                      │
@@ -4696,12 +4696,12 @@ Improvement: 50-70% less storage!
 ### Integration with Grafana
 
 ```rust
-// Grafana datasource plugin for DLog
-pub struct DLogGrafanaDatasource {
-    query_engine: DLogTracesQuery,
+// Grafana datasource plugin for Pyralog
+pub struct PyralogGrafanaDatasource {
+    query_engine: PyralogTracesQuery,
 }
 
-impl DLogGrafanaDatasource {
+impl PyralogGrafanaDatasource {
     pub async fn query_traces(&self, query: GrafanaTraceQuery) -> Result<GrafanaTraceResponse> {
         let traces = self.query_engine.find_traces(
             &query.service_name,
@@ -4740,7 +4740,7 @@ impl DLogGrafanaDatasource {
 ### Advantages Summary
 
 ```
-Why use DLog for OpenTelemetry:
+Why use Pyralog for OpenTelemetry:
 
 ✅ Performance: 10-50x faster writes than traditional backends
 ✅ Efficiency: 50-70% less storage (Arrow compression)
@@ -4754,7 +4754,7 @@ Why use DLog for OpenTelemetry:
 ✅ Ecosystem: Compatible with OTLP standard
 ```
 
-DLog combines the best of Tempo (object storage), Jaeger (query capabilities), and Clickhouse (columnar performance) into a single, Rust-native observability backend!
+Pyralog combines the best of Tempo (object storage), Jaeger (query capabilities), and Clickhouse (columnar performance) into a single, Rust-native observability backend!
 
 ---
 
@@ -4764,8 +4764,8 @@ DLog combines the best of Tempo (object storage), Jaeger (query capabilities), a
 
 **What it is**: Advanced analytical features for querying and analyzing log data with modern data warehouse capabilities.
 
-**Why Databend features fit DLog:**
-- Rust-native (same as DLog)
+**Why Databend features fit Pyralog:**
+- Rust-native (same as Pyralog)
 - Arrow/Parquet native (perfect match)
 - Cloud-first design (S3-native)
 - Serverless-ready architecture
@@ -4775,10 +4775,10 @@ DLog combines the best of Tempo (object storage), Jaeger (query capabilities), a
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog + Databend Features Integration                     │
+│  Pyralog + Databend Features Integration                     │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│  DLog Storage Layer (Arrow/Parquet)                        │
+│  Pyralog Storage Layer (Arrow/Parquet)                        │
 │         ↓                                                  │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  Databend-Inspired Enhancements                  │    │
@@ -4823,13 +4823,13 @@ pub fn logs_schema_with_json() -> Schema {
 }
 
 // Query JSON fields directly
-impl DLogClient {
+impl PyralogClient {
     pub async fn query_json_logs(&self, query: &str) -> Result<DataFrame> {
         let ctx = SessionContext::new();
         
         // Register log table with JSON support
         ctx.register_table("logs", Arc::new(
-            DLogStreamProvider::new(self.clone())
+            PyralogStreamProvider::new(self.clone())
                 .with_log("application-logs")
                 .with_schema(logs_schema_with_json())
         ))?;
@@ -4887,7 +4887,7 @@ pub fn register_json_functions(ctx: &SessionContext) {
 
 ### 2. External Tables (Zero-Copy S3 Queries)
 
-**Query Parquet files in S3 without loading into DLog:**
+**Query Parquet files in S3 without loading into Pyralog:**
 
 ```rust
 use datafusion::datasource::listing::{ListingOptions, ListingTable, ListingTableUrl};
@@ -4945,7 +4945,7 @@ impl ExternalTableManager {
             "s3://my-bucket/dlog-archives/logs/year=2023/month=*/*.parquet"
         ).await?;
         
-        // Query without loading data into DLog
+        // Query without loading data into Pyralog
         let df = self.ctx.sql("
             SELECT 
                 service_name,
@@ -4963,14 +4963,14 @@ impl ExternalTableManager {
     }
 }
 
-// Usage: Query across live DLog + S3 archives
-impl DLogClient {
+// Usage: Query across live Pyralog + S3 archives
+impl PyralogClient {
     pub async fn unified_query(&self) -> Result<DataFrame> {
         let ctx = SessionContext::new();
         
-        // Register live DLog table
+        // Register live Pyralog table
         ctx.register_table("live_logs", Arc::new(
-            DLogStreamProvider::new(self.clone()).with_log("logs")
+            PyralogStreamProvider::new(self.clone()).with_log("logs")
         ))?;
         
         // Register S3 external table
@@ -5035,7 +5035,7 @@ impl MaterializedView {
         let df = ctx.sql(&self.query).await?;
         let results = df.collect().await?;
         
-        // Store results as Arrow RecordBatches in DLog
+        // Store results as Arrow RecordBatches in Pyralog
         for batch in results {
             self.storage.write_materialized_view(
                 &self.name,
@@ -5061,7 +5061,7 @@ impl MaterializedView {
 }
 
 // Create materialized views
-impl DLogClient {
+impl PyralogClient {
     pub async fn create_materialized_view(
         &self,
         name: &str,
@@ -5091,7 +5091,7 @@ impl DLogClient {
 }
 
 // Example: Service health dashboard
-let client = DLogClient::connect("localhost:9092").await?;
+let client = PyralogClient::connect("localhost:9092").await?;
 
 client.create_materialized_view(
     "service_health_5min",
@@ -5189,13 +5189,13 @@ impl InvertedIndex {
     }
 }
 
-// Integration with DLog
-impl DLogClient {
+// Integration with Pyralog
+impl PyralogClient {
     pub async fn search_logs(&self, query: &str) -> Result<Vec<Record>> {
         // Use inverted index to find candidate offsets
         let offsets = self.inverted_index.search(query, 1000)?;
         
-        // Fetch full records from DLog
+        // Fetch full records from Pyralog
         let mut records = Vec::new();
         for offset in offsets {
             if let Some(record) = self.read_at_offset(offset).await? {
@@ -5292,7 +5292,7 @@ impl SegmentWithBloom {
 }
 
 // Query with Bloom filter pruning
-impl DLogClient {
+impl PyralogClient {
     pub async fn find_trace_by_id(&self, trace_id: &[u8]) -> Result<Option<Trace>> {
         let segments = self.storage.list_segments().await?;
         
@@ -5417,7 +5417,7 @@ impl ClusteredSegmentWriter {
 }
 
 // Configure clustering for logs
-impl DLogClient {
+impl PyralogClient {
     pub async fn create_log_with_clustering(
         &self,
         log_id: LogId,
@@ -5475,12 +5475,12 @@ impl VirtualColumn {
 }
 
 // Define virtual columns in schema
-impl DLogClient {
+impl PyralogClient {
     pub async fn register_table_with_virtual_columns(&self) -> Result<()> {
         let ctx = SessionContext::new();
         
         // Base table
-        let base_table = DLogStreamProvider::new(self.clone())
+        let base_table = PyralogStreamProvider::new(self.clone())
             .with_log("traces");
         
         ctx.register_table("traces_base", Arc::new(base_table))?;
@@ -5562,7 +5562,7 @@ impl LogSnapshot {
 }
 
 // Usage: Test on production data
-let client = DLogClient::connect("localhost:9092").await?;
+let client = PyralogClient::connect("localhost:9092").await?;
 
 // Create snapshot of production logs
 let snapshot = client.create_snapshot("prod-logs").await?;
@@ -5629,7 +5629,7 @@ use dlog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     // 1. Create log with clustering
     client.create_log_with_clustering(
@@ -5720,10 +5720,10 @@ async fn main() -> Result<()> {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog + Databend Features = Modern Log Analytics Platform │
+│  Pyralog + Databend Features = Modern Log Analytics Platform │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│  DLog Core:                                                │
+│  Pyralog Core:                                                │
 │  ✅ Distributed log storage                                │
 │  ✅ Arrow/Parquet native                                   │
 │  ✅ Raft consensus                                         │
@@ -5745,7 +5745,7 @@ async fn main() -> Result<()> {
 └────────────────────────────────────────────────────────────┘
 ```
 
-All features are **Rust-native** and integrate seamlessly with DLog's Arrow/DataFusion architecture!
+All features are **Rust-native** and integrate seamlessly with Pyralog's Arrow/DataFusion architecture!
 
 ---
 
@@ -5753,9 +5753,9 @@ All features are **Rust-native** and integrate seamlessly with DLog's Arrow/Data
 
 ### From: Databend, Snowflake, ClickHouse
 
-**What it is**: High-performance data ingestion capabilities for loading data from various sources and formats into DLog.
+**What it is**: High-performance data ingestion capabilities for loading data from various sources and formats into Pyralog.
 
-**Why critical for DLog:**
+**Why critical for Pyralog:**
 - Logs come in many formats (JSON, CSV, syslog, Parquet)
 - Need to ingest from S3, local files, Kafka, databases
 - Schema inference reduces manual configuration
@@ -5766,7 +5766,7 @@ All features are **Rust-native** and integrate seamlessly with DLog's Arrow/Data
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog Data Ingestion Architecture                         │
+│  Pyralog Data Ingestion Architecture                         │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  Ingestion Sources:                                        │
@@ -5797,7 +5797,7 @@ All features are **Rust-native** and integrate seamlessly with DLog's Arrow/Data
 │  │  • Progress tracking                              │    │
 │  └──────────────────────────────────────────────────┘    │
 │                              ▼                             │
-│  DLog Storage:                                             │
+│  Pyralog Storage:                                             │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  • Arrow RecordBatches                            │    │
 │  │  • Parquet segments                               │    │
@@ -5859,7 +5859,7 @@ pub enum Compression {
     Brotli,
 }
 
-impl DLogClient {
+impl PyralogClient {
     pub async fn copy_into(
         &self,
         command: CopyIntoCommand,
@@ -5907,7 +5907,7 @@ impl DLogClient {
                 Err(e) => {
                     errors.push(e);
                     if errors.len() > loader.options.max_errors {
-                        return Err(DLogError::TooManyErrors);
+                        return Err(PyralogError::TooManyErrors);
                     }
                 }
             }
@@ -5923,7 +5923,7 @@ impl DLogClient {
 }
 
 pub struct BulkLoader {
-    client: DLogClient,
+    client: PyralogClient,
     target_log: LogId,
     format: FileFormat,
     options: CopyOptions,
@@ -5960,13 +5960,13 @@ impl BulkLoader {
         } else if self.options.infer_schema {
             self.infer_schema(&batches)?
         } else {
-            return Err(DLogError::NoSchema);
+            return Err(PyralogError::NoSchema);
         };
         
         // Validate and convert to target schema
         let batches = self.validate_and_convert(batches, &schema)?;
         
-        // Write to DLog
+        // Write to Pyralog
         let mut rows = 0;
         let mut bytes = 0;
         
@@ -6038,7 +6038,7 @@ impl BulkLoader {
     
     fn infer_schema(&self, batches: &[RecordBatch]) -> Result<Schema> {
         if batches.is_empty() {
-            return Err(DLogError::EmptyBatch);
+            return Err(PyralogError::EmptyBatch);
         }
         
         // Use schema from first batch
@@ -6109,7 +6109,7 @@ use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::config::ClientConfig;
 
 pub struct StreamingIngestor {
-    client: DLogClient,
+    client: PyralogClient,
     target_log: LogId,
     format: FileFormat,
     buffer: Vec<RecordBatch>,
@@ -6119,7 +6119,7 @@ pub struct StreamingIngestor {
 
 impl StreamingIngestor {
     pub async fn ingest_from_kafka(
-        client: DLogClient,
+        client: PyralogClient,
         kafka_brokers: &str,
         kafka_topic: &str,
         target_log: LogId,
@@ -6147,7 +6147,7 @@ impl StreamingIngestor {
                 Ok(message) => {
                     // Parse message payload
                     let payload = message.payload()
-                        .ok_or(DLogError::EmptyMessage)?;
+                        .ok_or(PyralogError::EmptyMessage)?;
                     
                     let batch = ingestor.parse_message(payload)?;
                     
@@ -6183,7 +6183,7 @@ impl StreamingIngestor {
                     .collect::<Result<Vec<serde_json::Value>, _>>()?;
                 self.json_array_to_batch(lines)
             }
-            _ => Err(DLogError::UnsupportedFormat),
+            _ => Err(PyralogError::UnsupportedFormat),
         }
     }
     
@@ -6198,7 +6198,7 @@ impl StreamingIngestor {
             &self.buffer,
         )?;
         
-        // Write to DLog
+        // Write to Pyralog
         self.client.produce_batch(self.target_log, combined).await?;
         
         self.buffer.clear();
@@ -6208,7 +6208,7 @@ impl StreamingIngestor {
     }
 }
 
-// Usage: Stream from Kafka to DLog
+// Usage: Stream from Kafka to Pyralog
 tokio::spawn(async move {
     StreamingIngestor::ingest_from_kafka(
         client,
@@ -6226,7 +6226,7 @@ tokio::spawn(async move {
 
 ```rust
 pub struct StageManager {
-    client: DLogClient,
+    client: PyralogClient,
     stages: HashMap<String, Stage>,
 }
 
@@ -6259,13 +6259,13 @@ impl StageManager {
     
     pub async fn validate_stage(&mut self, name: &str) -> Result<ValidationReport> {
         let stage = self.stages.get_mut(name)
-            .ok_or(DLogError::StageNotFound)?;
+            .ok_or(PyralogError::StageNotFound)?;
         
         // List files
         let files = self.list_files(&stage.location).await?;
         
         if files.is_empty() {
-            return Err(DLogError::NoFilesInStage);
+            return Err(PyralogError::NoFilesInStage);
         }
         
         // Sample first file to infer schema
@@ -6301,10 +6301,10 @@ impl StageManager {
         target_log: LogId,
     ) -> Result<CopyIntoResult> {
         let stage = self.stages.get(stage_name)
-            .ok_or(DLogError::StageNotFound)?;
+            .ok_or(PyralogError::StageNotFound)?;
         
         if !stage.validated {
-            return Err(DLogError::StageNotValidated);
+            return Err(PyralogError::StageNotValidated);
         }
         
         // Use COPY INTO with validated schema
@@ -6510,7 +6510,7 @@ pub enum Schedule {
 }
 
 impl DataPipeline {
-    pub async fn execute(&mut self, client: &DLogClient) -> Result<PipelineResult> {
+    pub async fn execute(&mut self, client: &PyralogClient) -> Result<PipelineResult> {
         let mut data: Option<Vec<RecordBatch>> = None;
         
         for stage in &self.stages {
@@ -6519,16 +6519,16 @@ impl DataPipeline {
                     Some(self.extract(client, source, format).await?)
                 }
                 PipelineStage::Transform { sql } => {
-                    let input = data.ok_or(DLogError::NoData)?;
+                    let input = data.ok_or(PyralogError::NoData)?;
                     Some(self.transform(&input, sql).await?)
                 }
                 PipelineStage::Load { target_log } => {
-                    let input = data.ok_or(DLogError::NoData)?;
+                    let input = data.ok_or(PyralogError::NoData)?;
                     self.load(client, &input, target_log).await?;
                     None
                 }
                 PipelineStage::Validate { rules } => {
-                    let input = data.as_ref().ok_or(DLogError::NoData)?;
+                    let input = data.as_ref().ok_or(PyralogError::NoData)?;
                     self.validate(input, rules)?;
                     data
                 }
@@ -6544,7 +6544,7 @@ impl DataPipeline {
     
     async fn extract(
         &self,
-        client: &DLogClient,
+        client: &PyralogClient,
         source: &DataSource,
         format: &FileFormat,
     ) -> Result<Vec<RecordBatch>> {
@@ -6580,7 +6580,7 @@ impl DataPipeline {
     
     async fn load(
         &self,
-        client: &DLogClient,
+        client: &PyralogClient,
         data: &[RecordBatch],
         target_log: &LogId,
     ) -> Result<()> {
@@ -6685,7 +6685,7 @@ use dlog::ingestion::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     // 1. Bulk load historical data from S3
     let bulk_result = client.copy_into(CopyIntoCommand {
@@ -6741,7 +6741,7 @@ async fn main() -> Result<()> {
         schedule: Schedule::Interval(Duration::from_secs(3600)),  // Hourly
         stages: vec![
             PipelineStage::Extract {
-                source: DataSource::DLog {
+                source: DataSource::Pyralog {
                     log_id: "application-logs".into(),
                     start_time: SystemTime::now() - Duration::from_secs(3600),
                 },
@@ -6793,7 +6793,7 @@ async fn main() -> Result<()> {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  Ingestion + DLog Features Integration                    │
+│  Ingestion + Pyralog Features Integration                    │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  Ingestion → Storage:                                      │
@@ -6824,7 +6824,7 @@ async fn main() -> Result<()> {
 └────────────────────────────────────────────────────────────┘
 ```
 
-All ingestion features are **Rust-native** and integrate seamlessly with DLog's Arrow/DataFusion architecture!
+All ingestion features are **Rust-native** and integrate seamlessly with Pyralog's Arrow/DataFusion architecture!
 
 ---
 
@@ -6857,16 +6857,16 @@ All ingestion features are **Rust-native** and integrate seamlessly with DLog's 
 
 ## Conclusion
 
-These advanced features represent the cutting edge of distributed log systems. By studying implementations from Kafka, Pulsar, LogDevice, and others, DLog can selectively adopt features that provide the most value while maintaining its core principles of:
+These advanced features represent the cutting edge of distributed log systems. By studying implementations from Kafka, Pulsar, LogDevice, and others, Pyralog can selectively adopt features that provide the most value while maintaining its core principles of:
 
 1. **Performance**: Sub-millisecond latencies
 2. **Simplicity**: Easy to operate
 3. **Safety**: Memory-safe Rust
 4. **Flexibility**: Configurable consistency
 
-### DLog's Unique Advantages
+### Pyralog's Unique Advantages
 
-Each feature will be carefully designed to integrate with **DLog's unique architecture**:
+Each feature will be carefully designed to integrate with **Pyralog's unique architecture**:
 
 **1. Obelisk Sequencer Primitive** ⭐
 - Transaction IDs, Session IDs, Schema IDs, Event IDs
@@ -6902,9 +6902,9 @@ Each feature will be carefully designed to integrate with **DLog's unique archit
 - Sub-millisecond append latency
 - Batched fsync
 
-### What Makes DLog Different
+### What Makes Pyralog Different
 
-**Not just feature parity** - DLog introduces **novel primitives** that simplify implementation:
+**Not just feature parity** - Pyralog introduces **novel primitives** that simplify implementation:
 
 ```rust
 // Traditional approach (Kafka, Pulsar):
@@ -6912,7 +6912,7 @@ Each feature will be carefully designed to integrate with **DLog's unique archit
 // - Manual deduplication logic
 // - Heavyweight ID generation
 
-// DLog approach:
+// Pyralog approach:
 let tx_id = tx_id_counter.fetch_add(1)?;  // Crash-safe, 1-2 µs
 let session_id = session_counter.fetch_add(1)?;  // No duplicates
 let schema_id = schema_counter.fetch_add(1)?;  // Monotonic IDs
@@ -6932,7 +6932,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 - **Kafka, Pulsar**: Centralized transaction coordinator (~10K-100K tx/sec)
 - **TiKV**: Centralized TSO for timestamps (~500K timestamps/sec)
 
-**DLog's approach:** Combine **three battle-tested techniques**:
+**Pyralog's approach:** Combine **three battle-tested techniques**:
 
 1. **Percolator Protocol** (TiKV): Production-grade MVCC transactions with 2PC
 2. **Distributed TSO** (Scarab-powered): Eliminates TiKV's TSO bottleneck
@@ -6943,7 +6943,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 │  Kafka Transaction Coordinator: ~10K tx/sec            │
 │  Pulsar Transaction Coordinator: ~100K tx/sec          │
 │  TiKV Timestamp Oracle (TSO): ~500K timestamps/sec     │
-│  DLog Combined: 4+ BILLION tx/sec ⭐                   │
+│  Pyralog Combined: 4+ BILLION tx/sec ⭐                   │
 │                                                        │
 │  How: Percolator protocol                             │
 │       + 1024 distributed TSO nodes (4B timestamps/s)   │
@@ -6955,7 +6955,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 └────────────────────────────────────────────────────────┘
 ```
 
-**This architectural pattern extends to EVERYTHING in DLog!**
+**This architectural pattern extends to EVERYTHING in Pyralog!**
 
 ### Universal Pattern: Pharaoh Network via Scarab IDs
 
@@ -6974,7 +6974,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 │  Result: Multiple bottlenecks, complex election logic       │
 │                                                              │
 ├──────────────────────────────────────────────────────────────┤
-│   DLog Architecture (Scarab-Powered)                          │
+│   Pyralog Architecture (Scarab-Powered)                          │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ✅ Transaction Coordinators   → 1024 independent ⭐        │
@@ -7246,7 +7246,7 @@ let id = coordinators[coordinator_id].generate_id().await?;
 - Each has ~10K-100K ops/sec limit
 - Total system bottlenecked by slowest coordinator
 
-**DLog (Scarab-powered):**
+**Pyralog (Scarab-powered):**
 - 1024+ independent coordinators per service
 - No elections needed
 - Each has 4M+ ops/sec capacity
@@ -7260,7 +7260,7 @@ This pattern eliminates EVERY coordination bottleneck in the system!
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│                       DLog System Architecture                      │
+│                       Pyralog System Architecture                      │
 │              (Scarab-Powered Distributed Everything)                 │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
@@ -7349,7 +7349,7 @@ Traditional System (Kafka):
   • Complex election logic
   • Bottlenecks everywhere
 
-DLog (Percolator + Scarab-Powered):
+Pyralog (Percolator + Scarab-Powered):
   • 7,168 independent coordinators (7 services × 1024, inc. TSO)
   • ~28 BILLION total ops/sec across ALL services ⭐
   • Percolator MVCC transactions (production-grade)
@@ -7359,13 +7359,13 @@ DLog (Percolator + Scarab-Powered):
 Improvement: 56,000x better throughput!
 ```
 
-The goal is not to blindly copy features, but to learn from proven designs and **adapt them using DLog's modern architecture** to create a performant, safe, and developer-friendly distributed log system that **exceeds the scalability of existing systems by 1000x+**.
+The goal is not to blindly copy features, but to learn from proven designs and **adapt them using Pyralog's modern architecture** to create a performant, safe, and developer-friendly distributed log system that **exceeds the scalability of existing systems by 1000x+**.
 
 ---
 
 ## References
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Complete DLog architecture
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Complete Pyralog architecture
 - [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) - Obelisk Sequencer primitive
 - [EPOCHS.md](EPOCHS.md) - Epoch system for failover safety
 - [DATA_PATH.md](DATA_PATH.md) - Write and read paths
@@ -7377,7 +7377,7 @@ The goal is not to blindly copy features, but to learn from proven designs and *
 **Last Updated**: 2025-11-01
 **Target**: Progressive implementation across 2026
 
-**Key Innovation**: DLog's **Obelisk Sequencer primitive** simplifies implementation of nearly every advanced feature by providing crash-safe, durable, monotonic IDs with ~1-2 µs generation latency.
+**Key Innovation**: Pyralog's **Obelisk Sequencer primitive** simplifies implementation of nearly every advanced feature by providing crash-safe, durable, monotonic IDs with ~1-2 µs generation latency.
 
 For questions or suggestions, please open a GitHub issue or discussion.
 

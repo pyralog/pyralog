@@ -1,6 +1,6 @@
-# DLog Examples
+# Pyralog Examples
 
-This document provides practical examples of using DLog.
+This document provides practical examples of using Pyralog.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ use dlog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::new("localhost:9092");
+    let client = PyralogClient::new("localhost:9092");
     client.connect().await?;
 
     // Create a log with 8 partitions and replication factor of 3
@@ -81,7 +81,7 @@ for record in records {
 use dlog::prelude::*;
 
 struct ConsumerGroup {
-    client: DLogClient,
+    client: PyralogClient,
     log_id: LogId,
     group_id: String,
     partition: PartitionId,
@@ -111,10 +111,10 @@ impl ConsumerGroup {
 ### Server Configuration
 
 ```rust
-use dlog::{DLogServer, DLogConfig};
+use dlog::{PyralogServer, PyralogConfig};
 use std::path::PathBuf;
 
-let mut config = DLogConfig::default();
+let mut config = PyralogConfig::default();
 
 // Node configuration
 config.node.node_id = 1;
@@ -136,7 +136,7 @@ config.replication.quorum.replication_factor = 3;
 config.replication.quorum.write_quorum = 2;
 config.replication.quorum.read_quorum = 2;
 
-let server = DLogServer::new(config).await?;
+let server = PyralogServer::new(config).await?;
 ```
 
 ### From Configuration File
@@ -172,8 +172,8 @@ read_quorum = 2
 ```
 
 ```rust
-let config = DLogConfig::from_file("dlog.toml")?;
-let server = DLogServer::new(config).await?;
+let config = PyralogConfig::from_file("dlog.toml")?;
+let server = PyralogServer::new(config).await?;
 ```
 
 ## Advanced Patterns
@@ -222,7 +222,7 @@ use std::time::Duration;
 use tokio::time::interval;
 
 async fn batched_producer(
-    client: &DLogClient,
+    client: &PyralogClient,
     log_id: LogId,
 ) -> Result<()> {
     let mut buffer = Vec::new();
@@ -256,7 +256,7 @@ async fn batched_producer(
 use tokio::task::JoinSet;
 
 async fn parallel_consume(
-    client: DLogClient,
+    client: PyralogClient,
     log_id: LogId,
     partition_count: u32,
 ) -> Result<()> {
@@ -307,7 +307,7 @@ async fn parallel_consume(
 ### High Throughput Configuration
 
 ```rust
-let mut config = DLogConfig::default();
+let mut config = PyralogConfig::default();
 
 // Large segments
 config.storage.segment_config.max_size = 4 * 1024 * 1024 * 1024; // 4GB
@@ -323,7 +323,7 @@ config.replication.quorum.write_quorum = 1; // Async replication
 ### Low Latency Configuration
 
 ```rust
-let mut config = DLogConfig::default();
+let mut config = PyralogConfig::default();
 
 // Small write cache
 config.storage.cache_config.max_size = 8 * 1024 * 1024; // 8MB
@@ -353,7 +353,7 @@ config.storage.segment_config.use_mmap = true;
 ```rust
 use std::time::Instant;
 
-async fn measure_latency(client: &DLogClient, log_id: LogId) {
+async fn measure_latency(client: &PyralogClient, log_id: LogId) {
     let start = Instant::now();
     
     client.produce(
@@ -373,7 +373,7 @@ async fn measure_latency(client: &DLogClient, log_id: LogId) {
 use tokio::time::{interval, Duration};
 
 async fn load_test(
-    client: DLogClient,
+    client: PyralogClient,
     log_id: LogId,
     records_per_sec: usize,
 ) -> Result<()> {
@@ -404,5 +404,5 @@ async fn load_test(
 
 ## Conclusion
 
-These examples demonstrate the flexibility and power of DLog. For more information, see the [Architecture Documentation](ARCHITECTURE.md) and [API Documentation](https://docs.rs/dlog).
+These examples demonstrate the flexibility and power of Pyralog. For more information, see the [Architecture Documentation](ARCHITECTURE.md) and [API Documentation](https://docs.rs/dlog).
 

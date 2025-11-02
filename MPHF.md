@@ -1019,7 +1019,7 @@ impl<K: Hash + Eq + Clone, V: Clone> PPHMBuilder<K, V> {
     ) -> Result<PartitionMetadata> {
         let n = keys.len();
         
-        // Build PHF
+			// Build PHF
         let mphf = self.phf_builder.build(&keys)?;
         
         // Align values
@@ -1175,12 +1175,12 @@ fn main() -> Result<()> {
 
 ## Use Cases
 
-### 1. DLog LSM Compaction
+### 1. Pyralog LSM Compaction
 
 **Scenario**: Merge multiple SSTable perfect-hash indexes
 
 ```rust
-// DLog uses PPHM for compacting LSM levels
+// Pyralog uses PPHM for compacting LSM levels
 let l0_indexes: Vec<PHMap<Key, LSN>> = level0.ssts.iter()
     .map(|sst| sst.load_index())
     .collect();

@@ -1,6 +1,6 @@
-# DLog Implementation Plan
+# Pyralog Implementation Plan
 
-Comprehensive roadmap for building DLog from the ground up.
+Comprehensive roadmap for building Pyralog from the ground up.
 
 ## Table of Contents
 
@@ -64,7 +64,7 @@ Total to Production-Ready:             16-23 weeks (~4-6 months)
 
 ## Architecture Evolution Path
 
-DLog's architecture supports **three CopySet strategies** that can be adopted progressively:
+Pyralog's architecture supports **three CopySet strategies** that can be adopted progressively:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
@@ -633,7 +633,7 @@ impl Sequencer {
         
         // 2. Check if can write
         if !self.can_write(epoch).await {
-            return Err(DLogError::EpochSealed(epoch));
+            return Err(PyralogError::EpochSealed(epoch));
         }
         
         // 3. Assign offset (local increment - no consensus!)
@@ -757,14 +757,14 @@ pub struct PartitionMetadata {
 
 ```rust
 // dlog-protocol/src/client.rs
-pub struct DLogClient {
+pub struct PyralogClient {
     bootstrap_servers: Vec<String>,
     metadata_cache: Arc<RwLock<MetadataCache>>,
     connections: Arc<RwLock<HashMap<NodeId, Connection>>>,
     partitioner: Box<dyn Partitioner>,
 }
 
-impl DLogClient {
+impl PyralogClient {
     pub async fn produce(&self, log_id: LogId, record: Record) -> Result<LogOffset> {
         // 1. Calculate partition
         let partition = self.partitioner.partition(&record.key, &log_id)?;
@@ -775,7 +775,7 @@ impl DLogClient {
         // 3. Send directly to leader
         match self.send_to_node(leader, record).await {
             Ok(offset) => Ok(offset),
-            Err(DLogError::NotLeader(new_leader)) => {
+            Err(PyralogError::NotLeader(new_leader)) => {
                 // Refresh metadata and retry
                 self.refresh_metadata(&log_id).await?;
                 self.send_to_node(new_leader, record).await
@@ -802,7 +802,7 @@ impl DLogClient {
 // proto/dlog.proto
 syntax = "proto3";
 
-service DLogService {
+service PyralogService {
     rpc Produce(ProduceRequest) returns (ProduceResponse);
     rpc Consume(ConsumeRequest) returns (ConsumeResponse);
     rpc GetMetadata(MetadataRequest) returns (MetadataResponse);
@@ -831,14 +831,14 @@ message Record {
 // dlog-server/src/grpc.rs
 use tonic::{Request, Response, Status};
 
-pub struct DLogServiceImpl {
+pub struct PyralogServiceImpl {
     storage: Arc<LogStorage>,
     sequencer: Arc<Sequencer>,
     replicator: Arc<Replicator>,
 }
 
 #[tonic::async_trait]
-impl DLogService for DLogServiceImpl {
+impl PyralogService for PyralogServiceImpl {
     async fn produce(
         &self,
         request: Request<ProduceRequest>,
@@ -1060,7 +1060,7 @@ log_level = "info"
 use config::{Config, File, Environment};
 
 #[derive(Deserialize)]
-pub struct DLogConfig {
+pub struct PyralogConfig {
     pub server: ServerConfig,
     pub cluster: ClusterConfig,
     pub storage: StorageConfig,
@@ -1069,7 +1069,7 @@ pub struct DLogConfig {
     pub observability: ObservabilityConfig,
 }
 
-impl DLogConfig {
+impl PyralogConfig {
     pub fn load() -> Result<Self> {
         let config = Config::builder()
             .add_source(File::with_name("config/default"))
@@ -1270,7 +1270,7 @@ async fn test_copyset_load_distribution() {
 
 **Note on Competitive Advantage:**
 
-By this phase, DLog will have a **unique architecture** that combines:
+By this phase, Pyralog will have a **unique architecture** that combines:
 - ✅ Epochs (LogDevice) - 100x throughput vs consensus-per-record
 - ✅ Smart Clients (Kafka) - Direct routing, no proxy bottleneck
 - ✅ Three CopySet modes - Configurable from simple to maximum scale
@@ -1570,13 +1570,13 @@ tar -czf dlog-v0.1.0-linux-x64.tar.gz -C target/x86_64-unknown-linux-gnu/release
 
 ---
 
-## Final Notes: DLog's Unique Value Proposition
+## Final Notes: Pyralog's Unique Value Proposition
 
-### What Makes DLog Special
+### What Makes Pyralog Special
 
 **1. Three CopySet Strategies in One System**
 
-DLog is the **only distributed log** that offers three configurable replication strategies:
+Pyralog is the **only distributed log** that offers three configurable replication strategies:
 - **Per-Partition** (Kafka-style) - Simplicity
 - **Per-Record Hybrid** (Best of both) - Balanced
 - **Per-Record Coordinator** (LogDevice-inspired) - Maximum scale
@@ -1589,7 +1589,7 @@ Traditional systems:
   Leader disk I/O: 100 GB/hour per partition
   Partitions/node: 10-20
 
-DLog coordinator mode:
+Pyralog coordinator mode:
   Leader disk I/O: 10 MB/hour per partition (99%+ reduction!)
   Partitions/node: 100-500 (20x-50x increase!)
 ```
@@ -1603,7 +1603,7 @@ DLog coordinator mode:
 
 **4. Production-Ready Design**
 
-From day one, DLog is designed for:
+From day one, Pyralog is designed for:
 - High throughput (5M+ writes/sec)
 - Low latency (< 1ms p99)
 - Massive scale (50+ nodes, 10K+ partitions)
@@ -1616,7 +1616,7 @@ From day one, DLog is designed for:
 - Kafka: ❌ No epochs, ❌ No per-record CopySet, ❌ No coordinator mode
 - Pulsar: ❌ No epochs, ❌ Fixed architecture
 - LogDevice: ❌ No Kafka compatibility, ❌ Complex deployment
-- **DLog**: ✅ All three modes + Kafka-compatible + Simple deployment
+- **Pyralog**: ✅ All three modes + Kafka-compatible + Simple deployment
 
 ### Ready to Build?
 
@@ -1624,5 +1624,5 @@ This plan takes you from zero to production-ready in **4-6 months**. Follow the 
 
 ---
 
-**Let's build DLog! 🚀**
+**Let's build Pyralog! 🚀**
 

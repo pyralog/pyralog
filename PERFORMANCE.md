@@ -1,6 +1,6 @@
-# DLog Performance Guide
+# Pyralog Performance Guide
 
-Comprehensive guide to understanding and optimizing DLog performance.
+Comprehensive guide to understanding and optimizing Pyralog performance.
 
 ## Table of Contents
 
@@ -68,7 +68,7 @@ use dlog::prelude::*;
 use std::time::Instant;
 
 async fn benchmark_writes(
-    client: &DLogClient,
+    client: &PyralogClient,
     log_id: LogId,
     num_records: usize,
     batch_size: usize,
@@ -138,7 +138,7 @@ cargo flamegraph --bin dlog
 # Install heaptrack
 sudo apt-get install heaptrack
 
-# Profile DLog
+# Profile Pyralog
 heaptrack target/release/dlog
 
 # Analyze results

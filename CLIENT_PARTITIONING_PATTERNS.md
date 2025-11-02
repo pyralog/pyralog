@@ -15,13 +15,13 @@ Advanced partitioning strategies using client-managed keys for ordering and rout
 
 ## Overview
 
-DLog supports multiple partitioning strategies that clients can use to control data distribution and ordering.
+Pyralog supports multiple partitioning strategies that clients can use to control data distribution and ordering.
 
 ### Key Concepts
 
 **Partition Key**: Determines which partition receives the record  
 **Ordering Key**: Determines the order of records within a stream  
-**Server-Assigned Offset**: DLog's internal position (EpochOffset)
+**Server-Assigned Offset**: Pyralog's internal position (EpochOffset)
 
 These can be **the same** or **different** depending on your use case.
 
@@ -74,11 +74,11 @@ client.send_to_partition(partition, record);
 ### Example
 
 ```rust
-use dlog_client::DLogClient;
+use dlog_client::PyralogClient;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     // All events for user-123 go to same partition
     client.produce("events", Record::new(
@@ -166,16 +166,16 @@ client.send_to_partition(partition, record.with_key(vlsn));
 
 ```rust
 use std::sync::atomic::{AtomicU64, Ordering};
-use dlog_client::{DLogClient, Record};
+use dlog_client::{PyralogClient, Record};
 
 pub struct VLSNClient {
-    client: DLogClient,
+    client: PyralogClient,
     vlsn_counter: AtomicU64,
     partition_count: u32,
 }
 
 impl VLSNClient {
-    pub fn new(client: DLogClient, partition_count: u32) -> Self {
+    pub fn new(client: PyralogClient, partition_count: u32) -> Self {
         Self {
             client,
             vlsn_counter: AtomicU64::new(0),
@@ -221,7 +221,7 @@ impl VLSNClient {
                     .map(u64::from_be_bytes)
                     == Some(vlsn)
             })
-            .ok_or(DLogError::RecordNotFound)
+            .ok_or(PyralogError::RecordNotFound)
     }
     
     /// Read VLSN range
@@ -274,7 +274,7 @@ impl VLSNClient {
 ```rust
 #[tokio::main]
 async fn main() -> Result<()> {
-    let base_client = DLogClient::connect("localhost:9092").await?;
+    let base_client = PyralogClient::connect("localhost:9092").await?;
     let vlsn_client = VLSNClient::new(base_client, 10);  // 10 partitions
     
     // Write records (distributed across partitions)
@@ -313,7 +313,7 @@ Per-Client Ordering:
   - Can reconstruct by reading all partitions and sorting
 
 Per-Partition Ordering:
-  - Each partition has its own DLog offsets
+  - Each partition has its own Pyralog offsets
   - P0: offsets 0, 1, 2... (might have VLSNs 0, 3, 6...)
   - P1: offsets 0, 1, 2... (might have VLSNs 1, 4, 7...)
 
@@ -364,7 +364,7 @@ Memory:
 │    - Stored in record key                               │
 │    - Per-client sequence                                │
 │                                                         │
-│  Server Offset (DLog-Assigned):                         │
+│  Server Offset (Pyralog-Assigned):                         │
 │    - Server generates: EpochOffset(epoch=1, offset=42)  │
 │    - Per-partition sequence                             │
 │    - Stored in record metadata                          │
@@ -384,14 +384,14 @@ Memory:
 
 ```rust
 pub struct PeriodicCheckpointVLSN {
-    client: DLogClient,
+    client: PyralogClient,
     vlsn_counter: AtomicU64,
     checkpoint_file: PathBuf,
 }
 
 impl PeriodicCheckpointVLSN {
     pub async fn new(
-        client: DLogClient,
+        client: PyralogClient,
         partition_count: u32,
         checkpoint_file: PathBuf,
     ) -> Result<Self> {
@@ -410,7 +410,7 @@ impl PeriodicCheckpointVLSN {
     pub async fn write(&self, log_id: LogId, value: Vec<u8>) -> Result<u64> {
         let vlsn = self.vlsn_counter.fetch_add(1, Ordering::SeqCst);
         
-        // Write to DLog
+        // Write to Pyralog
         let partition = (vlsn % self.partition_count as u64) as u32;
         let record = Record::new(Some(vlsn.to_be_bytes().to_vec()), value);
         self.client.produce_to_partition(log_id, partition, record).await?;
@@ -483,7 +483,7 @@ use std::fs::OpenOptions;
 use std::io::{Seek, SeekFrom, Write};
 
 pub struct SparseFileVLSN {
-    client: DLogClient,
+    client: PyralogClient,
     vlsn_counter: AtomicU64,
     counter_file: File,
     partition_count: u32,
@@ -491,7 +491,7 @@ pub struct SparseFileVLSN {
 
 impl SparseFileVLSN {
     pub async fn new(
-        client: DLogClient,
+        client: PyralogClient,
         partition_count: u32,
         counter_file_path: PathBuf,
     ) -> Result<Self> {
@@ -517,7 +517,7 @@ impl SparseFileVLSN {
         // 1. Increment in-memory counter
         let vlsn = self.vlsn_counter.fetch_add(1, Ordering::SeqCst);
         
-        // 2. Write to DLog
+        // 2. Write to Pyralog
         let partition = (vlsn % self.partition_count as u64) as u32;
         let record = Record::new(Some(vlsn.to_be_bytes().to_vec()), value);
         self.client.produce_to_partition(log_id, partition, record).await?;
@@ -557,7 +557,7 @@ impl SparseFileVLSN {
 │    • No serialization (just write 0x00)                 │
 │    • Simple recovery (one syscall)                      │
 │                                                         │
-│  Invented for: DLog VLSN persistence (2025)             │
+│  Invented for: Pyralog VLSN persistence (2025)             │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -656,7 +656,7 @@ See detailed comparison below for full analysis of:
 
 ```rust
 pub struct BatchedSparseFileVLSN {
-    client: DLogClient,
+    client: PyralogClient,
     vlsn_counter: AtomicU64,
     counter_file: Arc<Mutex<File>>,
     partition_count: u32,
@@ -667,7 +667,7 @@ impl BatchedSparseFileVLSN {
     pub async fn write(&self, log_id: LogId, value: Vec<u8>) -> Result<u64> {
         let vlsn = self.vlsn_counter.fetch_add(1, Ordering::SeqCst);
         
-        // Write to DLog
+        // Write to Pyralog
         let partition = (vlsn % self.partition_count as u64) as u32;
         let record = Record::new(Some(vlsn.to_be_bytes().to_vec()), value);
         self.client.produce_to_partition(log_id, partition, record).await?;
@@ -719,7 +719,7 @@ println!("Actual blocks: {} KB", metadata.blocks() * 512 / 1024);
 use memmap2::MmapMut;
 
 pub struct MmapBitmapVLSN {
-    client: DLogClient,
+    client: PyralogClient,
     vlsn_counter: AtomicU64,
     mmap: Arc<Mutex<MmapMut>>,
     partition_count: u32,
@@ -727,7 +727,7 @@ pub struct MmapBitmapVLSN {
 
 impl MmapBitmapVLSN {
     pub async fn new(
-        client: DLogClient,
+        client: PyralogClient,
         partition_count: u32,
         counter_file_path: PathBuf,
     ) -> Result<Self> {
@@ -756,7 +756,7 @@ impl MmapBitmapVLSN {
     pub async fn write(&self, log_id: LogId, value: Vec<u8>) -> Result<u64> {
         let vlsn = self.vlsn_counter.fetch_add(1, Ordering::SeqCst);
         
-        // Write to DLog
+        // Write to Pyralog
         let partition = (vlsn % self.partition_count as u64) as u32;
         let record = Record::new(Some(vlsn.to_be_bytes().to_vec()), value);
         self.client.produce_to_partition(log_id, partition, record).await?;
@@ -793,7 +793,7 @@ use memmap2::MmapMut;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 pub struct FixedMmapVLSN {
-    client: DLogClient,
+    client: PyralogClient,
     vlsn_counter: AtomicU64,
     mmap: Arc<MmapMut>,  // Just 8 bytes!
     partition_count: u32,
@@ -801,7 +801,7 @@ pub struct FixedMmapVLSN {
 
 impl FixedMmapVLSN {
     pub async fn new(
-        client: DLogClient,
+        client: PyralogClient,
         partition_count: u32,
         counter_file_path: PathBuf,
     ) -> Result<Self> {
@@ -832,7 +832,7 @@ impl FixedMmapVLSN {
     pub async fn write(&self, log_id: LogId, value: Vec<u8>) -> Result<u64> {
         let vlsn = self.vlsn_counter.fetch_add(1, Ordering::SeqCst);
         
-        // Write to DLog
+        // Write to Pyralog
         let partition = (vlsn % self.partition_count as u64) as u32;
         let record = Record::new(Some(vlsn.to_be_bytes().to_vec()), value);
         self.client.produce_to_partition(log_id, partition, record).await?;
@@ -1535,7 +1535,7 @@ Recovery time doesn't matter        → Mmap Bitmap
 
 **About the Obelisk Sequencer Pattern:**
 
-This technique was invented specifically for DLog's VLSN persistence requirements. 
+This technique was invented specifically for Pyralog's VLSN persistence requirements. 
 While sparse files and append-only logs are well-known individually, the specific 
 combination of "append zero bytes + file size as counter" appears to be novel.
 
@@ -1577,7 +1577,7 @@ counter.fetch_add(1)?;  // Slightly slower, but durable!
 The **"1 byte = 1 increment + file size = counter value"** approach with sparse 
 file optimization appears to be unique. See detailed comparison above for full analysis.
 
-**It's not just for DLog!** This primitive can be extracted as a standalone library 
+**It's not just for Pyralog!** This primitive can be extracted as a standalone library 
 for use in any Rust project needing durable counters.
 
 ---
@@ -1586,7 +1586,7 @@ for use in any Rust project needing durable counters.
 
 **What is Scarab?**
 
-Scarab is DLog's distributed unique ID generator (inspired by Twitter's Snowflake algorithm, created 2010), and it's one of the most popular use cases for durable counters like the Obelisk Sequencer.
+Scarab is Pyralog's distributed unique ID generator (inspired by Twitter's Snowflake algorithm, created 2010), and it's one of the most popular use cases for durable counters like the Obelisk Sequencer.
 
 **Structure (64-bit ID):**
 
@@ -1835,7 +1835,7 @@ let partition = hash(key) % partition_count;
 
 ```rust
 pub struct TenantClient {
-    client: DLogClient,
+    client: PyralogClient,
     tenant_counters: DashMap<String, AtomicU64>,
 }
 
@@ -1996,7 +1996,7 @@ let results = futures::future::join_all(partition_reads).await;
 
 ### Overview
 
-DLog supports **two configurable commit styles** for tracking consumer progress:
+Pyralog supports **two configurable commit styles** for tracking consumer progress:
 
 1. **Per-Partition Commits** (Kafka-style) - Track offset per partition
 2. **VLSN Commits** (Simplified) - Track single VLSN across all partitions
@@ -2126,7 +2126,7 @@ pub enum CommitStrategy {
 }
 
 pub struct UnifiedConsumer {
-    client: DLogClient,
+    client: PyralogClient,
     log_id: LogId,
     consumer_id: String,
     strategy: CommitStrategy,
@@ -2138,7 +2138,7 @@ pub struct UnifiedConsumer {
 
 impl UnifiedConsumer {
     pub fn new(
-        client: DLogClient,
+        client: PyralogClient,
         log_id: LogId,
         consumer_id: String,
         strategy: CommitStrategy,
@@ -2255,7 +2255,7 @@ impl UnifiedConsumer {
                     // Move to next VLSN
                     current_vlsn += 1;
                 }
-                Err(DLogError::RecordNotFound) => {
+                Err(PyralogError::RecordNotFound) => {
                     // No more records
                     break;
                 }
@@ -2279,7 +2279,7 @@ impl UnifiedConsumer {
                     .map(u64::from_be_bytes)
                     == Some(vlsn)
             })
-            .ok_or(DLogError::RecordNotFound)
+            .ok_or(PyralogError::RecordNotFound)
     }
 }
 ```
@@ -2289,11 +2289,11 @@ impl UnifiedConsumer {
 **Example 1: Per-Partition Commits (Kafka-style)**
 
 ```rust
-use dlog_client::{DLogClient, CommitStrategy, UnifiedConsumer};
+use dlog_client::{PyralogClient, CommitStrategy, UnifiedConsumer};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     let mut consumer = UnifiedConsumer::new(
         client,
@@ -2319,7 +2319,7 @@ async fn main() -> Result<()> {
 ```rust
 #[tokio::main]
 async fn main() -> Result<()> {
-    let client = DLogClient::connect("localhost:9092").await?;
+    let client = PyralogClient::connect("localhost:9092").await?;
     
     let mut consumer = UnifiedConsumer::new(
         client,
@@ -2474,10 +2474,10 @@ Sequential only!
 
 **Key Takeaways:**
 
-1. **DLog supports multiple partitioning strategies** - Hash-based (default), VLSN, or custom
+1. **Pyralog supports multiple partitioning strategies** - Hash-based (default), VLSN, or custom
 2. **VLSN pattern enables per-client ordering with write distribution**
 3. **VLSN routing is deterministic** - Same VLSN always goes to same partition
-4. **Client-managed keys don't change DLog's consistency model**
+4. **Client-managed keys don't change Pyralog's consistency model**
 5. **Choose pattern based on your ordering and isolation needs**
 6. **Obelisk Sequencer pattern** - A **persistent atomic counter primitive** ⭐
    - Like `AtomicU64`, but crash-safe!

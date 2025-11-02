@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use dlog_core::{LogOffset, Record, RecordBatch, Result, DLogError, OffsetRange};
+use pyralog_core::{LogOffset, Record, RecordBatch, Result, DLogError, OffsetRange};
 use parking_lot::RwLock;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

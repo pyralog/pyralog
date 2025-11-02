@@ -1,6 +1,6 @@
-use dlog_consensus::RaftConfig;
-use dlog_replication::ReplicationConfig;
-use dlog_storage::{LogStorageConfig, SegmentConfig, WriteCacheConfig};
+use pyralog_consensus::RaftConfig;
+use pyralog_replication::ReplicationConfig;
+use pyralog_storage::{LogStorageConfig, SegmentConfig, WriteCacheConfig};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 

@@ -1,6 +1,6 @@
-# DLog Operations Guide
+# Pyralog Operations Guide
 
-This guide covers deploying, operating, and maintaining DLog in production.
+This guide covers deploying, operating, and maintaining Pyralog in production.
 
 ## Table of Contents
 
@@ -202,7 +202,7 @@ docker run -d \
 Create `/etc/systemd/system/dlog.service`:
 ```ini
 [Unit]
-Description=DLog Distributed Log Service
+Description=Pyralog Distributed Log Service
 After=network.target
 
 [Service]
@@ -391,7 +391,7 @@ If a partition loses all replicas:
 
 1. **Prepare new node**
    ```bash
-   # Install DLog
+   # Install Pyralog
    # Configure with new node_id
    # Add to cluster_nodes list
    ```
@@ -512,7 +512,7 @@ RUST_LOG=trace dlog --config config.json
 ### Support Information
 
 When reporting issues, include:
-- DLog version
+- Pyralog version
 - Configuration file
 - Recent logs
 - System metrics

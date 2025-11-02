@@ -1,6 +1,6 @@
-use dlog_core::{LogId, LogMetadata, PartitionId, Result, DLogError};
-use dlog_consensus::{RaftNode, RaftConfig};
-use dlog_storage::LogStorage;
+use pyralog_core::{LogId, LogMetadata, PartitionId, Result, DLogError};
+use pyralog_consensus::{RaftNode, RaftConfig};
+use pyralog_storage::LogStorage;
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::path::PathBuf;

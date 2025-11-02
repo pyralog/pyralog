@@ -1,4 +1,4 @@
-# Actor Model & Reactive Streams for DLog
+# Actor Model & Reactive Streams for Pyralog
 
 **Location-transparent, fault-tolerant, message-driven architecture inspired by Erlang, Akka, and Stella**
 
@@ -36,13 +36,13 @@
     - [Discovery Mechanisms](#discovery-mechanisms)
     - [Deploy-* Operators](#deploy--operators)
     - [Deploy-Reduce: Aggregate Over Flock](#deploy-reduce-aggregate-over-flock)
-    - [DLog Integration: Partition Discovery](#dlog-integration-partition-discovery)
+    - [Pyralog Integration: Partition Discovery](#dlog-integration-partition-discovery)
 12. [Supervision & Fault Tolerance](#supervision--fault-tolerance)
 13. [Actor Isolation & Capabilities](#actor-isolation--capabilities)
 14. [Typed Actors](#typed-actors)
 15. [Actor Persistence](#actor-persistence)
 16. [Reactive Streams](#reactive-streams)
-17. [DLog Integration](#dlog-integration)
+17. [Pyralog Integration](#dlog-integration)
 18. [Performance Considerations](#performance-considerations)
 19. [Use Cases](#use-cases)
 20. [Implementation Roadmap](#implementation-roadmap)
@@ -68,7 +68,7 @@ The **Actor Model** is a mathematical model of concurrent computation where "act
 Create → Receive Messages → Process → Send Messages → Terminate
 ```
 
-### Why Actors for DLog?
+### Why Actors for Pyralog?
 
 | Challenge | Actor Solution |
 |-----------|----------------|
@@ -80,7 +80,7 @@ Create → Receive Messages → Process → Send Messages → Terminate
 
 ### Stella: The Actor-Reactor Model
 
-DLog's actor model is inspired by **Stella**, a programming model that unifies actors and reactors to handle both imperative and reactive programming:
+Pyralog's actor model is inspired by **Stella**, a programming model that unifies actors and reactors to handle both imperative and reactive programming:
 
 **Stella Actor-Reactor Model**:
 
@@ -100,7 +100,7 @@ DLog's actor model is inspired by **Stella**, a programming model that unifies a
 - **deploy-* operator**: Time-varying collections of discovered nodes
 - **Use Case**: Bike-sharing infrastructure running on Raspberry Pi cluster
 
-**Core Concepts DLog Adopts from Stella**:
+**Core Concepts Pyralog Adopts from Stella**:
 - **Actor/Reactor Unification**: Single abstraction for sync/async computation
 - **Behavioral Composition**: Mixins and traits for composable actors
 - **Stream-Based Composition**: Data streams connect actors and reactors
@@ -2636,16 +2636,16 @@ where
 }
 ```
 
-### DLog Integration: Partition Discovery
+### Pyralog Integration: Partition Discovery
 
 ```rust
-/// DLog partition discovery using flocks
-pub struct DLogPartitionDiscovery {
+/// Pyralog partition discovery using flocks
+pub struct PyralogPartitionDiscovery {
     partition_flock: Flock<PartitionMessage>,
     routing_table: Arc<RwLock<HashMap<PartitionId, ActorRef<PartitionMessage>>>>,
 }
 
-impl DLogPartitionDiscovery {
+impl PyralogPartitionDiscovery {
     pub fn new() -> Self {
         // Use service registry for discovery
         let mut partition_flock = Flock::new(
@@ -3789,13 +3789,13 @@ impl Publisher for PolarsStream {
 
 ---
 
-## DLog Integration
+## Pyralog Integration
 
-### Actor-Based DLog Architecture
+### Actor-Based Pyralog Architecture
 
 ```rust
-/// DLog actor system
-pub struct DLogActorSystem {
+/// Pyralog actor system
+pub struct PyralogActorSystem {
     /// Partition actors
     partitions: HashMap<PartitionId, ActorRef<PartitionMessage>>,
     
@@ -3812,7 +3812,7 @@ pub struct DLogActorSystem {
     system: ActorSystem,
 }
 
-impl DLogActorSystem {
+impl PyralogActorSystem {
     pub async fn new() -> Self {
         let system = ActorSystem::new();
         
@@ -3904,7 +3904,7 @@ pub async fn execute_actor_pipeline(sql: &str) -> Result<Vec<RecordBatch>> {
 ### Actor-Based Partition Management
 
 ```rust
-/// DLog partition manager using actors
+/// Pyralog partition manager using actors
 pub struct ActorPartitionManager {
     router: PartitionRouter,
     migrator: ActorMigrator,

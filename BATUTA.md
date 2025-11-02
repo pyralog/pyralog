@@ -1,8 +1,8 @@
-# Batuta: The DLog Programming Language
+# Batuta: The Pyralog Programming Language
 
 **Orchestrating distributed systems with elegance and power**
 
-Batuta (Spanish/Portuguese/Italian for "baton" - the conductor's tool) is a dynamic, functional programming language designed specifically for DLog. It combines the best of Clojure's Lisp heritage and immutable data structures with Elixir's actor model and pattern matching, creating a unified language for querying, processing, and orchestrating distributed data systems.
+Batuta (Spanish/Portuguese/Italian for "baton" - the conductor's tool) is a dynamic, functional programming language designed specifically for Pyralog. It combines the best of Clojure's Lisp heritage and immutable data structures with Elixir's actor model and pattern matching, creating a unified language for querying, processing, and orchestrating distributed data systems.
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@ Batuta (Spanish/Portuguese/Italian for "baton" - the conductor's tool) is a dyna
     - [Reference Capabilities (Pony-Inspired)](#reference-capabilities-pony-inspired)
 15. [REPL & Interactive Development](#repl--interactive-development)
 16. [Standard Library](#standard-library)
-17. [DLog Integration](#dlog-integration)
+17. [Pyralog Integration](#dlog-integration)
 18. [Performance](#performance)
     - [Compilation Strategy](#compilation-strategy)
     - [Native Compilation](#1-native-via-rust)
@@ -65,7 +65,7 @@ Batuta is built on seven core principles:
 
 - **Expressive**: Write complex distributed queries in few lines
 - **Safe**: Immutable data + actor isolation + reference capabilities = no race conditions, compile-time safety
-- **Fast**: Compile to efficient Rust code, leverage DLog's performance
+- **Fast**: Compile to efficient Rust code, leverage Pyralog's performance
 - **Distributed**: First-class support for multi-node execution
 - **Universal**: Compile to native or WASM - run anywhere (server, browser, edge, embedded)
 - **Inspectable**: Live introspection of running systems via REPL
@@ -236,7 +236,7 @@ While Sulise provides the syntactic foundation, Batuta adds:
 - **Actor semantics**: `defactor`, `spawn`, `send`, `receive`
 - **Error handling**: `!` operator, `deferror`, error union types
 - **Reference capabilities**: `iso`, `val`, `ref`, `box`, `tag` annotations
-- **DLog integration**: Native query functions, time-travel, actors
+- **Pyralog integration**: Native query functions, time-travel, actors
 - **Type system**: Gradual typing, type inference, actor protocols
 - **Standard library**: Persistent data structures, actor utilities
 
@@ -266,7 +266,7 @@ Batuta combines:
 
 ```clojure
 ;; Traditional
-(println "Hello, DLog!")
+(println "Hello, Pyralog!")
 
 ;; Actor-based
 (defactor greeter []
@@ -333,7 +333,7 @@ Batuta combines:
 99999999999999N     ; bigint
 
 ;; Strings
-"Hello, DLog!"
+"Hello, Pyralog!"
 "Multi-line
  strings work"
 
@@ -542,7 +542,7 @@ v1  ; => [1 2 3 4 5]
 ;; Local actor
 (def local-actor (spawn worker))
 
-;; Remote actor (on another DLog node)
+;; Remote actor (on another Pyralog node)
 (def remote-actor (actor-ref "node-2.cluster.internal" :worker-1))
 
 ;; Send to remote actor (transparent)
@@ -1259,7 +1259,7 @@ iso <: tag
 # Local REPL
 $ batuta repl
 
-# Connect to running DLog cluster
+# Connect to running Pyralog cluster
 $ batuta repl --connect cluster.example.com:9999
 ```
 
@@ -1366,7 +1366,7 @@ batuta> (profile
 (str/join "," [1 2 3])      ; => "1,2,3"
 ```
 
-### DLog-Specific
+### Pyralog-Specific
 
 ```clojure
 ;; Query operations
@@ -1414,9 +1414,9 @@ batuta> (profile
 
 ---
 
-## DLog Integration
+## Pyralog Integration
 
-### Direct Access to DLog Primitives
+### Direct Access to Pyralog Primitives
 
 ```clojure
 ;; Obelisk Sequencer
@@ -1595,7 +1595,7 @@ wasmtime hello.wasm
 **WASM Use Cases:**
 
 1. **Edge Computing**: Deploy Batuta actors on Cloudflare Workers, Fastly Compute@Edge
-2. **Browser Analytics**: Run DLog queries directly in the browser
+2. **Browser Analytics**: Run Pyralog queries directly in the browser
 3. **Serverless Functions**: AWS Lambda, Google Cloud Functions with WASM runtime
 4. **Embedded Systems**: Run on IoT devices with WASM runtime
 5. **Plugin Systems**: Safe sandboxed plugins for applications
@@ -1659,7 +1659,7 @@ WASM is 70-80% native speed but with much smaller binaries and universal compati
 
 | Feature | Batuta | Clojure |
 |---------|--------|---------|
-| **Host** | Rust/DLog | JVM |
+| **Host** | Rust/Pyralog | JVM |
 | **Actors** | First-class | core.async |
 | **Pattern matching** | Built-in | Via library |
 | **Error handling** | Zig-style (explicit) | Exceptions |
@@ -1678,7 +1678,7 @@ WASM is 70-80% native speed but with much smaller binaries and universal compati
 | **Error handling** | Zig-style (explicit) | Pattern matching {:ok/:error} |
 | **Data structures** | Persistent | Functional |
 | **Compilation** | Native + WASM | BEAM bytecode |
-| **Distribution** | DLog cluster | BEAM cluster |
+| **Distribution** | Pyralog cluster | BEAM cluster |
 | **Queries** | Native SQL/graph | Via Ecto |
 | **Performance** | ~1.5× faster | Baseline |
 | **WASM support** | ✅ First-class | ❌ No |
@@ -1751,7 +1751,7 @@ WASM is 70-80% native speed but with much smaller binaries and universal compati
                     ▼              ▼
     ┌───────────────────────┐  ┌──────────────────────┐
     │  Server/Desktop       │  │  Browser/Edge/IoT    │
-    │  - DLog clusters      │  │  - Cloudflare Workers│
+    │  - Pyralog clusters      │  │  - Cloudflare Workers│
     │  - Distributed actors │  │  - Browser analytics │
     │  - Full I/O           │  │  - Serverless        │
     └───────────────────────┘  └──────────────────────┘
@@ -1978,7 +1978,7 @@ batuta --version
 ```clojure
 ;; hello.ba
 (defn main []
-  (println "Hello, DLog!")
+  (println "Hello, Pyralog!")
   (println "Batuta is orchestrating your data."))
 
 (main)
@@ -1999,8 +1999,8 @@ batuta compile hello.ba -o hello
 
 ```bash
 $ batuta repl
-Batuta 0.1.0 - DLog Programming Language
-Connected to DLog cluster: localhost:9092
+Batuta 0.1.0 - Pyralog Programming Language
+Connected to Pyralog cluster: localhost:9092
 
 batuta> (+ 1 2 3)
 6
@@ -2093,7 +2093,7 @@ batuta/
 
 ## Conclusion
 
-**Batuta** orchestrates distributed systems with the elegance of Lisp, the pragmatism of Elixir, and the performance of Rust. It's designed specifically for DLog, leveraging actors, supervision trees, and distributed coordination primitives to create a unified language for querying, processing, and managing data at scale.
+**Batuta** orchestrates distributed systems with the elegance of Lisp, the pragmatism of Elixir, and the performance of Rust. It's designed specifically for Pyralog, leveraging actors, supervision trees, and distributed coordination primitives to create a unified language for querying, processing, and managing data at scale.
 
 Like a conductor's baton directing an orchestra, Batuta coordinates:
 - **Actors** (musicians) executing in parallel
@@ -2110,5 +2110,5 @@ Like a conductor's baton directing an orchestra, Batuta coordinates:
 **GitHub**: https://github.com/dlog/batuta  
 **Discord**: https://discord.gg/dlog  
 
-*Built with ❤️ in Rust for DLog*
+*Built with ❤️ in Rust for Pyralog*
 

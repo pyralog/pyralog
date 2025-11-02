@@ -1,10 +1,10 @@
-# DLog Comparison Guide
+# Pyralog Comparison Guide
 
-How DLog compares to other distributed log systems.
+How Pyralog compares to other distributed log systems.
 
 ## Quick Comparison
 
-| Feature | DLog | Kafka | Redpanda | LogDevice | Pulsar |
+| Feature | Pyralog | Kafka | Redpanda | LogDevice | Pulsar |
 |---------|------|-------|----------|-----------|--------|
 | **Language** | Rust | Java/Scala | C++ | C++ | Java |
 | **Consensus** | Raft | ZooKeeper | Raft | Paxos | BookKeeper |
@@ -17,7 +17,7 @@ How DLog compares to other distributed log systems.
 | **Memory Safety** | ✅ | ✅ | ❌ | ❌ | ✅ |
 | **Dependencies** | None | ZK | None | Many | BK |
 
-## DLog vs Apache Kafka
+## Pyralog vs Apache Kafka
 
 ### Apache Kafka
 
@@ -35,7 +35,7 @@ How DLog compares to other distributed log systems.
 - ❌ Complex configuration
 - ❌ Resource-heavy
 
-### DLog Advantages
+### Pyralog Advantages
 
 1. **No External Dependencies**: Built-in Raft consensus
 2. **Lower Latency**: Write caching reduces p99 to < 1ms
@@ -43,16 +43,16 @@ How DLog compares to other distributed log systems.
 4. **Simpler Operation**: Single binary, no ZooKeeper
 5. **Better Resource Usage**: No GC, lower memory footprint
 
-### DLog Disadvantages
+### Pyralog Disadvantages
 
 1. **Less Mature**: Newer project, smaller community
 2. **Limited Ecosystem**: Fewer tools and integrations
 3. **Less Documentation**: Still building out docs
 4. **Fewer Client Libraries**: Rust-focused initially
 
-### When to Choose DLog over Kafka
+### When to Choose Pyralog over Kafka
 
-✅ **Choose DLog if**:
+✅ **Choose Pyralog if**:
 - You want lowest possible latency
 - You prefer simpler operations (no ZooKeeper)
 - You're building new systems (no legacy constraints)
@@ -66,7 +66,7 @@ How DLog compares to other distributed log systems.
 - You require enterprise support
 - You're risk-averse
 
-## DLog vs Redpanda
+## Pyralog vs Redpanda
 
 ### Redpanda
 
@@ -83,7 +83,7 @@ How DLog compares to other distributed log systems.
 - ❌ Limited to Kafka model
 - ❌ Smaller community than Kafka
 
-### DLog vs Redpanda
+### Pyralog vs Redpanda
 
 **Similarities**:
 - Both eliminate ZooKeeper (use Raft)
@@ -93,7 +93,7 @@ How DLog compares to other distributed log systems.
 
 **Key Differences**:
 
-| Aspect | DLog | Redpanda |
+| Aspect | Pyralog | Redpanda |
 |--------|------|----------|
 | Language | Rust (memory-safe) | C++ (manual memory) |
 | Quorums | Flexible (LogDevice-inspired) | Fixed majority |
@@ -101,9 +101,9 @@ How DLog compares to other distributed log systems.
 | CopySets | Yes | No |
 | Maturity | New | Production-ready |
 
-### When to Choose DLog over Redpanda
+### When to Choose Pyralog over Redpanda
 
-✅ **Choose DLog if**:
+✅ **Choose Pyralog if**:
 - You need flexible quorums
 - You want epoch-based failover
 - Memory safety is critical
@@ -114,7 +114,7 @@ How DLog compares to other distributed log systems.
 - You want commercial support
 - You're migrating from Kafka
 
-## DLog vs LogDevice
+## Pyralog vs LogDevice
 
 ### LogDevice
 
@@ -132,7 +132,7 @@ How DLog compares to other distributed log systems.
 - ❌ Not Kafka-compatible
 - ❌ Limited adoption outside Facebook
 
-### DLog vs LogDevice
+### Pyralog vs LogDevice
 
 **Similarities**:
 - Both use epochs
@@ -142,7 +142,7 @@ How DLog compares to other distributed log systems.
 
 **Key Differences**:
 
-| Aspect | DLog | LogDevice |
+| Aspect | Pyralog | LogDevice |
 |--------|------|-----------|
 | Consensus | Raft | Paxos |
 | Language | Rust | C++ |
@@ -151,9 +151,9 @@ How DLog compares to other distributed log systems.
 | Write Cache | Yes | No |
 | Complexity | Simpler | More complex |
 
-### When to Choose DLog over LogDevice
+### When to Choose Pyralog over LogDevice
 
-✅ **Choose DLog if**:
+✅ **Choose Pyralog if**:
 - You want simpler operations
 - You need Kafka compatibility
 - You prefer Rust's safety
@@ -164,7 +164,7 @@ How DLog compares to other distributed log systems.
 - You need its specific features
 - You have Facebook's operational expertise
 
-## DLog vs Apache Pulsar
+## Pyralog vs Apache Pulsar
 
 ### Apache Pulsar
 
@@ -181,9 +181,9 @@ How DLog compares to other distributed log systems.
 - ❌ Resource-heavy
 - ❌ Smaller community than Kafka
 
-### When to Choose DLog over Pulsar
+### When to Choose Pyralog over Pulsar
 
-✅ **Choose DLog if**:
+✅ **Choose Pyralog if**:
 - You want simpler architecture
 - You don't need multi-tenancy
 - You prefer lower resource usage
@@ -200,7 +200,7 @@ How DLog compares to other distributed log systems.
 
 | System | Latency | Notes |
 |--------|---------|-------|
-| **DLog** | **< 1ms** | With write cache |
+| **Pyralog** | **< 1ms** | With write cache |
 | Redpanda | ~1-2ms | With write cache |
 | Kafka | ~5-10ms | Without cache |
 | LogDevice | ~2-5ms | Varies by config |
@@ -210,7 +210,7 @@ How DLog compares to other distributed log systems.
 
 | System | Throughput | Notes |
 |--------|------------|-------|
-| **DLog** | **1M+ msg/s** | Single node, batched |
+| **Pyralog** | **1M+ msg/s** | Single node, batched |
 | Redpanda | 1M+ msg/s | Single node |
 | Kafka | 500K-1M msg/s | Single broker |
 | LogDevice | Varies | Depends on quorum |
@@ -222,7 +222,7 @@ How DLog compares to other distributed log systems.
 
 ### Core Features
 
-| Feature | DLog | Kafka | Redpanda | LogDevice | Pulsar |
+| Feature | Pyralog | Kafka | Redpanda | LogDevice | Pulsar |
 |---------|------|-------|----------|-----------|--------|
 | Partitioning | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Replication | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -232,7 +232,7 @@ How DLog compares to other distributed log systems.
 
 ### Advanced Features
 
-| Feature | DLog | Kafka | Redpanda | LogDevice | Pulsar |
+| Feature | Pyralog | Kafka | Redpanda | LogDevice | Pulsar |
 |---------|------|-------|----------|-----------|--------|
 | Transactions | 🔜 | ✅ | ✅ | ❌ | ✅ |
 | Compaction | 🔜 | ✅ | ✅ | ❌ | ✅ |
@@ -242,7 +242,7 @@ How DLog compares to other distributed log systems.
 
 ### Operations
 
-| Feature | DLog | Kafka | Redpanda | LogDevice | Pulsar |
+| Feature | Pyralog | Kafka | Redpanda | LogDevice | Pulsar |
 |---------|------|-------|----------|-----------|--------|
 | Single Binary | ✅ | ❌ | ✅ | ❌ | ❌ |
 | Auto-scaling | 🔜 | ❌ | ✅ | ❌ | ❌ |
@@ -254,14 +254,14 @@ Legend: ✅ Available, 🔜 Planned, ❌ Not Available
 
 ## Migration Paths
 
-### From Kafka to DLog
+### From Kafka to Pyralog
 
 **Compatibility**: High (Kafka-compatible API)
 
 **Steps**:
-1. Deploy DLog cluster
+1. Deploy Pyralog cluster
 2. Dual-write to both systems
-3. Migrate consumers to DLog
+3. Migrate consumers to Pyralog
 4. Stop writes to Kafka
 5. Decommission Kafka
 
@@ -269,18 +269,18 @@ Legend: ✅ Available, 🔜 Planned, ❌ Not Available
 - Ecosystem tools may not work
 - Testing compatibility
 
-### From Redpanda to DLog
+### From Redpanda to Pyralog
 
 **Compatibility**: High (both Kafka-compatible)
 
 **Similar migration path as Kafka**
 
-### From LogDevice to DLog
+### From LogDevice to Pyralog
 
 **Compatibility**: Low (different APIs)
 
 **Steps**:
-1. Deploy DLog cluster
+1. Deploy Pyralog cluster
 2. Develop adapter layer
 3. Migrate application by application
 4. Extensive testing
@@ -291,7 +291,7 @@ Legend: ✅ Available, 🔜 Planned, ❌ Not Available
 
 ## Conclusion
 
-### Choose DLog for:
+### Choose Pyralog for:
 
 ✅ **New projects** where you control the stack
 ✅ **Low-latency requirements** (< 1ms p99)
@@ -306,11 +306,11 @@ Legend: ✅ Available, 🔜 Planned, ❌ Not Available
 ❌ **Enterprise support** requirements
 ❌ **Risk-averse** deployments (choose proven systems)
 ❌ **Extensive integrations** needed
-❌ **Immediate production** deployment (wait for DLog maturity)
+❌ **Immediate production** deployment (wait for Pyralog maturity)
 
 ## Future Direction
 
-DLog aims to provide:
+Pyralog aims to provide:
 1. **Best-in-class latency** via write caching
 2. **Flexible consistency** via LogDevice quorums
 3. **Simple operations** via Redpanda-style design

@@ -1,4 +1,4 @@
-use dlog_core::{LogOffset, Result, DLogError};
+use pyralog_core::{LogOffset, Result, DLogError};
 use std::path::{Path, PathBuf};
 use tokio::fs;
 

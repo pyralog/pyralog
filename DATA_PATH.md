@@ -1,6 +1,6 @@
-# DLog Data Path Architecture
+# Pyralog Data Path Architecture
 
-Detailed documentation of write and read paths through DLog, including diagrams and step-by-step flows.
+Detailed documentation of write and read paths through Pyralog, including diagrams and step-by-step flows.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ Detailed documentation of write and read paths through DLog, including diagrams 
      │ 1. produce(record)
      ▼
 ┌─────────────────┐
-│  DLog Server    │
+│  Pyralog Server    │
 │  (Protocol)     │
 └────┬────────────┘
      │ 2. route to partition
@@ -92,7 +92,7 @@ let offset = client.produce(log_id, record).await?;
 
 ```
 ┌──────────────────────────────────────┐
-│         DLog Server (Node 1)         │
+│         Pyralog Server (Node 1)         │
 ├──────────────────────────────────────┤
 │  ┌────────────────────────────────┐  │
 │  │  Protocol Handler              │  │
@@ -113,7 +113,7 @@ let offset = client.produce(log_id, record).await?;
 ```
 
 ```rust
-impl DLogServer {
+impl PyralogServer {
     async fn handle_produce(&self, request: ProduceRequest) -> Result<ProduceResponse> {
         // 1. Get log metadata
         let metadata = self.cluster.get_log(&request.log_id)?;
@@ -123,7 +123,7 @@ impl DLogServer {
         
         // 3. Check if leader for this partition
         if !self.is_leader(partition) {
-            return Err(DLogError::NotLeader(self.get_leader(partition)));
+            return Err(PyralogError::NotLeader(self.get_leader(partition)));
         }
         
         // 4. Continue to write path...
@@ -198,7 +198,7 @@ impl Sequencer {
         
         // Check if we can write
         if !self.can_write(partition, epoch) {
-            return Err(DLogError::EpochSealed);
+            return Err(PyralogError::EpochSealed);
         }
         
         record.epoch = epoch;
@@ -397,7 +397,7 @@ impl ReplicationManager {
         
         // 5. Check if quorum reached
         if !quorum.is_satisfied() {
-            return Err(DLogError::QuorumNotAvailable);
+            return Err(PyralogError::QuorumNotAvailable);
         }
         
         Ok(())
@@ -447,7 +447,7 @@ Client
   │ produce(key="user-123", value="order data")
   ▼
 ┌─────────────────────────────────────────────────────────┐
-│ DLog Server (Leader for Partition 2)                   │
+│ Pyralog Server (Leader for Partition 2)                   │
 │                                                         │
 │  Step 1: Protocol Layer                                │
 │  ├─ Parse request                                      │
@@ -514,7 +514,7 @@ Client receives offset=1000
      │ 1. consume(partition, offset)
      ▼
 ┌─────────────────┐
-│  DLog Server    │
+│  Pyralog Server    │
 └────┬────────────┘
      │ 2. locate partition
      ▼
@@ -563,7 +563,7 @@ let records = client.consume(
 
 ```
 ┌──────────────────────────────────────┐
-│         DLog Server                  │
+│         Pyralog Server                  │
 ├──────────────────────────────────────┤
 │                                      │
 │  Parse ConsumeRequest:               │
@@ -622,7 +622,7 @@ impl LogStorage {
                 }
             })
             .map(|idx| &self.segments[idx])
-            .map_err(|_| DLogError::InvalidOffset(offset))
+            .map_err(|_| PyralogError::InvalidOffset(offset))
     }
 }
 ```
@@ -798,7 +798,7 @@ Client
   │ consume(partition=2, offset=1000, max=100)
   ▼
 ┌─────────────────────────────────────────────────────────┐
-│ DLog Server                                             │
+│ Pyralog Server                                             │
 │                                                         │
 │  Step 1: Request Validation                             │
 │  ├─ Parse ConsumeRequest                               │
@@ -1296,7 +1296,7 @@ A naive approach would have clients connect to any server, which then proxies re
 
 ### The Solution: Smart Client Pattern
 
-DLog uses the **smart client pattern** (like Kafka) where clients fetch metadata and connect directly to the correct leader:
+Pyralog uses the **smart client pattern** (like Kafka) where clients fetch metadata and connect directly to the correct leader:
 
 ```
 ┌────────────────────────────────────────────────┐
@@ -1428,7 +1428,7 @@ pub struct BrokerMetadata {
 ### Client-Side Implementation
 
 ```rust
-pub struct DLogClient {
+pub struct PyralogClient {
     // Bootstrap servers (initial connection)
     bootstrap_servers: Vec<String>,
     
@@ -1442,7 +1442,7 @@ pub struct DLogClient {
     partitioner: Box<dyn Partitioner>,
 }
 
-impl DLogClient {
+impl PyralogClient {
     pub async fn produce(
         &self,
         log_id: LogId,
@@ -1462,7 +1462,7 @@ impl DLogClient {
             Ok(offset) => Ok(offset),
             
             // 4. Handle leader change
-            Err(DLogError::NotLeader(new_leader)) => {
+            Err(PyralogError::NotLeader(new_leader)) => {
                 // Invalidate cache
                 self.invalidate_metadata(&log_id).await;
                 
@@ -1493,7 +1493,7 @@ impl DLogClient {
         self.metadata_cache
             .read()
             .get_leader(log_id, partition)
-            .ok_or(DLogError::LeaderNotAvailable)
+            .ok_or(PyralogError::LeaderNotAvailable)
     }
     
     async fn refresh_metadata(&self, log_id: &LogId) -> Result<()> {
@@ -1516,7 +1516,7 @@ impl DLogClient {
             }
         }
         
-        Err(DLogError::NoAvailableServers)
+        Err(PyralogError::NoAvailableServers)
     }
 }
 ```
@@ -1615,7 +1615,7 @@ Frequency: Rare (only on leader changes)
 Clients can use metadata to implement different read strategies:
 
 ```rust
-impl DLogClient {
+impl PyralogClient {
     pub async fn consume(
         &self,
         log_id: LogId,
@@ -1749,7 +1749,7 @@ Result: Essentially free! ✅
 
 ```rust
 // 1. On-demand refresh (when needed)
-if let Err(DLogError::NotLeader(_)) = result {
+if let Err(PyralogError::NotLeader(_)) = result {
     self.refresh_metadata(log_id).await?;
 }
 
@@ -1793,7 +1793,7 @@ client.subscribe_to_metadata_updates(|metadata| {
 │  • Direct connection to partition leaders           │
 │  • Client-side load balancing                       │
 │  • Scales to 1000s of clients                       │
-│  ✅ DLog uses this model                            │
+│  ✅ Pyralog uses this model                            │
 └─────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────┐
@@ -1802,7 +1802,7 @@ client.subscribe_to_metadata_updates(|metadata| {
 │  • Clients know token ring topology                 │
 │  • Route directly to coordinator                    │
 │  • No leader, any node can handle writes            │
-│  • DLog: Similar metadata approach, but leader-based│
+│  • Pyralog: Similar metadata approach, but leader-based│
 └─────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────┐
@@ -1811,7 +1811,7 @@ client.subscribe_to_metadata_updates(|metadata| {
 │  • mongos routers proxy requests                    │
 │  • Clients connect to mongos, not shards directly   │
 │  • Extra hop, but simpler client                    │
-│  ❌ DLog avoids this model (performance)            │
+│  ❌ Pyralog avoids this model (performance)            │
 └─────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────┐
@@ -1820,7 +1820,7 @@ client.subscribe_to_metadata_updates(|metadata| {
 │  • Clients learn slot → node mapping                │
 │  • Direct connection to slot master                 │
 │  • MOVED/ASK redirects for topology changes         │
-│  • Similar to DLog's NotLeader error handling       │
+│  • Similar to Pyralog's NotLeader error handling       │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -1836,7 +1836,7 @@ client.subscribe_to_metadata_updates(|metadata| {
 | Load balancing | Built-in ✅ | Needs LB ❌ |
 | Failure handling | Client retries | Proxy handles |
 
-**DLog uses smart clients because:**
+**Pyralog uses smart clients because:**
 1. Performance is critical (every ms matters)
 2. Client libraries handle complexity
 3. Scales better with cluster size

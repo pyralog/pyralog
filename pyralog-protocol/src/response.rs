@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use dlog_core::{LogId, Result, DLogError};
+use pyralog_core::{LogId, Result, DLogError};
 use serde::{Deserialize, Serialize};
 
 /// Wire format for responses

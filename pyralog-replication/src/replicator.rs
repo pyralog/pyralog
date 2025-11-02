@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use dlog_core::{
+use pyralog_core::{
     LogOffset, PartitionId, Record, RecordBatch, Result, DLogError,
     traits::{ReplicationManager as ReplicationManagerTrait, ReplicationStatus},
 };

@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use dlog_core::{LogOffset, Record, RecordBatch, Result, DLogError};
+use pyralog_core::{LogOffset, Record, RecordBatch, Result, DLogError};
 use parking_lot::Mutex;
 use std::collections::VecDeque;
 use std::sync::Arc;

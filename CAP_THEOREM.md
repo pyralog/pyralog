@@ -1,11 +1,11 @@
-# CAP Theorem and DLog
+# CAP Theorem and Pyralog
 
-Understanding consistency, availability, and partition tolerance in DLog's design.
+Understanding consistency, availability, and partition tolerance in Pyralog's design.
 
 ## Table of Contents
 
 1. [CAP Theorem Overview](#cap-theorem-overview)
-2. [DLog's Position in CAP Space](#dlogs-position-in-cap-space)
+2. [Pyralog's Position in CAP Space](#dlogs-position-in-cap-space)
 3. [Flexible Quorums and CAP](#flexible-quorums-and-cap)
 4. [Practical Tradeoffs](#practical-tradeoffs)
 5. [Configuration Examples](#configuration-examples)
@@ -57,18 +57,18 @@ In distributed systems, **network partitions are inevitable**. Therefore, the re
 
 ---
 
-## DLog's Position in CAP Space
+## Pyralog's Position in CAP Space
 
 ### Configurable CAP Profile
 
-DLog's unique approach: **Let users choose their position on the CAP spectrum** through flexible quorums.
+Pyralog's unique approach: **Let users choose their position on the CAP spectrum** through flexible quorums.
 
 ```
 Traditional Systems:
 - Kafka: CP (strong consistency)
 - Cassandra: AP (eventual consistency)
 
-DLog:
+Pyralog:
 - Configurable: From CP to AP based on quorum settings
 ```
 
@@ -79,7 +79,7 @@ DLog:
 3. **Graceful Degradation**: System adapts to failures
 4. **Epoch-based Safety**: Prevents split-brain regardless of CAP choice
 
-### DLog's CAP Triangle
+### Pyralog's CAP Triangle
 
 ```
          Strong Consistency
@@ -89,7 +89,7 @@ DLog:
            / W=RF \
           /  R=RF  \
          /          \
-        /   DLog     \
+        /   Pyralog     \
        /  (tunable)   \
       /                \
      /   W=majority    \
@@ -197,7 +197,7 @@ QuorumConfig {
 
 ### Consistency Levels
 
-DLog supports multiple consistency levels through quorum configuration:
+Pyralog supports multiple consistency levels through quorum configuration:
 
 | Level | W | R | Latency | Availability | Consistency |
 |-------|---|---|---------|--------------|-------------|
@@ -233,9 +233,9 @@ Result:
 - Issue: Split-brain! Both partitions accept writes
 ```
 
-### DLog's Split-Brain Prevention
+### Pyralog's Split-Brain Prevention
 
-Even with AP configuration, DLog uses **epochs** to prevent true split-brain:
+Even with AP configuration, Pyralog uses **epochs** to prevent true split-brain:
 
 ```rust
 pub struct Record {
@@ -337,7 +337,7 @@ let config = QuorumConfig {
 - May sacrifice availability
 ```
 
-**DLog Equivalent**:
+**Pyralog Equivalent**:
 ```rust
 QuorumConfig {
     replication_factor: 3,
@@ -358,7 +358,7 @@ QuorumConfig {
 - May return stale data
 ```
 
-**DLog Equivalent**:
+**Pyralog Equivalent**:
 ```rust
 QuorumConfig {
     replication_factor: 3,
@@ -369,16 +369,16 @@ QuorumConfig {
 
 ### LogDevice
 
-**CAP Position**: Tunable (like DLog)
+**CAP Position**: Tunable (like Pyralog)
 
 ```
 - Flexible quorums
 - Configurable W and R
 - Epoch-based safety
-- Similar to DLog's approach
+- Similar to Pyralog's approach
 ```
 
-**Direct Mapping**: DLog's quorum system inspired by LogDevice
+**Direct Mapping**: Pyralog's quorum system inspired by LogDevice
 
 ### Redis
 
@@ -390,11 +390,11 @@ QuorumConfig {
 - Redis Sentinel: CP with eventual failover
 ```
 
-### DLog vs Others
+### Pyralog vs Others
 
 | System | CAP | Configurable | Epochs | Quorums |
 |--------|-----|--------------|--------|---------|
-| **DLog** | **Tunable** | **✅** | **✅** | **Flexible** |
+| **Pyralog** | **Tunable** | **✅** | **✅** | **Flexible** |
 | Kafka | CP | ⚠️ Limited | ❌ | ISR-based |
 | Cassandra | AP | ✅ | ❌ | Flexible |
 | LogDevice | Tunable | ✅ | ✅ | Flexible |
@@ -411,7 +411,7 @@ PAC: During Partition, choose between Availability and Consistency
 ELC: Else (no partition), choose between Latency and Consistency
 ```
 
-### DLog's PACELC Profile
+### Pyralog's PACELC Profile
 
 **During Partition (PA/C)**:
 ```rust
@@ -427,7 +427,7 @@ if write_quorum + read_quorum > replication_factor {
 
 **Else, Normal Operation (EL/C)**:
 ```rust
-// DLog favors Latency via write caching
+// Pyralog favors Latency via write caching
 if cache_enabled {
     // EL: Low Latency
     cache.buffer(record);
@@ -444,7 +444,7 @@ if cache_enabled {
 #### PA/EL (Availability + Latency)
 
 ```rust
-DLogConfig {
+PyralogConfig {
     replication: QuorumConfig {
         replication_factor: 3,
         write_quorum: 1,
@@ -464,7 +464,7 @@ DLogConfig {
 #### PC/EC (Consistency + Consistency)
 
 ```rust
-DLogConfig {
+PyralogConfig {
     replication: QuorumConfig {
         replication_factor: 3,
         write_quorum: 3,
@@ -480,10 +480,10 @@ DLogConfig {
 **Profile**: Maximum consistency
 **Use case**: Financial transactions, critical data
 
-#### PC/EL (Consistency + Latency) - **DLog's Sweet Spot**
+#### PC/EL (Consistency + Latency) - **Pyralog's Sweet Spot**
 
 ```rust
-DLogConfig {
+PyralogConfig {
     replication: QuorumConfig {
         replication_factor: 3,
         write_quorum: 2,    // Consistency during partition
@@ -576,7 +576,7 @@ Rationale:
 
 **Definition**: Operations appear to execute atomically in some order consistent with real-time
 
-**DLog Achieves Linearizability** when:
+**Pyralog Achieves Linearizability** when:
 ```rust
 write_quorum == replication_factor && read_quorum == 1
 // OR
@@ -601,7 +601,7 @@ let config = QuorumConfig {
 
 **Definition**: If operation A causally precedes B, all nodes see A before B
 
-**DLog Provides Causal Consistency** through epochs:
+**Pyralog Provides Causal Consistency** through epochs:
 ```rust
 pub struct Record {
     pub epoch: Epoch,
@@ -618,7 +618,7 @@ pub struct Record {
 
 **Definition**: A client's reads reflect its writes
 
-**DLog Guarantees** through sticky sessions:
+**Pyralog Guarantees** through sticky sessions:
 ```rust
 // Client tracks its latest written offset
 pub struct ConsistentClient {
@@ -676,13 +676,13 @@ dlog_read_latency_seconds      // Read latency
 
 ### Key Takeaways
 
-1. **CAP is a spectrum, not binary**: DLog lets you choose your position
+1. **CAP is a spectrum, not binary**: Pyralog lets you choose your position
 2. **P is mandatory**: Networks partition, so choose C or A
 3. **Flexible quorums are powerful**: One size doesn't fit all
 4. **Epochs add safety**: Even AP config gets split-brain protection
 5. **Configuration matters**: Choose based on your requirements
 
-### DLog's Philosophy
+### Pyralog's Philosophy
 
 ```
 "Don't force users into one CAP box.
@@ -701,9 +701,9 @@ dlog_read_latency_seconds      // Read latency
 5. Configure quorums accordingly
 ```
 
-### The DLog Advantage
+### The Pyralog Advantage
 
-Unlike systems that force you into CP (Kafka) or AP (Cassandra), **DLog adapts to your needs** while maintaining safety through epochs and flexible quorums inspired by LogDevice.
+Unlike systems that force you into CP (Kafka) or AP (Cassandra), **Pyralog adapts to your needs** while maintaining safety through epochs and flexible quorums inspired by LogDevice.
 
 ---
 
@@ -712,8 +712,8 @@ Unlike systems that force you into CP (Kafka) or AP (Cassandra), **DLog adapts t
 - [Brewer's CAP Theorem (2000)](https://www.cs.berkeley.edu/~brewer/cs262b-2004/PODC-keynote.pdf)
 - [CAP Twelve Years Later (2012)](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/)
 - [PACELC Theorem](https://en.wikipedia.org/wiki/PACELC_theorem)
-- [DLog Flexible Quorums](DESIGN.md#flexible-quorums)
-- [DLog Epochs](EPOCHS.md)
+- [Pyralog Flexible Quorums](DESIGN.md#flexible-quorums)
+- [Pyralog Epochs](EPOCHS.md)
 - [LogDevice Consistency](https://engineering.fb.com/2017/08/31/core-infra/logdevice-a-distributed-data-store-for-logs/)
 
 ---
@@ -722,5 +722,5 @@ Unlike systems that force you into CP (Kafka) or AP (Cassandra), **DLog adapts t
 **Version**: 1.0
 **Status**: Complete
 
-*For questions about CAP tradeoffs in DLog, see [FAQ.md](FAQ.md) or open a GitHub discussion.*
+*For questions about CAP tradeoffs in Pyralog, see [FAQ.md](FAQ.md) or open a GitHub discussion.*
 

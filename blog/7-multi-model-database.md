@@ -1,12 +1,12 @@
 # Multi-Model Database with Category Theory: One Query Language, Five Data Models
 
-**Part 7 of the DLog Blog Series**
+**Part 7 of the Pyralog Blog Series**
 
 What if you could query relational tables, graph connections, JSON documents, key-value pairs, and RDF triples—all with a single, unified query language? And what if the math **actually made sense**?
 
 **Most multi-model databases are duct-taped Frankenstein monsters.** They bolt together different engines, each with its own query language and semantics. Want to join a graph to a table? Good luck.
 
-**DLog is different.** We built our multi-model system on **category theory**—the mathematics of structure. Every data model is a category. Every query is a functor. Everything composes naturally.
+**Pyralog is different.** We built our multi-model system on **category theory**—the mathematics of structure. Every data model is a category. Every query is a functor. Everything composes naturally.
 
 This isn't just academic elegance. It's the **only way** to build multi-model databases that actually work.
 
@@ -185,7 +185,7 @@ Here's where category theory pays off. **All models share a common structure**, 
 **Scenario**: Product catalog in relational, user behavior graph, product reviews as documents.
 
 ```sql
--- DLog's unified query
+-- Pyralog's unified query
 SELECT 
     p.name,
     p.price,
@@ -225,7 +225,7 @@ LIMIT 10;
 
 ## Query Optimization Across Models
 
-DLog's optimizer uses category theory laws to rewrite queries:
+Pyralog's optimizer uses category theory laws to rewrite queries:
 
 ### Law 1: Functor Composition
 
@@ -296,7 +296,7 @@ A typical e-commerce platform needs:
 
 **Traditional solution**: 5 databases, 5 teams, 5× the problems.
 
-### The DLog Solution
+### The Pyralog Solution
 
 **One database. One query language. Infinite flexibility.**
 
@@ -417,14 +417,14 @@ impl DataModel for DocumentCollection {
 
 ### Benchmark: 100M Records
 
-| Query Type | DLog | Neo4j | MongoDB | PostgreSQL |
+| Query Type | Pyralog | Neo4j | MongoDB | PostgreSQL |
 |------------|------|-------|---------|------------|
 | Simple SELECT | **50 μs** | N/A | N/A | 80 μs |
 | Graph traversal | **120 μs** | 200 μs | N/A | N/A |
 | Document query | **90 μs** | N/A | 150 μs | N/A |
 | Cross-model join | **180 μs** | **Impossible** | **Impossible** | **Impossible** |
 
-**DLog is faster than specialized databases** because:
+**Pyralog is faster than specialized databases** because:
 1. **Columnar storage** (Apache Arrow): Cache-friendly
 2. **Unified optimizer**: Cross-model optimizations
 3. **Zero copying**: Direct memory access
@@ -456,9 +456,9 @@ dlog.migrate(migration).await?;
 
 ---
 
-## Comparison: DLog vs Others
+## Comparison: Pyralog vs Others
 
-| Feature | DuckDB | Neo4j | MongoDB | PostgreSQL | **DLog** |
+| Feature | DuckDB | Neo4j | MongoDB | PostgreSQL | **Pyralog** |
 |---------|--------|-------|---------|------------|----------|
 | Relational | ✅ | ❌ | ❌ | ✅ | ✅ |
 | Graph | ❌ | ✅ | ❌ | ❌ | ✅ |
@@ -469,7 +469,7 @@ dlog.migrate(migration).await?;
 | Math foundation | ❌ | ❌ | ❌ | ❌ | **✅ Category Theory** |
 | Unified optimizer | ❌ | ❌ | ❌ | ❌ | **✅** |
 
-**DLog is the only database with:**
+**Pyralog is the only database with:**
 1. All five data models
 2. Cross-model queries
 3. Mathematical correctness guarantees
@@ -547,14 +547,14 @@ WHERE u.active = true;
 
 ## What's Next?
 
-In the next post, we'll introduce **Batuta**, DLog's programming language that combines Lisp macros, Elixir actors, Zig error handling, and Pony reference capabilities—compiling to both native code and WebAssembly.
+In the next post, we'll introduce **Batuta**, Pyralog's programming language that combines Lisp macros, Elixir actors, Zig error handling, and Pony reference capabilities—compiling to both native code and WebAssembly.
 
 **Next**: [Batuta: A New Language for Data Processing →](8-batuta-language.md)
 
 ---
 
 **Blog Series**:
-1. [Introducing DLog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
@@ -567,7 +567,7 @@ In the next post, we'll introduce **Batuta**, DLog's programming language that c
 
 ---
 
-**Author**: DLog Team
+**Author**: Pyralog Team
 **License**: MIT-0 (code) & CC0-1.0 (documentation)
 **Contact**: hello@dlog.io
 

@@ -28,7 +28,7 @@
 
 ## Overview
 
-DLog extends its multi-model capabilities with **native tensor support**, enabling efficient storage and processing of multi-dimensional arrays for machine learning, scientific computing, and real-time analytics.
+Pyralog extends its multi-model capabilities with **native tensor support**, enabling efficient storage and processing of multi-dimensional arrays for machine learning, scientific computing, and real-time analytics.
 
 ### Key Features
 
@@ -40,7 +40,7 @@ DLog extends its multi-model capabilities with **native tensor support**, enabli
 - **Vector search** (ANN indexes for embeddings)
 - **SQL extensions** (tensor slicing, operations)
 
-### Why Tensors in DLog?
+### Why Tensors in Pyralog?
 
 Modern applications require **unified storage** for:
 - Structured data (tables)
@@ -48,7 +48,7 @@ Modern applications require **unified storage** for:
 - Graph data (relationships)
 - **Tensor data** (vectors, matrices, ND arrays)
 
-DLog provides a **single system** for all data types with:
+Pyralog provides a **single system** for all data types with:
 - ACID transactions across models
 - Cryptographic verification
 - Time-travel queries
@@ -156,7 +156,7 @@ Product of matrices (efficient for high-dimensional tensors).
 - **Unit**: I ⊗ A ≅ A
 - **Naturality**: Tensor product is a bifunctor
 
-**Example in DLog**:
+**Example in Pyralog**:
 
 ```
 Objects: Tensor spaces (ℝⁿ, ℝⁿˣᵐ, ℝⁿˣᵐˣᵖ, ...)
@@ -663,7 +663,7 @@ Morphisms: Linear maps (matrix multiply, reshape)
 Tensor product: ⊗ (Kronecker product)
 ```
 
-Integration with DLog's existing category-theoretic model:
+Integration with Pyralog's existing category-theoretic model:
 
 ```rust
 pub trait TensorCategory {
@@ -686,7 +686,7 @@ pub trait TensorCategory {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    DLog Tensor Polystore                     │
+│                    Pyralog Tensor Polystore                     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  ┌─────────────────────────────────────────────────────┐   │
@@ -933,7 +933,7 @@ pub enum Distance {
 dlog.ingest_documents(vec![
     Document {
         id: "doc1",
-        text: "DLog is a distributed log system...",
+        text: "Pyralog is a distributed log system...",
         metadata: json!({"source": "README.md"}),
     },
     // ...
@@ -950,7 +950,7 @@ dlog.embed_documents(
 
 // Semantic search
 let context = dlog.semantic_search(
-    query: "How does DLog handle replication?",
+    query: "How does Pyralog handle replication?",
     k: 5,
 ).await?;
 
@@ -1060,7 +1060,7 @@ let output = pipeline.execute().await?;
 
 ### Query Optimization
 
-DLog's tensor algebra compiler optimizes:
+Pyralog's tensor algebra compiler optimizes:
 
 1. **Fusion**: Combine multiple ops into single kernel
 2. **Reordering**: Optimize computation order
@@ -1269,8 +1269,8 @@ let comparison = dlog.compare_model_versions(
 ```rust
 use dlpack::{DLTensor, DLDataType, DLDevice};
 
-// DLog tensor to DLPack
-impl DLogTensor {
+// Pyralog tensor to DLPack
+impl PyralogTensor {
     pub fn to_dlpack(&self) -> DLTensor {
         DLTensor {
             data: self.data.as_ptr() as *mut _,
@@ -1298,7 +1298,7 @@ impl DLogTensor {
                 dl_tensor.ndim as usize,
             );
             
-            DLogTensor::from_raw_parts(
+            PyralogTensor::from_raw_parts(
                 dl_tensor.data,
                 shape.to_vec(),
                 dl_tensor.dtype,
@@ -1311,8 +1311,8 @@ impl DLogTensor {
 ### PyTorch Integration
 
 ```rust
-// Zero-copy: DLog → PyTorch
-impl DLogTensor {
+// Zero-copy: Pyralog → PyTorch
+impl PyralogTensor {
     pub fn to_torch(&self) -> PyObject {
         Python::with_gil(|py| {
             let dl_tensor = self.to_dlpack();
@@ -1324,15 +1324,15 @@ impl DLogTensor {
     }
 }
 
-// Zero-copy: PyTorch → DLog
-impl From<PyObject> for DLogTensor {
+// Zero-copy: PyTorch → Pyralog
+impl From<PyObject> for PyralogTensor {
     fn from(torch_tensor: PyObject) -> Self {
         Python::with_gil(|py| {
             // Get DLPack capsule from PyTorch
             let capsule = torch_tensor.call_method0(py, "__dlpack__")?;
             let dl_tensor = unsafe { extract_dlpack(capsule) };
             
-            DLogTensor::from_dlpack(&dl_tensor)
+            PyralogTensor::from_dlpack(&dl_tensor)
         })
     }
 }
@@ -1347,10 +1347,10 @@ import dlog
 # Create tensor in PyTorch
 torch_tensor = torch.randn(1000, 768, device='cuda')
 
-# Zero-copy transfer to DLog
+# Zero-copy transfer to Pyralog
 dlog_tensor = dlog.from_torch(torch_tensor)  # No copy!
 
-# Store in DLog
+# Store in Pyralog
 client.insert("embeddings", id=1, embedding=dlog_tensor)
 
 # Retrieve and use in PyTorch
@@ -1382,7 +1382,7 @@ pub fn to_tensorflow(&self) -> PyObject {
 import tensorflow as tf
 import dlog
 
-# DLog → TensorFlow (zero-copy)
+# Pyralog → TensorFlow (zero-copy)
 dlog_tensor = client.get_tensor("features", id=123)
 tf_tensor = dlog.to_tensorflow(dlog_tensor)
 
@@ -1390,7 +1390,7 @@ tf_tensor = dlog.to_tensorflow(dlog_tensor)
 model = tf.keras.Sequential([...])
 predictions = model(tf_tensor)
 
-# TensorFlow → DLog
+# TensorFlow → Pyralog
 dlog_result = dlog.from_tensorflow(predictions)
 client.insert("predictions", id=123, result=dlog_result)
 ```
@@ -1416,7 +1416,7 @@ pub fn to_jax(&self) -> PyObject {
 import jax.numpy as jnp
 import dlog
 
-# DLog → JAX (zero-copy)
+# Pyralog → JAX (zero-copy)
 dlog_tensor = client.get_tensor("weights", layer="encoder")
 jax_array = dlog.to_jax(dlog_tensor)
 
@@ -1431,7 +1431,7 @@ output = forward(input, jax_array)
 ### ONNX Model Import/Export
 
 ```rust
-// Import ONNX model into DLog
+// Import ONNX model into Pyralog
 pub async fn import_onnx_model(
     model_path: &str,
 ) -> Result<ModelWeights> {
@@ -1447,7 +1447,7 @@ pub async fn import_onnx_model(
     Ok(weights)
 }
 
-// Export DLog model to ONNX
+// Export Pyralog model to ONNX
 pub async fn export_to_onnx(
     model_weights: &ModelWeights,
     output_path: &str,
@@ -1475,7 +1475,7 @@ pub async fn export_to_onnx(
 // Import pre-trained ONNX model
 let weights = dlog.import_onnx_model("resnet50.onnx").await?;
 
-// Store in DLog
+// Store in Pyralog
 dlog.save_model_weights("resnet50", "v1.0", weights).await?;
 
 // Later: Export to ONNX for deployment
@@ -1486,7 +1486,7 @@ dlog.export_to_onnx(&weights, "resnet50_deployed.onnx").await?;
 ### Hugging Face Transformers Integration
 
 ```rust
-// Store Hugging Face model in DLog
+// Store Hugging Face model in Pyralog
 pub async fn save_hf_model(
     model_name: &str,
     model: &PreTrainedModel,
@@ -1496,8 +1496,8 @@ pub async fn save_hf_model(
     
     let mut weights = ModelWeights::new();
     for (name, tensor) in state_dict {
-        // Convert to DLog tensor (zero-copy via DLPack)
-        let dlog_tensor = DLogTensor::from_torch(tensor);
+        // Convert to Pyralog tensor (zero-copy via DLPack)
+        let dlog_tensor = PyralogTensor::from_torch(tensor);
         weights.insert(name, dlog_tensor);
     }
     
@@ -1514,7 +1514,7 @@ pub async fn save_hf_model(
     Ok(())
 }
 
-// Load Hugging Face model from DLog
+// Load Hugging Face model from Pyralog
 pub async fn load_hf_model(
     model_name: &str,
 ) -> Result<PreTrainedModel> {
@@ -1540,13 +1540,13 @@ pub async fn load_hf_model(
 from transformers import AutoModel, AutoTokenizer
 import dlog
 
-# Save Hugging Face model to DLog
+# Save Hugging Face model to Pyralog
 model = AutoModel.from_pretrained("bert-base-uncased")
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 dlog.save_hf_model("bert-base-uncased", model, tokenizer)
 
-# Later: Load from DLog (faster than downloading)
+# Later: Load from Pyralog (faster than downloading)
 model, tokenizer = dlog.load_hf_model("bert-base-uncased")
 
 # Use model
@@ -1616,7 +1616,7 @@ let training_job = dlog.create_training_job(TrainingConfig {
     learning_rate: 0.001,
 }).await?;
 
-// DLog automatically:
+// Pyralog automatically:
 // 1. Shards dataset across 8 nodes
 // 2. Loads model on each node
 // 3. Coordinates gradient synchronization
@@ -1792,8 +1792,8 @@ let checkpoint_config = CheckpointConfig {
         metric: "val_accuracy",
     },
     
-    // Save to DLog (versioned, time-travel enabled)
-    location: CheckpointLocation::DLog {
+    // Save to Pyralog (versioned, time-travel enabled)
+    location: CheckpointLocation::Pyralog {
         table: "model_checkpoints",
         versioning: true,
     },
@@ -2691,7 +2691,7 @@ let roi = dlog.query_sql(r#"
 #### Zarr Integration
 
 ```rust
-// Import Zarr array into DLog
+// Import Zarr array into Pyralog
 pub async fn import_zarr(
     zarr_path: &str,  // Local path or cloud URL
     config: ZarrImportConfig,
@@ -2707,7 +2707,7 @@ pub async fn import_zarr(
     // Read Zarr metadata
     let zarr_array = ZarrArray::open(store).await?;
     
-    // Convert to DLog tensor
+    // Convert to Pyralog tensor
     let tensor = dlog.create_tensor_table(config.table_name, TensorSchema {
         shape: zarr_array.shape().to_vec(),
         dtype: zarr_array.dtype(),
@@ -2746,7 +2746,7 @@ dlog.import_zarr(
     },
 ).await?;
 
-// Query imported data (same as native DLog tensors)
+// Query imported data (same as native Pyralog tensors)
 let data = dlog.query_sql(r#"
     SELECT temperature[:, 40:50, -120:-110]
     FROM climate_zarr
@@ -2757,7 +2757,7 @@ let data = dlog.query_sql(r#"
 #### Export to Zarr
 
 ```rust
-// Export DLog tensor to Zarr format
+// Export Pyralog tensor to Zarr format
 pub async fn export_zarr(
     tensor_id: &str,
     zarr_path: &str,
@@ -2803,7 +2803,7 @@ pub async fn export_zarr(
 **Example**:
 
 ```rust
-// Export DLog tensor to Zarr on S3
+// Export Pyralog tensor to Zarr on S3
 dlog.export_zarr(
     "climate_tensor",
     "s3://my-bucket/output/climate.zarr",
@@ -2822,7 +2822,7 @@ dlog.export_zarr(
 
 #### Zarr v3 Support
 
-DLog supports both **Zarr v2** and **Zarr v3** specifications:
+Pyralog supports both **Zarr v2** and **Zarr v3** specifications:
 
 ```rust
 pub enum ZarrVersion {
@@ -3027,7 +3027,7 @@ pub enum ZarrCodec {
 - ✅ Complex hierarchies
 - ✅ Established workflows
 
-#### DLog + Zarr Use Cases
+#### Pyralog + Zarr Use Cases
 
 **1. Climate Model Output**:
 ```rust
@@ -3041,7 +3041,7 @@ dlog.export_zarr_incremental(
     },
 ).await?;
 
-// Analysts can access immediately via DLog or native Zarr clients
+// Analysts can access immediately via Pyralog or native Zarr clients
 ```
 
 **2. Satellite Imagery**:
@@ -3074,14 +3074,14 @@ dlog.export_zarr(
 ).await?;
 ```
 
-#### Zarr + DLog Benefits
+#### Zarr + Pyralog Benefits
 
 1. **Unified Query Interface**: Query Zarr data with SQL
 2. **ACID Transactions**: Update Zarr arrays transactionally
 3. **Time-Travel**: Version control for Zarr arrays
 4. **Cryptographic Verification**: Merkle trees for Zarr chunks
 5. **Multi-Model Joins**: Combine Zarr arrays with relational/graph data
-6. **Distributed Processing**: DLog automatically parallelizes Zarr chunk access
+6. **Distributed Processing**: Pyralog automatically parallelizes Zarr chunk access
 7. **Caching**: Intelligent chunk caching for repeated access
 
 **Example: Query Zarr + Relational**:
@@ -3183,7 +3183,7 @@ let frames = dlog.query_sql(r#"
 
 ```rust
 // Configure GPU backend
-let config = DLogConfig {
+let config = PyralogConfig {
     tensor: TensorConfig {
         device: Device::CUDA { device_id: 0 },
         memory_pool: GpuMemoryPool::Managed {
@@ -3375,7 +3375,7 @@ Store graph embeddings, perform GNN operations.
 
 ## Comparison with Alternatives
 
-| Feature | DLog Tensors | TileDB | Milvus | PostgreSQL + pgvector | Pinecone |
+| Feature | Pyralog Tensors | TileDB | Milvus | PostgreSQL + pgvector | Pinecone |
 |---------|-------------|--------|--------|----------------------|----------|
 | **Multi-model** | ✅ All models | ❌ Arrays only | ❌ Vectors only | ⚠️ Limited | ❌ Vectors only |
 | **ACID** | ✅ Full | ⚠️ Limited | ❌ No | ✅ Full | ❌ No |
@@ -3387,7 +3387,7 @@ Store graph embeddings, perform GNN operations.
 | **Time-travel** | ✅ Built-in | ❌ No | ❌ No | ⚠️ Manual | ❌ No |
 | **Cryptographic** | ✅ Merkle trees | ❌ No | ❌ No | ❌ No | ❌ No |
 
-**Key differentiator**: DLog is the **only system** combining:
+**Key differentiator**: Pyralog is the **only system** combining:
 - Multi-model database (relational + document + graph + tensor)
 - ACID transactions across all models
 - Cryptographic verification
@@ -3399,7 +3399,7 @@ Store graph embeddings, perform GNN operations.
 
 ## Architecture Integration
 
-### Tensor Layer in DLog Stack
+### Tensor Layer in Pyralog Stack
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -3422,7 +3422,7 @@ Store graph embeddings, perform GNN operations.
 │  • Chunking, compression, quantization                     │
 │  • SIMD/GPU kernels                                        │
 ├─────────────────────────────────────────────────────────────┤
-│                   DLog Core (LSM + Raft)                    │
+│                   Pyralog Core (LSM + Raft)                    │
 │  • Distributed coordination                                │
 │  • Replication, consensus                                  │
 │  • Cryptographic verification                              │
@@ -3433,7 +3433,7 @@ Store graph embeddings, perform GNN operations.
 
 ## Conclusion
 
-**DLog's tensor support** provides a **unified platform** for:
+**Pyralog's tensor support** provides a **unified platform** for:
 - Traditional databases (SQL, NoSQL)
 - Vector databases (embeddings, ANN search)
 - Array databases (scientific computing)

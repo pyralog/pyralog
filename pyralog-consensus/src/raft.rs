@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use dlog_core::{Result, DLogError, LogOffset};
+use pyralog_core::{Result, DLogError, LogOffset};
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::path::PathBuf;

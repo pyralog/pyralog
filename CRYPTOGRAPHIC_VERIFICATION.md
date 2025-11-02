@@ -1,6 +1,6 @@
 # Cryptographic Verification and Zero-Trust Architecture
 
-**Integrating immudb's cryptographic features into DLog for tamper-proof, verifiable logs**
+**Integrating immudb's cryptographic features into Pyralog for tamper-proof, verifiable logs**
 
 ---
 
@@ -25,13 +25,13 @@
 
 ## Overview
 
-DLog already provides:
+Pyralog already provides:
 - ✅ **Immutability** via append-only log
 - ✅ **ACID transactions** via Percolator protocol
 - ✅ **Time-travel queries** via timestamp indexes
 - ✅ **Audit trail** via transaction metadata
 
-By integrating **immudb's cryptographic features**, DLog gains:
+By integrating **immudb's cryptographic features**, Pyralog gains:
 - 🔐 **Tamper-proof verification** (detect any modification)
 - 🔐 **Zero-trust architecture** (client verifies without trusting server)
 - 🔐 **Cryptographic receipts** (proof of writes)
@@ -41,7 +41,7 @@ By integrating **immudb's cryptographic features**, DLog gains:
 - 🔐 **HSM integration** (hardware key protection)
 - 🔐 **Blockchain-style chaining** (dual verification)
 
-**Result**: DLog becomes a **verifiable, tamper-evident, zero-trust distributed log**.
+**Result**: Pyralog becomes a **verifiable, tamper-evident, zero-trust distributed log**.
 
 ---
 
@@ -58,7 +58,7 @@ A **Merkle tree** (hash tree) is a cryptographic data structure where:
 
 ### Why BLAKE3?
 
-DLog uses **BLAKE3** instead of SHA256 for cryptographic hashing:
+Pyralog uses **BLAKE3** instead of SHA256 for cryptographic hashing:
 
 | Property | SHA256 | BLAKE3 | Advantage |
 |----------|--------|--------|-----------|
@@ -89,7 +89,7 @@ DLog uses **BLAKE3** instead of SHA256 for cryptographic hashing:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog with Merkle Trees                                    │
+│  Pyralog with Merkle Trees                                    │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  PARTITION LEVEL                                           │
@@ -577,7 +577,7 @@ impl StateSignature {
 
 ```rust
 pub struct ZeroTrustClient {
-    client: DLogClient,
+    client: PyralogClient,
     // Cached trusted roots (verified)
     trusted_roots: HashMap<(PartitionId, Epoch), RecordHash>,
     // Cluster public keys for signature verification
@@ -662,7 +662,7 @@ pub struct ReadWithProofResponse {
 #### 3. Server Support
 
 ```rust
-impl DLogServer {
+impl PyralogServer {
     pub async fn read_with_proof(
         &self,
         partition_id: PartitionId,
@@ -742,7 +742,7 @@ Use cases:
 │       ↓                                                    │
 │  SHA256(data) = hash                                       │
 │       ↓                                                    │
-│  Write to DLog: { hash, metadata }                         │
+│  Write to Pyralog: { hash, metadata }                         │
 │       ↓                                                    │
 │  Get cryptographic receipt                                 │
 │       • Hash                                               │
@@ -784,7 +784,7 @@ pub struct NotarizationReceipt {
     pub offset: LogOffset,
 }
 
-impl DLogClient {
+impl PyralogClient {
     /// Notarize external data (store hash + timestamp)
     pub async fn notarize(
         &self,
@@ -867,7 +867,7 @@ impl DLogClient {
 }
 
 // Convenience: Notarize files
-impl DLogClient {
+impl PyralogClient {
     pub async fn notarize_file(
         &self,
         path: &Path,
@@ -968,7 +968,7 @@ Auditor nodes:
 │  Auditor Node Architecture                                 │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│  DLog Cluster (normal nodes)                               │
+│  Pyralog Cluster (normal nodes)                               │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  Write requests → Raft → Storage → Merkle trees  │    │
 │  └──────────────────────────────────────────────────┘    │
@@ -996,7 +996,7 @@ Auditor nodes:
 
 ```rust
 pub struct AuditorNode {
-    client: DLogClient,
+    client: PyralogClient,
     // Independently computed Merkle roots
     local_merkle_roots: HashMap<(PartitionId, Epoch), RecordHash>,
     // Alert configuration
@@ -1158,7 +1158,7 @@ pub struct CryptographicReceipt {
     pub metadata: HashMap<String, String>,
 }
 
-impl DLogClient {
+impl PyralogClient {
     pub async fn write_with_receipt(
         &self,
         key: String,
@@ -1367,7 +1367,7 @@ pub enum MultiSigStatus {
     Committed,
 }
 
-impl DLogClient {
+impl PyralogClient {
     pub async fn create_multisig_transaction(
         &self,
         records: Vec<Record>,
@@ -1526,7 +1526,7 @@ HSM benefits:
 │  HSM Integration                                           │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
-│  DLog Node                                                 │
+│  Pyralog Node                                                 │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  Sign state: sign(root_hash)                     │    │
 │  └──────────────────────────────────────────────────┘    │
@@ -1654,7 +1654,7 @@ impl SignerBackend for HSMSigner {
     }
 }
 
-// Use in DLog
+// Use in Pyralog
 pub struct ClusterSigner {
     backend: Box<dyn SignerBackend>,
 }
@@ -1768,7 +1768,7 @@ impl ChainedRecord {
     pub fn genesis() -> Self {
         let genesis_record = Record {
             key: "genesis".into(),
-            value: b"DLog Genesis Block".to_vec(),
+            value: b"Pyralog Genesis Block".to_vec(),
             timestamp: Utc::now(),
             ..Default::default()
         };
@@ -1901,7 +1901,7 @@ impl ChainedLogStorage {
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  DLog with Complete Cryptographic Verification            │
+│  Pyralog with Complete Cryptographic Verification            │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  CLIENT LAYER                                              │
@@ -2143,7 +2143,7 @@ Signatures:
 - Tamper detection (fraud prevention)
 - Multi-signature approval (high-value transfers)
 
-**DLog Solution**:
+**Pyralog Solution**:
 - ✅ Cryptographic receipts for all transactions
 - ✅ HSM-backed signatures for compliance
 - ✅ Multi-sig for approval workflows
@@ -2158,7 +2158,7 @@ Signatures:
 - Prove data hasn't been modified
 - External auditing
 
-**DLog Solution**:
+**Pyralog Solution**:
 - ✅ Merkle trees detect any modification
 - ✅ Zero-trust clients verify all data
 - ✅ Auditor nodes for compliance teams
@@ -2172,7 +2172,7 @@ Signatures:
 - Multi-party verification
 - Notarize shipments
 
-**DLog Solution**:
+**Pyralog Solution**:
 - ✅ Notarization for shipments
 - ✅ Cryptographic receipts for carriers
 - ✅ Zero-trust verification by buyers
@@ -2186,7 +2186,7 @@ Signatures:
 - Complete audit trail
 - Tamper-evident records
 
-**DLog Solution**:
+**Pyralog Solution**:
 - ✅ HSM integration (FIPS certified)
 - ✅ Merkle trees + chaining (dual verification)
 - ✅ Auditor nodes for oversight
@@ -2200,7 +2200,7 @@ Signatures:
 - Detect tampering
 - Low bandwidth (proofs)
 
-**DLog Solution**:
+**Pyralog Solution**:
 - ✅ Notarization for sensor data
 - ✅ Efficient proofs (log N size)
 - ✅ Zero-trust verification
@@ -2210,7 +2210,7 @@ Signatures:
 
 ## Comparison with immudb
 
-| Feature | immudb | DLog with Crypto Features |
+| Feature | immudb | Pyralog with Crypto Features |
 |---------|--------|---------------------------|
 | **Merkle Trees** | ✅ Yes | ✅ Yes (segment + partition) |
 | **State Signatures** | ✅ Yes | ✅ Yes (HSM-backed) |
@@ -2228,7 +2228,7 @@ Signatures:
 | **Time-Travel** | ❌ Limited | ✅ Yes |
 | **SQL Queries** | ❌ No | ✅ Yes (DataFusion) |
 
-### DLog Advantages
+### Pyralog Advantages
 
 ✅ **4,900× higher throughput** (490M vs 100K writes/sec)  
 ✅ **Fully distributed** (immudb is single-node)  
@@ -2249,7 +2249,7 @@ Signatures:
 
 ## Conclusion
 
-By integrating **immudb's cryptographic features** into DLog, we get:
+By integrating **immudb's cryptographic features** into Pyralog, we get:
 
 🔐 **Tamper-proof logs** (Merkle trees + blockchain chaining)  
 🔐 **Zero-trust architecture** (client verifies everything)  
@@ -2260,7 +2260,7 @@ By integrating **immudb's cryptographic features** into DLog, we get:
 🔐 **HSM integration** (hardware key protection)  
 🔐 **Blockchain-style verification** (dual guarantees)  
 
-**Plus DLog's existing strengths**:
+**Plus Pyralog's existing strengths**:
 - ✅ 490M writes/sec with BLAKE3 (4,900× faster than immudb)
 - ✅ Fully distributed (linear scaling)
 - ✅ ACID transactions (512M tx/sec)
@@ -2281,7 +2281,7 @@ Perfect for:
 
 ## Further Reading
 
-- [PAPER.md](PAPER.md) - DLog research paper
+- [PAPER.md](PAPER.md) - Pyralog research paper
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Transactions and exactly-once semantics
 - [IMMUTABLE_KNOWLEDGE_DB.md](IMMUTABLE_KNOWLEDGE_DB.md) - Temporal knowledge databases
