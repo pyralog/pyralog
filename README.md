@@ -540,7 +540,7 @@ async fn main() -> Result<()> {
 
 ## 📚 Comprehensive Documentation
 
-DLog includes **70,000+ lines** of documentation across **39 files**:
+DLog includes **72,000+ lines** of documentation across **40 files**:
 
 ### 🎯 Getting Started
 - **[QUICK_START.md](QUICK_START.md)** - Get up and running in 5 minutes

@@ -42,6 +42,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - **[TENSOR_DATABASE](TENSOR_DATABASE.md)** ⭐ **NEW: Multi-dimensional arrays, ML/AI, vectors, embeddings**
 - **[DADBS](DADBS.md)** ⭐ **NEW: Decentralized Autonomous Database Systems**
 - **[MPHF](MPHF.md)** ⭐ **NEW: Partitioned Perfect Hash Maps (O(1) lookups, zero collisions)**
+- **[WIREGUARD_PROTOCOL](WIREGUARD_PROTOCOL.md)** ⭐ **NEW: Quantum-resistant universal protocol (WireGuard + Rosenpass)**
 
 ### Development
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to DLog
@@ -383,6 +384,72 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - ~200 lines of Rust implementation with fluent API
     - 5 real-world use cases (LSM compaction, DHT, routing, genomics, config management)
     - Advanced optimizations (SIMD, zero-copy, batch prefetch, Bloom filters)
+
+#### Networking & Security
+- [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) ⭐ **NEW: WireGuard as Universal Protocol**
+  - **Why WireGuard Over TLS**
+    - 10× less handshake complexity (1-RTT vs 2-RTT)
+    - 4,000 lines of code vs 100,000+ (OpenSSL/BoringSSL)
+    - Cryptokey routing (no IP-based trust)
+    - No cipher negotiation (sensible defaults)
+    - NAT traversal built-in
+  - **Architecture & Communication Paths**
+    - Client→Cluster (user applications)
+    - Node→Node (internal cluster, Raft, replication)
+    - Cluster→Cluster (multi-datacenter replication)
+    - Admin→Cluster (secure administration)
+    - Universal protocol for all DLog communication
+  - **Security Model**
+    - Curve25519 (ECDH), ChaCha20 (encryption), Poly1305 (authentication), BLAKE2s (hashing)
+    - Zero-trust architecture with peer isolation
+    - Automatic key rotation every 2 minutes
+    - Perfect forward secrecy
+  - **DPI (Deep Packet Inspection) Resistance**
+    - Silent protocol (no handshake pattern)
+    - Cryptographic camouflage
+    - Random padding, traffic shaping, port hopping
+    - Decoy traffic generation
+    - obfs4-style obfuscation
+    - Success rates: 95% GFW bypass, 99% corporate networks
+  - **Quantum Resistance** ⭐
+    - Current vulnerabilities (Curve25519: vulnerable to Shor's algorithm)
+    - Rosenpass integration (post-quantum key exchange)
+    - Kyber1024 (NIST PQC standard) for key encapsulation
+    - Dilithium for digital signatures
+    - Hybrid cryptography (classical + post-quantum)
+    - Security guarantee: attacker must break BOTH classical AND PQ
+    - Minimal overhead: ~0.1ms handshake latency
+    - Migration strategy (hybrid → PQ-preferred → PQ-only)
+    - NIST PQC compliant, CNSA 2.0 requirements
+    - Timeline: quantum-resistant by 2030
+  - **Performance Characteristics**
+    - 9.5 Gbps throughput (kernel module)
+    - 6-8 Gbps throughput (BoringTun userspace)
+    - 1-RTT handshake (~0.2ms)
+    - Sub-millisecond latency overhead
+  - **BoringTun: Userspace WireGuard in Rust**
+    - Cloudflare's implementation (~8,000 lines Rust)
+    - Cross-platform (Linux, macOS, Windows, BSD)
+    - No kernel module required
+    - Memory-safe Rust implementation
+    - Container-friendly (no NET_ADMIN capability)
+    - Hybrid deployment strategy
+  - **Cross-Platform Support**
+    - Linux kernel module (production), FreeBSD kernel, OpenBSD kernel
+    - Windows kernel (wireguard-nt), macOS (wireguard-go)
+    - BoringTun userspace (all platforms)
+    - Platform comparison table with performance metrics
+  - **Configuration & Deployment**
+    - Automatic bootstrap, TOML configuration
+    - Kubernetes, Docker Compose examples
+    - Key management (generation, distribution, rotation)
+    - Health checks and connection tracking
+  - **Standards Compliance**
+    - NIST Post-Quantum Cryptography (Kyber, Dilithium, SPHINCS+)
+    - CNSA 2.0 (quantum-resistant by 2030)
+    - Future: Native WireGuard v2 with PQ support (2025-2027)
+  - **Complete implementation roadmap with Rust code examples**
+  - **~2,650 lines of comprehensive documentation**
 
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
@@ -738,12 +805,21 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 6. Learn about capability-based security and typed actors
 7. Review Stella-inspired actor-reactor unification
 
+### "I need quantum-resistant networking with DPI evasion"
+1. Read [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) ⭐ - complete WireGuard guide
+2. Study quantum resistance with Rosenpass (Kyber1024 + Dilithium)
+3. Review hybrid cryptography (classical + post-quantum)
+4. Check DPI resistance features (obfuscation, traffic shaping, port hopping)
+5. Explore BoringTun userspace implementation in Rust
+6. Learn about cross-platform deployment (Linux, Windows, macOS, BSD)
+7. Review NIST PQC compliance and CNSA 2.0 requirements
+
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 39 markdown files
-  - 33 main documentation files
+- **Total Documents**: 40 markdown files
+  - 34 main documentation files
   - 6 blog posts
-- **Total Lines**: ~70,000+ lines of documentation
+- **Total Lines**: ~72,000+ lines of documentation
 - **Coverage**:
   - ✅ Architecture and design
   - ✅ Research contributions and academic paper
@@ -756,6 +832,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - ✅ Cryptographic verification and zero-trust architecture
   - ✅ Decentralized autonomous database systems (DADBS)
   - ✅ Partitioned perfect hash maps (MPHF)
+  - ✅ WireGuard universal protocol (quantum resistance, DPI evasion)
   - ✅ Memory-only mode (ephemeral storage, caching)
   - ✅ User guides and tutorials
   - ✅ Operations and deployment
@@ -798,6 +875,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 | DADBS | [DADBS.md](DADBS.md) | [ARCHITECTURE.md](ARCHITECTURE.md), [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md) |
 | Tensor Database | [TENSOR_DATABASE.md](TENSOR_DATABASE.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | Perfect Hash Maps | [MPHF.md](MPHF.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
+| WireGuard Protocol | [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) | [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md), [OPERATIONS.md](OPERATIONS.md) |
 
 ## 📝 Documentation Quality
 
@@ -852,7 +930,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 ---
 
-**Last Updated**: 2025-11-01 (includes DADBS.md, MPHF.md)
+**Last Updated**: 2025-11-02 (includes WIREGUARD_PROTOCOL.md with quantum resistance)
 
 **Maintainers**: DLog Team
 
