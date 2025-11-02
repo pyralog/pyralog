@@ -4,7 +4,7 @@
 
 **A unified infrastructure for building secure, fault-tolerant distributed systems with cryptographic verification, actor-based concurrency, and functional programming abstractions.**
 
-IMPORTANT: Project in research and design phase. Drafts only. It feels like I'm putting my heart, soul, and mind into this project. LLMs helps me think and write, but I'm the one who is doing the work.
+IMPORTANT: Project in research and design phase. Drafts only. It feels like I'm putting my heart, soul, and mind into this project. LLMs helps me think and write, but I'm the one who is doing the work. This project is the result of 20 years of thinking and learning about distributed systems, cryptography, and programming languages.
 
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
 [![License: MIT-0](https://img.shields.io/badge/license-MIT--0-blue.svg)](LICENSE)
