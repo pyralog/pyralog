@@ -168,7 +168,7 @@ Combine Snowflake IDs with our Obelisk Sequencer (from the previous post):
 ```rust
 pub struct SnowflakeGenerator {
     machine_id: u64,
-    sequence: SparseAppendCounter,  // ← Crash-safe!
+    sequence: ObeliskSequencer,  // ← Crash-safe!
     epoch: u64,
 }
 
@@ -198,7 +198,7 @@ Now we can build a truly distributed coordinator:
 ```rust
 pub struct DistributedTimestampOracle {
     tso_id: u16,  // 0-1023 (which TSO instance am I?)
-    sequence: SparseAppendCounter,
+    sequence: ObeliskSequencer,
     epoch_ms: u64,
 }
 
@@ -278,7 +278,7 @@ The pattern extends to every coordinator in DLog:
 ```rust
 pub struct TransactionCoordinator {
     coord_id: u16,  // 0-1023
-    tx_counter: SparseAppendCounter,
+    tx_counter: ObeliskSequencer,
 }
 
 // Client routing:
@@ -297,7 +297,7 @@ Compare to:
 ```rust
 pub struct SessionManager {
     manager_id: u16,  // 0-1023
-    session_counter: SparseAppendCounter,
+    session_counter: ObeliskSequencer,
 }
 
 // Client routing:
@@ -312,7 +312,7 @@ let session_id = managers[manager_id].create_session();
 ```rust
 pub struct ConsumerGroupCoordinator {
     coord_id: u16,  // 0-1023
-    generation_counter: SparseAppendCounter,
+    generation_counter: ObeliskSequencer,
 }
 
 // Client routing:
@@ -327,7 +327,7 @@ let generation = coordinators[coord_id].join_group(consumer_id);
 ```rust
 pub struct SchemaRegistry {
     registry_id: u16,  // 0-1023
-    schema_id_counter: SparseAppendCounter,
+    schema_id_counter: ObeliskSequencer,
 }
 
 // Client routing:
@@ -342,7 +342,7 @@ let schema_id = registries[registry_id].register_schema(schema);
 ```rust
 pub struct Sequencer {
     sequencer_id: u16,  // 0-1023
-    offset_counter: SparseAppendCounter,
+    offset_counter: ObeliskSequencer,
 }
 
 // Per-partition sequencer (no global coordinator)
@@ -356,7 +356,7 @@ let offset = sequencer.assign_offset(record);
 ```rust
 pub struct CDCEventGenerator {
     generator_id: u16,  // 0-1023
-    event_counter: SparseAppendCounter,
+    event_counter: ObeliskSequencer,
 }
 
 // Client routing:

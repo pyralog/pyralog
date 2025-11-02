@@ -167,7 +167,7 @@ pub struct TransactionCoordinator {
 pub struct TimestampOracle {
     tso_id: u16,  // 0-1023 (distributed!)
     epoch_ms: u64,
-    sequence_counter: SparseAppendCounter,  // ⭐ Crash-safe
+    sequence_counter: ObeliskSequencer,  // ⭐ Crash-safe
 }
 
 impl TimestampOracle {
@@ -497,7 +497,7 @@ let consumer = Consumer::new(ReadLevel::Committed);
 pub struct TransactionCoordinator {
     coordinator_id: u16,  // 0-1023
     epoch_ms: u64,
-    sequence_counter: SparseAppendCounter,  // ⭐ Crash-safe
+    sequence_counter: ObeliskSequencer,  // ⭐ Crash-safe
     tso_client: DistributedTSOClient,  // For Percolator timestamps
     active_transactions: HashMap<TransactionId, PercolatorTransaction>,
     transaction_log: LogStorage,
@@ -565,7 +565,7 @@ impl TransactionCoordinator {
 │  Scaling:                                                   │
 │    Client → TSO[hash(key) % 1024]      (distributed!)       │
 │    Client → Coordinator[hash(key) % 1024] (distributed!)    │
-│    Both use SparseAppendCounter for crash-safety            │
+│    Both use ObeliskSequencer for crash-safety            │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -1102,7 +1102,7 @@ tx.commitTransaction();  // Atomic: writes + offsets!
 
 pub struct ProducerSessionManager {
     manager_id: u16,  // 0-1023 (distributed!)
-    session_counter: SparseAppendCounter,  // ⭐ Crash-safe
+    session_counter: ObeliskSequencer,  // ⭐ Crash-safe
     active_sessions: HashMap<SessionId, ProducerSession>,
 }
 
@@ -2563,7 +2563,7 @@ pub struct Order {
 pub struct SchemaRegistry {
     storage: Arc<dyn SchemaStorage>,
     // Durable, crash-safe schema ID generator
-    schema_id_counter: SparseAppendCounter,  // ⭐ Like Snowflake IDs
+    schema_id_counter: ObeliskSequencer,  // ⭐ Like Snowflake IDs
 }
 
 impl SchemaRegistry {
@@ -2686,7 +2686,7 @@ pub struct ConsumerGroupCoordinator {
     groups: HashMap<String, ConsumerGroup>,
     assignments: HashMap<ConsumerId, Vec<PartitionId>>,
     // Durable generation ID counter
-    generation_counter: SparseAppendCounter,  // ⭐ Crash-safe rebalances
+    generation_counter: ObeliskSequencer,  // ⭐ Crash-safe rebalances
 }
 
 impl ConsumerGroupCoordinator {
@@ -3001,7 +3001,7 @@ pub struct PostgresCDC {
     slot: String,
     lsn: PostgresLSN,
     // Durable event ID generator for CDC events
-    event_id_counter: SparseAppendCounter,  // ⭐ Crash-safe event tracking
+    event_id_counter: ObeliskSequencer,  // ⭐ Crash-safe event tracking
 }
 
 #[async_trait]
@@ -6998,7 +6998,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 
 pub struct TransactionCoordinator {
     coordinator_id: u16,  // 0-1023
-    sequence_counter: SparseAppendCounter,  // ⭐ Crash-safe
+    sequence_counter: ObeliskSequencer,  // ⭐ Crash-safe
     tso_client: DistributedTSOClient,  // For Percolator MVCC timestamps
     active_transactions: HashMap<TransactionId, PercolatorTransaction>,
 }
@@ -7025,7 +7025,7 @@ let tx_id = tx_coordinators[coordinator_id].begin_transaction().await?;
 
 pub struct ConsumerGroupCoordinator {
     coordinator_id: u16,  // 0-1023
-    generation_counter: SparseAppendCounter,  // ⭐
+    generation_counter: ObeliskSequencer,  // ⭐
     groups: HashMap<String, ConsumerGroup>,
 }
 
@@ -7062,7 +7062,7 @@ let coordinator = consumer_coordinators[coordinator_id];
 
 pub struct SchemaRegistryCoordinator {
     registry_id: u16,  // 0-1023
-    schema_id_counter: SparseAppendCounter,  // ⭐
+    schema_id_counter: ObeliskSequencer,  // ⭐
     schemas: HashMap<SchemaId, Schema>,
 }
 
@@ -7099,7 +7099,7 @@ let schema_id = schema_registries[registry_id].register_schema(schema).await?;
 
 pub struct ProducerSessionManager {
     manager_id: u16,  // 0-1023
-    session_counter: SparseAppendCounter,  // ⭐
+    session_counter: ObeliskSequencer,  // ⭐
     sessions: HashMap<SessionId, ProducerSession>,
 }
 
@@ -7137,7 +7137,7 @@ let session_id = session_managers[manager_id].create_session().await?;
 pub struct DistributedSequencer {
     partition_id: PartitionId,
     sequencer_id: u16,  // Multiple sequencers per partition
-    offset_counter: SparseAppendCounter,  // ⭐
+    offset_counter: ObeliskSequencer,  // ⭐
 }
 
 impl DistributedSequencer {
@@ -7169,7 +7169,7 @@ impl DistributedSequencer {
 
 pub struct CDCConnector {
     connector_id: u16,  // 0-1023
-    event_id_counter: SparseAppendCounter,  // ⭐
+    event_id_counter: ObeliskSequencer,  // ⭐
 }
 
 // Benefits:
@@ -7206,7 +7206,7 @@ pub struct CDCConnector {
 ```rust
 pub struct UniversalCoordinator<T> {
     coordinator_id: u16,  // 0-1023 (or 0-4095 with 12 bits)
-    sequence_counter: SparseAppendCounter,  // ⭐
+    sequence_counter: ObeliskSequencer,  // ⭐
     state: HashMap<Key, T>,
 }
 
@@ -7324,7 +7324,7 @@ This pattern eliminates EVERY coordination bottleneck in the system!
 │  │  [41 bits timestamp | 10 bits coordinator_id | 12 bits seq]│   │
 │  │                                                            │    │
 │  │  Powered by:                                               │    │
-│  │  SparseAppendCounter (persistent atomic counter) ⭐       │    │
+│  │  ObeliskSequencer (persistent atomic counter) ⭐       │    │
 │  │  • ~1-2 µs ID generation                                  │    │
 │  │  • Crash-safe                                             │    │
 │  │  • No coordination needed                                 │    │

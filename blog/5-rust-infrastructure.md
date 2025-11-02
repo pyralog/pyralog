@@ -394,7 +394,7 @@ mod tests {
     
     #[test]
     fn test_sparse_counter() {
-        let counter = SparseAppendCounter::open("test_counter").unwrap();
+        let counter = ObeliskSequencer::open("test_counter").unwrap();
         
         assert_eq!(counter.get().unwrap(), 0);
         
@@ -443,7 +443,7 @@ use proptest::prelude::*;
 proptest! {
     #[test]
     fn sparse_counter_never_duplicates(operations in prop::collection::vec(0..1000u64, 1..100)) {
-        let counter = SparseAppendCounter::open("prop_test").unwrap();
+        let counter = ObeliskSequencer::open("prop_test").unwrap();
         
         let mut values = Vec::new();
         for _ in operations {
@@ -465,7 +465,7 @@ proptest! {
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn sparse_counter_benchmark(c: &mut Criterion) {
-    let counter = SparseAppendCounter::open("bench_counter").unwrap();
+    let counter = ObeliskSequencer::open("bench_counter").unwrap();
     
     c.bench_function("sparse_counter_increment", |b| {
         b.iter(|| {

@@ -906,7 +906,7 @@ mmap[vlsn as usize] = 1;  // ✅ Succeeds (in memory)
 // ... application continues ...
 // Hours later: OS tries to flush → SIGBUS → CRASH! 💥
 
-// Sparse Append approach (Strategy 2):
+// Obelisk Sequencer approach (Strategy 2):
 let vlsn = counter.fetch_add(1);
 match file.write_all(&[0]) {
     Ok(_) => { /* continue */ }
@@ -926,7 +926,7 @@ match file.write_all(&[0]) {
 │   Error Handling: write() vs mmap                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  write() syscall (Sparse Append):                           │
+│  write() syscall (Obelisk Sequencer):                           │
 │    Disk full → Returns ENOSPC immediately                   │
 │    Can handle with match Err(e)                             │
 │    Predictable failure point                                │
@@ -1066,7 +1066,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │                                                             │
 │  Crash Scenarios:                                           │
 │  ────────────────                                           │
-│  Sparse Append:                                             │
+│  Obelisk Sequencer:                                              │
 │    Before fsync: Lost (known)                               │
 │    After fsync: Durable (guaranteed)                        │
 │    File size reflects exact counter value                   │
@@ -1077,7 +1077,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │    Fixed-size: Read 8 bytes to recover                      │
 │    Bitmap: Must scan file to find last written byte         │
 │                                                             │
-│  Winner: Sparse Append (predictable durability) ✅          │
+│  Winner: Obelisk Sequencer (predictable durability) ✅          │
 │          Fixed-Size Mmap (best mmap option for recovery)    │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -1121,7 +1121,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │      Only one page needed regardless of VLSN count!         │
 │                                                             │
 │  Winner: Fixed-Size Mmap (smallest! 4 KB constant) ✅       │
-│          Sparse Append (8 KB, but grows with writes)        │
+│          Obelisk Sequencer (8 KB, but grows with writes)        │
 │          Bitmap: 250,000x larger!                           │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -1157,9 +1157,9 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │    2. Read 8 bytes                      ~1 µs               │
 │    3. vlsn = u64::from_le_bytes()       ~1 ns               │
 │    ───────────────────────────────────────                  │
-│    Total: ~2 µs (same as Sparse Append!)                    │
+│    Total: ~2 µs (same as Obelisk Sequencer!)                    │
 │                                                             │
-│  Winner: TIE! Sparse Append & Fixed-Size Mmap both ~2 µs ✅ │
+│  Winner: TIE! Obelisk Sequencer & Fixed-Size Mmap both ~2 µs ✅ │
 │          (Bitmap: 1,000,000x slower with full scan)         │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -1196,7 +1196,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │    ───────────────────────────────────────────────          │
 │    Total: ~12 KB (constant, regardless of VLSN count!)      │
 │                                                             │
-│  Winner: TIE! Sparse Append & Fixed-Size Mmap both ~10 KB ✅│
+│  Winner: TIE! Obelisk Sequencer & Fixed-Size Mmap both ~10 KB ✅│
 │          (Bitmap: 300-400x larger for 1M VLSNs)             │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -1209,7 +1209,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │   Scaling to Billions of VLSNs                              │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Sparse Append at 10 Billion VLSNs:                        │
+│  Obelisk Sequencer at 10 Billion VLSNs:                        │
 │    • File size: 10 GB (logical)                             │
 │    • Disk usage: ~8 KB (sparse!)                            │
 │    • Write perf: Same (append is O(1))                      │
@@ -1234,7 +1234,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │    ✅ Perfect scaling! No penalties at all!                 │
 │                                                             │
 │  Winner: Fixed-Size Mmap (perfect O(1) scaling!) ✅         │
-│          Sparse Append (excellent, minimal overhead)        │
+│          Obelisk Sequencer (excellent, minimal overhead)        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -1302,7 +1302,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │      • Fixed-size: Works on 32-bit (just 8 bytes!)          │
 │      • Windows: Requires different code path (both)         │
 │                                                             │
-│  Winner: Sparse Append (more portable, single API) ✅       │
+│  Winner: Obelisk Sequencer (more portable, single API) ✅       │
 │          Fixed-Size Mmap (works on 32-bit unlike bitmap)    │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -1361,7 +1361,7 @@ extern "C" fn sigbus_handler(_: libc::c_int) {
 │      • Non-deterministic state                              │
 │      • But simpler recovery (just 8 bytes)                  │
 │                                                             │
-│  Winner: Sparse Append (safer failure handling) ✅          │
+│  Winner: Obelisk Sequencer (safer failure handling) ✅          │
 │          (All mmap approaches have SIGBUS risk)             │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -1455,9 +1455,9 @@ Use Periodic Checkpoint when:
 - ✅ No SIGBUS risk on disk full
 
 **For ultra-low latency, single-threaded use cases: Fixed-Size Mmap** (Strategy 4) ⭐
-- ✅ Fastest writes (20-40 ns, 50-100x faster than Sparse Append!)
-- ✅ Minimal disk usage (4 KB constant, better than Sparse Append!)
-- ✅ Instant recovery (~2 µs, same as Sparse Append)
+- ✅ Fastest writes (20-40 ns, 50-100x faster than Obelisk Sequencer!)
+- ✅ Minimal disk usage (4 KB constant, better than Obelisk Sequencer!)
+- ✅ Instant recovery (~2 µs, same as Obelisk Sequencer)
 - ✅ Perfect O(1) scaling to trillions of VLSNs
 - ⚠️  OS-managed durability (less control)
 - ⚠️  SIGBUS risk on disk full (requires signal handler)
@@ -1477,7 +1477,7 @@ Use Periodic Checkpoint when:
 │   Three-Way Comparison                                       │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Sparse Append vs Fixed-Size Mmap vs Bitmap Mmap:          │
+│  Obelisk Sequencer vs Fixed-Size Mmap vs Bitmap Mmap:          │
 │                                                             │
 │  Writes:                                                    │
 │    Sparse:      ~1-2 µs                                     │
@@ -1549,7 +1549,7 @@ let counter = AtomicU64::new(0);
 counter.fetch_add(1, Ordering::SeqCst);  // Fast, but volatile
 
 // Obelisk Sequencer (survives crashes):
-let counter = SparseAppendCounter::new("counter.dat")?;
+let counter = ObeliskSequencer::new("counter.dat")?;
 counter.fetch_add(1)?;  // Slightly slower, but durable!
 ```
 
@@ -1620,7 +1620,7 @@ pub struct SnowflakeGenerator {
     epoch: u64,                      // Custom epoch (e.g., 2010-11-04)
     datacenter_id: u64,              // 0-31
     worker_id: u64,                  // 0-31
-    sequence: SparseAppendCounter,   // 0-4095 (durable!) ⭐
+    sequence: ObeliskSequencer,   // 0-4095 (durable!) ⭐
     last_timestamp: AtomicU64,
 }
 
@@ -2503,7 +2503,7 @@ A general-purpose building block for durable monotonic counters - think `std::sy
 AtomicU64::fetch_add(1)  →  Lost on crash ❌
 
 // Obelisk Sequencer:
-SparseAppendCounter::fetch_add(1)  →  Survives crashes ✅
+ObeliskSequencer::fetch_add(1)  →  Survives crashes ✅
 ```
 
 The technique combines sparse files with append-only writes where file size equals counter value. 

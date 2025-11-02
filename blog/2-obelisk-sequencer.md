@@ -123,12 +123,12 @@ use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom, Write};
 use std::sync::Mutex;
 
-pub struct SparseAppendCounter {
+pub struct ObeliskSequencer {
     file: Mutex<File>,
     path: PathBuf,
 }
 
-impl SparseAppendCounter {
+impl ObeliskSequencer {
     pub fn open(path: PathBuf) -> Result<Self> {
         let file = OpenOptions::new()
             .read(true)
@@ -262,7 +262,7 @@ Total: ~1 microsecond downtime ✅
 pub struct TimestampOracle {
     tso_id: u16,  // 0-1023 (which TSO instance)
     epoch_ms: u64,
-    sequence_counter: SparseAppendCounter,  // ← Crash-safe!
+    sequence_counter: ObeliskSequencer,  // ← Crash-safe!
 }
 
 impl TimestampOracle {
@@ -290,7 +290,7 @@ impl TimestampOracle {
 ```rust
 pub struct TransactionCoordinator {
     coord_id: u16,
-    tx_counter: SparseAppendCounter,  // ← Crash-safe transaction IDs
+    tx_counter: ObeliskSequencer,  // ← Crash-safe transaction IDs
     transactions: HashMap<TxId, Transaction>,
 }
 
@@ -317,7 +317,7 @@ impl TransactionCoordinator {
 ```rust
 pub struct SessionManager {
     manager_id: u16,
-    session_counter: SparseAppendCounter,  // ← Crash-safe session IDs
+    session_counter: ObeliskSequencer,  // ← Crash-safe session IDs
 }
 
 impl SessionManager {
@@ -423,16 +423,16 @@ sparse-counter = "0.1"
 ```
 
 ```rust
-use sparse_counter::SparseAppendCounter;
+use sparse_counter::ObeliskSequencer;
 
 fn main() -> Result<()> {
-    let counter = SparseAppendCounter::open("my_counter.dat")?;
+    let counter = ObeliskSequencer::open("my_counter.dat")?;
     
     // Fast, crash-safe increment
     let value = counter.increment()?;
     
     // Instant recovery after crash
-    let recovered = SparseAppendCounter::open("my_counter.dat")?;
+    let recovered = ObeliskSequencer::open("my_counter.dat")?;
     assert_eq!(recovered.get()?, value);
     
     Ok(())
