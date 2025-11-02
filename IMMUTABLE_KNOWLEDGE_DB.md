@@ -196,7 +196,7 @@ DLog was designed with these use cases in mind, even though it's primarily a dis
 │  TRANSACTION LAYER (DLog Transactions)                     │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  • Percolator protocol (MVCC)                    │    │
-│  │  • Distributed TSO (Snowflake IDs)               │    │
+│  │  • Distributed TSO (Scarab IDs)               │    │
 │  │  • Snapshot isolation                            │    │
 │  │  • 512M tx/sec capacity                          │    │
 │  └──────────────────────────────────────────────────┘    │

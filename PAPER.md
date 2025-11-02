@@ -34,7 +34,7 @@ This paper makes the following contributions:
 
 1. **Obelisk Sequencer**: A novel persistent atomic counter primitive that enables crash-safe, high-performance monotonic ID generation with minimal disk overhead.
 
-2. **Pharaoh Network via Snowflake IDs**: An architectural pattern that eliminates all centralized coordinators by combining Snowflake-style distributed IDs with Obelisk Sequencers, achieving linear horizontal scalability.
+2. **Pharaoh Network via Scarab IDs**: An architectural pattern that eliminates all centralized coordinators by combining Scarab-style distributed IDs with Obelisk Sequencers, achieving linear horizontal scalability.
 
 **Consensus and Replication:**
 
@@ -169,7 +169,7 @@ DLog employs a layered architecture:
 ┌────────────────────────────────────────────────────────────┐
 │              ☀️ Pharaoh Network Layer                 │
 │  Timestamp Oracles │ Tx Coordinators │ Session Managers   │
-│  (1024 nodes each, Snowflake IDs + Sparse Counters)       │
+│  (1024 nodes each, Scarab IDs + Sparse Counters)       │
 └────────────────────────────────────────────────────────────┘
                            ▼
 ┌────────────────────────────────────────────────────────────┐
@@ -254,9 +254,9 @@ This approach provides:
 
 **Performance**: Approximately 1-2 microseconds per increment on modern NVMe storage with batched fsync.
 
-### 4.2 Snowflake IDs with Persistent Sequences
+### 4.2 Scarab IDs with Persistent Sequences
 
-Twitter's Snowflake ID algorithm generates 64-bit unique identifiers:
+Twitter's Scarab ID algorithm generates 64-bit unique identifiers:
 
 ```
 [41 bits: timestamp_ms] [10 bits: worker_id] [13 bits: sequence]
@@ -267,7 +267,7 @@ Properties:
 - Globally unique: Unique across all workers
 - High throughput: 4096 IDs per millisecond per worker
 
-Traditional Snowflake implementations store sequence numbers in memory, losing crash-safety. DLog combines Snowflake IDs with Obelisk Sequencers:
+Traditional Scarab implementations store sequence numbers in memory, losing crash-safety. DLog combines Scarab IDs with Obelisk Sequencers:
 
 ```
 [41 bits: timestamp_ms] [10 bits: coordinator_id] [13 bits: durable_sequence]
@@ -292,7 +292,7 @@ Traditional distributed systems rely on centralized coordinators elected through
 2. Assign each a unique coordinator_id (0-1023)
 3. Each uses Obelisk Sequencer for sequence numbers
 4. Clients hash requests to coordinator_id = hash(key) % N
-5. Each coordinator generates Snowflake IDs independently
+5. Each coordinator generates Scarab IDs independently
 
 **Properties**:
 
@@ -463,12 +463,12 @@ DLog implements distributed transactions using Google's Percolator protocol, whi
 - **Multi-version Concurrency Control (MVCC)**: No locking for reads
 - **Two-Phase Commit (2PC)**: Atomic multi-partition writes
 
-Traditional Percolator implementations (like TiKV) suffer from a centralized Timestamp Oracle bottleneck. DLog eliminates this through distributed TSOs using Snowflake IDs.
+Traditional Percolator implementations (like TiKV) suffer from a centralized Timestamp Oracle bottleneck. DLog eliminates this through distributed TSOs using Scarab IDs.
 
 **Transaction Lifecycle**:
 
 1. **Begin**: Client contacts random Transaction Coordinator (hash-based routing)
-2. **Timestamp Allocation**: Coordinator generates Snowflake transaction ID containing start timestamp
+2. **Timestamp Allocation**: Coordinator generates Scarab transaction ID containing start timestamp
 3. **Reads**: Read with snapshot at start_ts from any partition
 4. **Writes**: Buffer writes locally in client
 5. **Prewrite**: Write data with "intent" locks to all partitions
@@ -477,7 +477,7 @@ Traditional Percolator implementations (like TiKV) suffer from a centralized Tim
 
 **Distributed TSO Architecture**:
 
-Deploy 1024 Timestamp Oracle instances, each generating Snowflake timestamps:
+Deploy 1024 Timestamp Oracle instances, each generating Scarab timestamps:
 ```
 [41 bits: timestamp_ms] [10 bits: tso_id] [13 bits: sequence]
 ```
@@ -491,7 +491,7 @@ Performance:
 
 ### 6.2 Distributed Transaction Coordinators
 
-Similarly, DLog deploys 1024 Transaction Coordinator instances, each managing disjoint sets of transactions using Snowflake transaction IDs.
+Similarly, DLog deploys 1024 Transaction Coordinator instances, each managing disjoint sets of transactions using Scarab transaction IDs.
 
 Coordinators are stateless—they only coordinate the 2PC protocol. Transaction state is stored in DLog partitions as:
 - Transaction metadata log
@@ -511,7 +511,7 @@ DLog provides exactly-once semantics (EOS) through three mechanisms:
 
 **1. Idempotent Producers**:
 
-Producers obtain session IDs from distributed Session Managers (1024 instances, Snowflake-based). Each record includes:
+Producers obtain session IDs from distributed Session Managers (1024 instances, Scarab-based). Each record includes:
 - Session ID (globally unique)
 - Sequence number (monotonic per session)
 
@@ -1152,7 +1152,7 @@ Traditional distributed systems use consensus (Paxos, Raft) to elect leaders for
 
 **Key Insight**: Consensus is needed only when multiple nodes must agree on a single value. If nodes can independently generate unique values that are globally comparable, consensus becomes unnecessary.
 
-Snowflake IDs enable this by encoding coordinator identity in the ID itself. Combined with Obelisk Sequencers for crash-safety, coordinators become stateless and independently operable.
+Scarab IDs enable this by encoding coordinator identity in the ID itself. Combined with Obelisk Sequencers for crash-safety, coordinators become stateless and independently operable.
 
 **Trade-offs**:
 - **Simplicity**: No leader election, no split-brain scenarios, no complex failure modes
@@ -1475,7 +1475,7 @@ DLog represents a fundamental rethinking of distributed data systems. Through no
 
 **Coordination Primitives:**
 1. **Obelisk Sequencer**: A persistent atomic counter primitive enabling crash-safe monotonic ID generation with minimal overhead.
-2. **Pharaoh Network**: Elimination of all centralized coordinators through Snowflake IDs + Obelisk Sequencers, achieving linear horizontal scalability.
+2. **Pharaoh Network**: Elimination of all centralized coordinators through Scarab IDs + Obelisk Sequencers, achieving linear horizontal scalability.
 
 **Consensus and Replication:**
 3. **Dual Raft Architecture**: Separation of cluster-wide and partition-specific consensus, enabling parallel failover and reducing coordination overhead.
@@ -1573,7 +1573,7 @@ Special thanks to the creators of Clojure (Rich Hickey), Elixir (José Valim), E
 
 ### Unique ID Generation
 
-16. **Snowflake IDs**: Twitter Engineering (2010). Snowflake: A network service for generating unique ID numbers.
+16. **Scarab IDs**: Inspired by Twitter's Snowflake (2010). A network service for generating unique ID numbers.
 
 17. **UUIDs**: Leach, P., Mealling, M., & Salz, R. (2005). A universally unique identifier (UUID) URN namespace. RFC 4122.
 

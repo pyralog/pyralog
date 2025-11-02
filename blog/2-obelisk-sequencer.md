@@ -267,7 +267,7 @@ pub struct TimestampOracle {
 
 impl TimestampOracle {
     pub fn get_timestamp(&self) -> Result<Timestamp> {
-        // Generate Snowflake-style timestamp
+        // Generate Scarab-style timestamp
         let timestamp_ms = Self::current_millis() - self.epoch_ms;
         let sequence = self.sequence_counter.increment()?;  // ← 1-2µs
         
@@ -454,7 +454,7 @@ By leveraging sparse files—a feature present in every modern filesystem—we b
 
 This primitive enables DLog's Pharaoh Network to achieve **28 billion operations per second** without central bottlenecks.
 
-In the next post, we'll show how combining Obelisk Sequencers with Snowflake IDs eliminates ALL coordinators in distributed systems.
+In the next post, we'll show how combining Obelisk Sequencers with Scarab IDs eliminates ALL coordinators in distributed systems.
 
 ---
 

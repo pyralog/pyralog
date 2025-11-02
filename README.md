@@ -48,7 +48,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 ### 🎯 Novel Coordination Primitives
 
 - **🗿 Obelisk Sequencer**: Crash-safe persistent atomic counters with minimal disk overhead (~1-2μs per increment)
-- **☀️ Pharaoh Network**: Eliminate all centralized bottlenecks via Snowflake IDs
+- **☀️ Pharaoh Network**: Eliminate all centralized bottlenecks via 🪲 Scarab IDs
   - 4B+ transactions/sec (8,000× faster than TiKV)
   - 4B+ timestamps/sec (distributed TSO)
   - 28B+ total operations/sec across all services
@@ -224,7 +224,7 @@ DLog has evolved from a distributed log into a **comprehensive computing platfor
 - **Reference Capabilities**: Pony-style capabilities (iso, trn, ref, val, box, tag) for safe concurrency without data races
 - **Compiles to Rust**: Native performance (2-3× faster than Clojure, 1.5× faster than Elixir)
 - **REPL-Driven**: Live data exploration, hot code reloading, actor introspection
-- **DLog Native**: Direct access to all DLog primitives (Snowflake IDs, Merkle trees, multi-model queries)
+- **DLog Native**: Direct access to all DLog primitives (🪲 Scarab IDs, Merkle trees, multi-model queries)
 - **Time-Travel Queries**: as-of and history queries built into the language
 - **Startup Time**: 50ms (vs 2s for Clojure)
 
@@ -240,7 +240,7 @@ DLog's revolutionary layered architecture eliminates traditional boundaries:
 ┌────────────────────────────────────────────────────────────┐
 │  ☀️ Pharaoh Network Layer (1024 nodes each type)           │
 │  Timestamp Oracles │ Tx Coordinators │ Session Managers    │
-│  (Snowflake IDs + Obelisk Sequencers)                     │
+│  (🪲 Scarab IDs + 🗿 Obelisk Sequencers)                  │
 └────────────────────────────────────────────────────────────┘
                            ▼
 ┌────────────────────────────────────────────────────────────┐

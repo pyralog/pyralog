@@ -94,7 +94,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - Abstract and contributions
   - Background and related work survey
   - Novel coordination primitives (Obelisk Sequencer)
-  - Pharaoh Network via Snowflake IDs
+  - Pharaoh Network via Scarab IDs
   - Dual Raft architecture
   - Configurable CopySet strategies
   - Percolator protocol integration
@@ -144,14 +144,14 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Trade-off analysis and when to use each
     - SIGBUS risk explained
     - Could be extracted as standalone Rust crate
-    - **Use Case Deep Dive: Snowflake IDs**
+    - **Use Case Deep Dive: Scarab IDs**
       - Twitter's distributed ID generator algorithm
       - 64-bit structure (timestamp + machine ID + sequence)
       - How Obelisk Sequencer prevents duplicate IDs
       - 10 real-world use cases (Twitter, Discord, Instagram, etc.)
       - Discord message example with code
       - Variants (ULID, Instagram, MongoDB ObjectId)
-      - Companies using Snowflake/similar approaches
+      - Companies using Scarab/similar approaches
   - Consumer commit strategies (per-partition vs VLSN)
 
 #### Data Path
@@ -501,7 +501,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Actor introspection
     - Time-travel debugging
   - **DLog Native Integration**
-    - Snowflake IDs, Obelisk Sequencers
+    - Scarab IDs, Obelisk Sequencers
     - Merkle tree verification
     - Multi-model queries (SQL, Cypher, SPARQL, JSONPath)
     - Tensor operations, cryptographic primitives
@@ -522,7 +522,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Per-record CopySet optimization
   - **Transactions** ⭐ **NEW: Percolator protocol integration**
     - TiKV's Percolator protocol (MVCC, 2PC)
-    - Distributed TSO (Snowflake-powered, 4B timestamps/sec)
+    - Distributed TSO (Scarab-powered, 4B timestamps/sec)
     - Distributed Transaction Coordinators (4B tx/sec)
     - 8000x faster than TiKV, 40,000x faster than Kafka
     - Complete MVCC storage implementation
@@ -530,7 +530,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - **Exactly-once semantics** ⭐ **EXPANDED: Complete deep-dive**
     - Three delivery guarantees (at-most-once, at-least-once, exactly-once)
     - Kafka's three-part solution (idempotent producers, transactions, offset commits)
-    - Complete DLog implementation with Percolator + Snowflake IDs
+    - Complete DLog implementation with Percolator + Scarab IDs
     - Distributed session managers (4B sessions/sec)
     - Deduplication algorithm and cache management
     - Transactional writes with MVCC
@@ -583,7 +583,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Data pipelines (automated ETL workflows)
     - 1-5 GB/sec bulk load throughput
     - 100K-1M events/sec streaming ingestion
-  - **Universal Pattern**: ☀️ Pharaoh Network via Snowflake IDs
+  - **Universal Pattern**: ☀️ Pharaoh Network via Scarab IDs
     - Extends to ALL coordinators in DLog
     - 28 billion ops/sec across 7 service types
   - Implementation roadmap
@@ -884,7 +884,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 5. Explore immutable data structures (persistent vectors, maps, sets)
 6. Check fault tolerance with supervision trees
 7. Try REPL-driven development with live data exploration
-8. Review DLog native integration (Snowflake IDs, Merkle trees, multi-model queries)
+8. Review DLog native integration (Scarab IDs, Merkle trees, multi-model queries)
 
 ## 📊 Documentation Statistics
 

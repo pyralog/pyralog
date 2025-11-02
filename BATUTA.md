@@ -1424,8 +1424,8 @@ batuta> (profile
 (dlog/increment counter)
 (dlog/get-value counter)  ; => 42
 
-;; Snowflake IDs
-(dlog/snowflake-id)  ; => 175928847299117063
+;; Scarab IDs
+(dlog/scarab-id)  ; => 175928847299117063
 
 ;; Merkle Tree Verification
 (def receipt (dlog/write-with-proof :audit-log data))

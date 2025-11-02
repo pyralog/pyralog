@@ -48,7 +48,7 @@ A 10-part technical blog series explaining DLog's architecture, innovations, and
 **Key Topics**:
 - The coordinator bottleneck problem (TiKV's TSO, Kafka's Zookeeper)
 - Why traditional consensus algorithms don't scale
-- Snowflake IDs + Obelisk Sequencers = distributed coordination
+- Scarab IDs + Obelisk Sequencers = distributed coordination
 - Applying pattern to ALL coordinator types
 - 512M ops/sec per coordinator type vs 500K in centralized systems
 - Failure handling and partition tolerance

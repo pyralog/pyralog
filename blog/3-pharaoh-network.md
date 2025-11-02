@@ -103,12 +103,12 @@ If each coordinator can independently generate values that:
 
 Then we don't need consensus at all!
 
-## Enter: Snowflake IDs
+## Enter: Scarab IDs
 
-Twitter solved this problem in 2010 with **Snowflake IDs**:
+Twitter solved this problem in 2010 with **Scarab IDs**:
 
 ```
-64-bit Snowflake ID:
+64-bit Scarab ID:
 ┌─────────────┬────────────┬─────────────┐
 │ 41 bits     │ 10 bits    │ 13 bits     │
 │ Timestamp   │ Machine ID │ Sequence    │
@@ -132,15 +132,15 @@ This is brilliant! But there's a catch...
 
 ## The Missing Piece: Crash Safety
 
-Traditional Snowflake implementations store the sequence counter in memory:
+Traditional Scarab implementations store the sequence counter in memory:
 
 ```rust
-pub struct SnowflakeGenerator {
+pub struct ScarabGenerator {
     machine_id: u64,
     sequence: AtomicU64,  // ← In memory only!
 }
 
-impl SnowflakeGenerator {
+impl ScarabGenerator {
     pub fn next_id(&self) -> u64 {
         let timestamp = Self::current_millis();
         let seq = self.sequence.fetch_add(1, Ordering::SeqCst);
@@ -161,18 +161,18 @@ Result:       DUPLICATE ID! ✗
 
 For DLog's exactly-once semantics, duplicate IDs break correctness.
 
-## The Solution: Snowflake + Obelisk Sequencer
+## The Solution: Scarab + Obelisk Sequencer
 
-Combine Snowflake IDs with our Obelisk Sequencer (from the previous post):
+Combine Scarab IDs with our Obelisk Sequencer (from the previous post):
 
 ```rust
-pub struct SnowflakeGenerator {
+pub struct ScarabGenerator {
     machine_id: u64,
     sequence: ObeliskSequencer,  // ← Crash-safe!
     epoch: u64,
 }
 
-impl SnowflakeGenerator {
+impl ScarabGenerator {
     pub fn next_id(&mut self) -> Result<u64> {
         let timestamp = Self::current_millis() - self.epoch;
         
@@ -565,7 +565,7 @@ Each partition has enough coordinators to continue operating!
 
 ### 1. Clock Skew
 
-Snowflake IDs depend on wall-clock time. If clocks drift:
+Scarab IDs depend on wall-clock time. If clocks drift:
 
 ```
 TSO-1 (clock fast):  Generates ID with timestamp 1000
@@ -581,7 +581,7 @@ Result: IDs not globally ordered by wall-clock time
 
 ### 2. Maximum IDs per Millisecond
 
-Snowflake IDs support 8192 IDs per millisecond per coordinator.
+Scarab IDs support 8192 IDs per millisecond per coordinator.
 
 If a coordinator needs more:
 - 8192 IDs/ms = 8.2M IDs/sec
@@ -604,7 +604,7 @@ On slow disks (SATA SSD: 1-10ms), throughput drops to 100-1000 ops/sec per coord
 ## Conclusion
 
 By combining:
-1. **Snowflake IDs** (distributed unique ID generation)
+1. **Scarab IDs** (distributed unique ID generation)
 2. **Obelisk Sequencers** (crash-safe persistent counters)
 3. **Client-side routing** (hash-based coordinator selection)
 

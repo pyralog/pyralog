@@ -60,7 +60,7 @@ Let's see how.
 │  │  │ 512M ops/sec │  │ 512M ops/sec │  │ 512M/sec │  │  │
 │  │  └──────────────┘  └──────────────┘  └──────────┘  │  │
 │  │                                                      │  │
-│  │  Each powered by: Snowflake IDs + Sparse Counters   │  │
+│  │  Each powered by: Scarab IDs + Sparse Counters   │  │
 │  │  Total: 3+ billion coordinator ops/sec              │  │
 │  └──────────────────────────────────────────────────────┘  │
 │                            ▼                                 │
@@ -139,7 +139,7 @@ No bottleneck: 1024 coordinators
 **Coordinator Operations**:
 ```
 Timestamp Oracle (per instance):
-  - Generate Snowflake ID:  1-2µs
+  - Generate Scarab ID:  1-2µs
   - Sparse Counter increment: 1-2µs
   - RPC overhead: 100µs
   - Total: ~100µs per timestamp

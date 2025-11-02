@@ -14,11 +14,11 @@ A **persistent atomic counter** (like `AtomicU64`, but crash-safe) that enables:
 - ✅ Consumer Generation IDs (crash-safe rebalancing)
 - ✅ Schema IDs (monotonic, sortable schema versions)
 - ✅ CDC Event IDs (durable event sequencing)
-- ✅ **Similar to Snowflake IDs** used by Twitter, Discord, Instagram
+- ✅ **Similar to Scarab IDs** used by Twitter, Discord, Instagram
 
 **Performance:** ~1-2 µs per ID generation, instant recovery (~2 µs)
 
-**Revolutionary combination:** Snowflake IDs + Obelisk Sequencer = **Distributed coordinators**
+**Revolutionary combination:** Scarab IDs + Obelisk Sequencer = **Distributed coordinators**
 - Transaction Coordinator: 4+ billion tx/sec (vs Kafka's 10K tx/sec)
 - 1024 independent coordinators, no coordination needed
 - Client-side routing, no election overhead
@@ -30,7 +30,7 @@ See [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for full 
 - **Global Raft Cluster**: Cluster membership, partition creation/deletion metadata
 - **Per-Partition Raft Clusters**: Parallel operations, no global bottleneck
 
-**Note:** With Snowflake-powered Pharaoh Network, we **eliminate** the need for coordinator election via Global Raft - any node can be a coordinator!
+**Note:** With Scarab-powered Pharaoh Network, we **eliminate** the need for coordinator election via Global Raft - any node can be a coordinator!
 
 Enables fast failover and scales to thousands of partitions.
 
@@ -124,16 +124,16 @@ pub struct TransactionCoordinator {
 }
 ```
 
-#### Protocol: Percolator with Snowflake TSO
+#### Protocol: Percolator with Scarab TSO
 
-**DLog uses TiKV's Percolator protocol, but eliminates the TSO bottleneck with Snowflake IDs!**
+**DLog uses TiKV's Percolator protocol, but eliminates the TSO bottleneck with Scarab IDs!**
 
 **TiKV's Problem:**
 - Centralized TSO (Timestamp Oracle) - ~500K timestamps/sec bottleneck
 - Single-point, requires Raft election
 
 **DLog's Solution:**
-- Distributed TSO using Snowflake IDs - 4+ billion timestamps/sec
+- Distributed TSO using Scarab IDs - 4+ billion timestamps/sec
 - 1024 independent TSO nodes, no election
 
 ```
@@ -147,9 +147,9 @@ pub struct TransactionCoordinator {
 │         → 2PC across regions                             │
 │         → Each region uses Raft internally               │
 │                                                          │
-│  DLog (Percolator + Snowflake TSO): ⭐                   │
+│  DLog (Percolator + Scarab TSO): ⭐                       │
 │    Client → TSO[hash(key) % 1024]  (distributed!)       │
-│         → Get Snowflake timestamp: 4B/sec                │
+│         → Get Scarab timestamp: 4B/sec                    │
 │         → 2PC across partitions                          │
 │         → Each partition uses Raft internally            │
 │                                                          │
@@ -161,7 +161,7 @@ pub struct TransactionCoordinator {
 #### Architecture
 
 ```rust
-// Snowflake Timestamp (64-bit):
+// Scarab Timestamp (64-bit):
 // [41 bits: timestamp | 10 bits: tso_id | 12 bits: sequence]
 
 pub struct TimestampOracle {
@@ -172,7 +172,7 @@ pub struct TimestampOracle {
 
 impl TimestampOracle {
     pub async fn get_timestamp(&mut self) -> Result<Timestamp> {
-        // Generate Snowflake timestamp
+        // Generate Scarab timestamp
         let timestamp = Self::current_millis() - self.epoch_ms;
         let sequence = self.sequence_counter.fetch_add(1)?;
         
@@ -186,8 +186,8 @@ impl TimestampOracle {
 
 pub struct Transaction {
     client_id: u64,
-    start_ts: Timestamp,     // From TSO (Snowflake)
-    commit_ts: Option<Timestamp>,  // From TSO (Snowflake)
+    start_ts: Timestamp,     // From TSO (Scarab)
+    commit_ts: Option<Timestamp>,  // From TSO (Scarab)
     writes: HashMap<Key, Value>,
 }
 
@@ -205,7 +205,7 @@ pub enum TransactionState {
 1. Client requests START_TS from distributed TSO
    ↓
    let tso_id = hash(key) % 1024;
-   let start_ts = tso[tso_id].get_timestamp().await?;  // Snowflake TS
+   let start_ts = tso[tso_id].get_timestamp().await?;  // Scarab TS
    
 2. Client buffers writes locally
    ↓
@@ -221,7 +221,7 @@ pub enum TransactionState {
    
 4. Get COMMIT_TS from distributed TSO
    ↓
-   let commit_ts = tso[tso_id].get_timestamp().await?;  // Snowflake TS
+   let commit_ts = tso[tso_id].get_timestamp().await?;  // Scarab TS
    
 5. COMMIT phase (2PC phase 2)
    ↓
@@ -455,7 +455,7 @@ let consumer = Consumer::new(ReadLevel::Committed);
 
 **Transactions leverage DLog's unique features:**
 
-**1. Complete Architecture: Percolator + Distributed TSO + Snowflake Coordinators** ⭐
+**1. Complete Architecture: Percolator + Distributed TSO + Scarab Coordinators** ⭐
 
 **DLog combines three complementary techniques:**
 
@@ -469,12 +469,12 @@ let consumer = Consumer::new(ReadLevel::Committed);
 │     • 2PC (Two-Phase Commit) across partitions               │
 │     • Optimistic locking                                     │
 │                                                              │
-│  2. Distributed TSO (Snowflake-powered):                     │
+│  2. Distributed TSO (Scarab-powered):                     │
 │     • 1024 independent timestamp oracles                     │
 │     • 4B timestamps/sec (8000x faster than TiKV's TSO)       │
 │     • No single-point bottleneck                             │
 │                                                              │
-│  3. Distributed Transaction Coordinators (Snowflake IDs):    │
+│  3. Distributed Transaction Coordinators (Scarab IDs):    │
 │     • 1024 independent coordinators                          │
 │     • 4B transaction IDs/sec                                 │
 │     • No election overhead                                   │
@@ -484,10 +484,10 @@ let consumer = Consumer::new(ReadLevel::Committed);
 └──────────────────────────────────────────────────────────────┘
 ```
 
-**Transaction Coordinator with Snowflake IDs:**
+**Transaction Coordinator with Scarab IDs:**
 
 ```rust
-// Snowflake Transaction ID (64-bit):
+// Scarab Transaction ID (64-bit):
 // ┌─────────────────────────────────────────────────┐
 // │ 41 bits: timestamp (ms since epoch)             │
 // │ 10 bits: coordinator_id (1024 coordinators)     │
@@ -505,7 +505,7 @@ pub struct TransactionCoordinator {
 
 impl TransactionCoordinator {
     pub async fn begin_transaction(&mut self) -> Result<TransactionId> {
-        // 1. Generate unique transaction ID (Snowflake)
+        // 1. Generate unique transaction ID (Scarab)
         let timestamp = Self::current_millis() - self.epoch_ms;
         let sequence = self.sequence_counter.fetch_add(1)?;
         let tx_id = TransactionId(
@@ -635,7 +635,7 @@ Each partition has its own Raft cluster:
 │    • ~100K tx/sec per coordinator                        │
 │    • Better, but still centralized per shard             │
 │                                                          │
-│  DLog (Snowflake-powered): ⭐                            │
+│  DLog (Scarab-powered): ⭐                            │
 │    • 1024 independent coordinators                       │
 │    • 4M tx/sec per coordinator                           │
 │    • 4+ BILLION tx/sec total                             │
@@ -644,7 +644,7 @@ Each partition has its own Raft cluster:
 └──────────────────────────────────────────────────────────┘
 ```
 
-See [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Snowflake ID and Obelisk Sequencer details.
+See [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Scarab ID and Obelisk Sequencer details.
 
 #### Challenges
 
@@ -654,13 +654,13 @@ See [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Snowf
 2. **Distributed deadlocks**: Need timeout and detection
    - **Solution**: Implement deadlock detection + timeouts
    
-3. **Clock skew**: Snowflake IDs depend on timestamps
+3. **Clock skew**: Scarab IDs depend on timestamps
    - **Solution**: Use NTP, detect clock jumps, fallback to waiting
 
 **What We Eliminated:**
 
 ❌ ~~Transaction coordinator is single point~~ 
-✅ **Now distributed!** 1024 independent coordinators via Snowflake IDs
+✅ **Now distributed!** 1024 independent coordinators via Scarab IDs
 
 ❌ ~~Need to shard transaction coordinator~~
 ✅ **Already sharded!** Client-side routing via coordinator_id
@@ -1097,7 +1097,7 @@ tx.commitTransaction();  // Atomic: writes + offsets!
 #### Phase 1: Idempotent Writes with Distributed Session Managers
 
 ```rust
-// Snowflake Session ID (64-bit):
+// Scarab Session ID (64-bit):
 // [41 bits: timestamp | 10 bits: manager_id | 12 bits: sequence]
 
 pub struct ProducerSessionManager {
@@ -1108,7 +1108,7 @@ pub struct ProducerSessionManager {
 
 impl ProducerSessionManager {
     pub async fn create_session(&mut self) -> Result<SessionId> {
-        // Generate Snowflake session ID
+        // Generate Scarab session ID
         let timestamp = Self::current_millis() - EPOCH;
         let sequence = self.session_counter.fetch_add(1)?;
         
@@ -1160,10 +1160,10 @@ impl IdempotentProducer {
 }
 ```
 
-**Why Distributed Session Managers with Snowflake IDs:**
+**Why Distributed Session Managers with Scarab IDs:**
 - ✅ 1024 independent session managers (no bottleneck)
 - ✅ 4M sessions/sec per manager = 4B sessions/sec total
-- ✅ No session ID collisions (Snowflake guarantees uniqueness)
+- ✅ No session ID collisions (Scarab guarantees uniqueness)
 - ✅ Crash-safe via Obelisk Sequencer
 - ✅ Survives sequencer failover
 - ✅ No coordinator election needed
@@ -1483,7 +1483,7 @@ Transactions:
 │  DLog:                                                     │
 │    • Distributed coordinators (4B tx/sec) ⭐              │
 │    • Distributed session managers (4B sessions/sec) ⭐     │
-│    • Snowflake IDs (no collisions, crash-safe)            │
+│    • Scarab IDs (no collisions, crash-safe)            │
 │    • Obelisk Sequencer (automatic uniqueness)          │
 │    • Percolator MVCC (production-grade transactions)       │
 │    • Distributed TSO (8000x faster than TiKV)             │
@@ -1496,7 +1496,7 @@ Transactions:
 **Key Innovations:**
 
 1. **Distributed Session Managers**: No single bottleneck for producer sessions
-2. **Snowflake Session IDs**: Globally unique, time-ordered, no coordination
+2. **Scarab Session IDs**: Globally unique, time-ordered, no coordination
 3. **Obelisk Sequencer**: Crash-safe sequence generation
 4. **Percolator Integration**: Production-grade MVCC from TiKV
 5. **Distributed TSO**: Eliminates TiKV's timestamp bottleneck
@@ -2563,7 +2563,7 @@ pub struct Order {
 pub struct SchemaRegistry {
     storage: Arc<dyn SchemaStorage>,
     // Durable, crash-safe schema ID generator
-    schema_id_counter: ObeliskSequencer,  // ⭐ Like Snowflake IDs
+    schema_id_counter: ObeliskSequencer,  // ⭐ Like Scarab IDs
 }
 
 impl SchemaRegistry {
@@ -3016,7 +3016,7 @@ impl CDCSource for PostgresCDC {
         
         self.lsn = changes.last().map(|c| c.lsn).unwrap_or(self.lsn);
         
-        // Assign globally unique event IDs (like Snowflake IDs)
+        // Assign globally unique event IDs (like Scarab IDs)
         let mut changes_with_ids = Vec::new();
         for change in changes {
             let event_id = self.event_id_counter.fetch_add(1)?;
@@ -6872,7 +6872,7 @@ Each feature will be carefully designed to integrate with **DLog's unique archit
 - Transaction IDs, Session IDs, Schema IDs, Event IDs
 - ~1-2 µs generation, instant recovery
 - Like `AtomicU64`, but crash-safe
-- **Similar to Snowflake IDs** (Twitter, Discord, Instagram)
+- **Similar to Scarab IDs** (Twitter, Discord, Instagram)
 
 **2. Dual Raft Clusters**
 - Global Raft: Coordinator election, metadata
@@ -6924,7 +6924,7 @@ let schema_id = schema_counter.fetch_add(1)?;  // Monotonic IDs
 - Schema ID collisions
 - CDC event ID gaps
 
-### Revolutionary: Percolator + Distributed TSO + Snowflake Coordinators
+### Revolutionary: Percolator + Distributed TSO + Scarab Coordinators
 
 **Most significant innovation:**
 
@@ -6935,8 +6935,8 @@ Traditional systems have **centralized bottlenecks** for transactions:
 **DLog's approach:** Combine **three battle-tested techniques**:
 
 1. **Percolator Protocol** (TiKV): Production-grade MVCC transactions with 2PC
-2. **Distributed TSO** (Snowflake-powered): Eliminates TiKV's TSO bottleneck
-3. **Pharaoh Network** (Snowflake IDs): Eliminates Kafka's coordinator bottleneck
+2. **Distributed TSO** (Scarab-powered): Eliminates TiKV's TSO bottleneck
+3. **Pharaoh Network** (Scarab IDs): Eliminates Kafka's coordinator bottleneck
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -6957,9 +6957,9 @@ Traditional systems have **centralized bottlenecks** for transactions:
 
 **This architectural pattern extends to EVERYTHING in DLog!**
 
-### Universal Pattern: Pharaoh Network via Snowflake IDs
+### Universal Pattern: Pharaoh Network via Scarab IDs
 
-**The principle is simple:** Any coordinator that assigns IDs can be distributed using Snowflake IDs + Obelisk Sequencer.
+**The principle is simple:** Any coordinator that assigns IDs can be distributed using Scarab IDs + Obelisk Sequencer.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -6974,7 +6974,7 @@ Traditional systems have **centralized bottlenecks** for transactions:
 │  Result: Multiple bottlenecks, complex election logic       │
 │                                                              │
 ├──────────────────────────────────────────────────────────────┤
-│   DLog Architecture (Snowflake-Powered)                      │
+│   DLog Architecture (Scarab-Powered)                          │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ✅ Transaction Coordinators   → 1024 independent ⭐        │
@@ -6990,10 +6990,10 @@ Traditional systems have **centralized bottlenecks** for transactions:
 
 ### 1. Transaction Coordinators (Percolator Protocol)
 
-**Uses TiKV's Percolator protocol + Distributed TSO + Snowflake Coordinators:**
+**Uses TiKV's Percolator protocol + Distributed TSO + Scarab Coordinators:**
 
 ```rust
-// 64-bit Snowflake Transaction ID:
+// 64-bit Scarab Transaction ID:
 // [41 bits: timestamp | 10 bits: coordinator_id | 12 bits: sequence]
 
 pub struct TransactionCoordinator {
@@ -7020,7 +7020,7 @@ let tx_id = tx_coordinators[coordinator_id].begin_transaction().await?;
 ### 2. Consumer Group Coordinators
 
 ```rust
-// 64-bit Snowflake Generation ID:
+// 64-bit Scarab Generation ID:
 // [41 bits: timestamp | 10 bits: coordinator_id | 12 bits: sequence]
 
 pub struct ConsumerGroupCoordinator {
@@ -7031,7 +7031,7 @@ pub struct ConsumerGroupCoordinator {
 
 impl ConsumerGroupCoordinator {
     pub async fn rebalance(&mut self, group_id: &str) -> Result<GenerationId> {
-        // Generate Snowflake generation ID
+        // Generate Scarab generation ID
         let timestamp = Self::current_millis() - EPOCH;
         let sequence = self.generation_counter.fetch_add(1)?;
         
@@ -7057,7 +7057,7 @@ let coordinator = consumer_coordinators[coordinator_id];
 ### 3. Schema Registry Coordinators
 
 ```rust
-// 64-bit Snowflake Schema ID:
+// 64-bit Scarab Schema ID:
 // [41 bits: timestamp | 10 bits: registry_id | 12 bits: sequence]
 
 pub struct SchemaRegistryCoordinator {
@@ -7068,7 +7068,7 @@ pub struct SchemaRegistryCoordinator {
 
 impl SchemaRegistryCoordinator {
     pub async fn register_schema(&mut self, schema: Schema) -> Result<SchemaId> {
-        // Generate Snowflake schema ID
+        // Generate Scarab schema ID
         let timestamp = Self::current_millis() - EPOCH;
         let sequence = self.schema_id_counter.fetch_add(1)?;
         
@@ -7094,7 +7094,7 @@ let schema_id = schema_registries[registry_id].register_schema(schema).await?;
 ### 4. Producer Session Managers
 
 ```rust
-// 64-bit Snowflake Session ID:
+// 64-bit Scarab Session ID:
 // [41 bits: timestamp | 10 bits: manager_id | 12 bits: sequence]
 
 pub struct ProducerSessionManager {
@@ -7105,7 +7105,7 @@ pub struct ProducerSessionManager {
 
 impl ProducerSessionManager {
     pub async fn create_session(&mut self) -> Result<SessionId> {
-        // Generate Snowflake session ID
+        // Generate Scarab session ID
         let timestamp = Self::current_millis() - EPOCH;
         let sequence = self.session_counter.fetch_add(1)?;
         
@@ -7131,7 +7131,7 @@ let session_id = session_managers[manager_id].create_session().await?;
 
 ```rust
 // For partitions, we can have multiple sequencers per partition!
-// 64-bit Snowflake Offset:
+// 64-bit Scarab Offset:
 // [41 bits: timestamp | 10 bits: sequencer_id | 12 bits: sequence]
 
 pub struct DistributedSequencer {
@@ -7142,7 +7142,7 @@ pub struct DistributedSequencer {
 
 impl DistributedSequencer {
     pub async fn assign_offset(&mut self) -> Result<LogOffset> {
-        // Generate Snowflake offset
+        // Generate Scarab offset
         let timestamp = Self::current_millis() - EPOCH;
         let sequence = self.offset_counter.fetch_add(1)?;
         
@@ -7164,7 +7164,7 @@ impl DistributedSequencer {
 ### 6. CDC Event ID Generators
 
 ```rust
-// 64-bit Snowflake CDC Event ID:
+// 64-bit Scarab CDC Event ID:
 // [41 bits: timestamp | 10 bits: connector_id | 12 bits: sequence]
 
 pub struct CDCConnector {
@@ -7180,7 +7180,7 @@ pub struct CDCConnector {
 
 ### Universal Performance Profile
 
-**For ANY coordinator using Snowflake IDs:**
+**For ANY coordinator using Scarab IDs:**
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -7211,11 +7211,11 @@ pub struct UniversalCoordinator<T> {
 }
 
 impl<T> UniversalCoordinator<T> {
-    pub async fn generate_id(&mut self) -> Result<SnowflakeId> {
+    pub async fn generate_id(&mut self) -> Result<ScarabId> {
         let timestamp = Self::current_millis() - EPOCH;
         let sequence = self.sequence_counter.fetch_add(1)?;
         
-        Ok(SnowflakeId {
+        Ok(ScarabId {
             timestamp,
             coordinator_id: self.coordinator_id,
             sequence,
@@ -7246,13 +7246,13 @@ let id = coordinators[coordinator_id].generate_id().await?;
 - Each has ~10K-100K ops/sec limit
 - Total system bottlenecked by slowest coordinator
 
-**DLog (Snowflake-powered):**
+**DLog (Scarab-powered):**
 - 1024+ independent coordinators per service
 - No elections needed
 - Each has 4M+ ops/sec capacity
 - NO system-wide bottlenecks
 
-**Key insight:** Snowflake IDs + Obelisk Sequencer = **Distributed coordination without coordination!**
+**Key insight:** Scarab IDs + Obelisk Sequencer = **Distributed coordination without coordination!**
 
 This pattern eliminates EVERY coordination bottleneck in the system!
 
@@ -7261,7 +7261,7 @@ This pattern eliminates EVERY coordination bottleneck in the system!
 ```
 ┌────────────────────────────────────────────────────────────────────┐
 │                       DLog System Architecture                      │
-│              (Snowflake-Powered Distributed Everything)             │
+│              (Scarab-Powered Distributed Everything)                 │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
 │  Client Layer:                                                     │
@@ -7278,7 +7278,7 @@ This pattern eliminates EVERY coordination bottleneck in the system!
 │  │  TSO 0, TSO 1, ..., TSO 1023                             │    │
 │  │  • Each: 4M timestamps/sec                                │    │
 │  │  • Total: 4B timestamps/sec (8000x faster than TiKV)      │    │
-│  │  • Snowflake-powered (no central bottleneck!)             │    │
+│  │  • Scarab-powered (no central bottleneck!)             │    │
 │  └──────────────────────────────────────────────────────────┘    │
 │                              ▼                                     │
 │  Coordinator Layer (1024 independent coordinators per service):   │
@@ -7320,7 +7320,7 @@ This pattern eliminates EVERY coordination bottleneck in the system!
 │                                                                    │
 │  Every Coordinator Uses:                                           │
 │  ┌──────────────────────────────────────────────────────────┐    │
-│  │  Snowflake ID Generator:                                  │    │
+│  │  Scarab ID Generator:                                  │    │
 │  │  [41 bits timestamp | 10 bits coordinator_id | 12 bits seq]│   │
 │  │                                                            │    │
 │  │  Powered by:                                               │    │
@@ -7349,7 +7349,7 @@ Traditional System (Kafka):
   • Complex election logic
   • Bottlenecks everywhere
 
-DLog (Percolator + Snowflake-Powered):
+DLog (Percolator + Scarab-Powered):
   • 7,168 independent coordinators (7 services × 1024, inc. TSO)
   • ~28 BILLION total ops/sec across ALL services ⭐
   • Percolator MVCC transactions (production-grade)

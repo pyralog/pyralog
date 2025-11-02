@@ -467,7 +467,7 @@ The Obelisk Sequencer is a **general-purpose primitive** for durable monotonic c
 │    • Recovery:     ✅ (instant, ~2 µs)                      │
 │                                                             │
 │  Use cases:                                                 │
-│    • Monotonic sequence generators (ULID, Snowflake)        │
+│    • Monotonic sequence generators (ULID, Scarab)           │
 │    • Transaction ID counters                                │
 │    • Log Sequence Numbers (LSN)                             │
 │    • Event ID assignment                                    │
@@ -1582,17 +1582,17 @@ for use in any Rust project needing durable counters.
 
 ---
 
-### Use Case Deep Dive: Snowflake IDs
+### Use Case Deep Dive: Scarab IDs
 
-**What is Snowflake?**
+**What is Scarab?**
 
-Snowflake is Twitter's distributed unique ID generator algorithm (created 2010), and it's one of the most popular use cases for durable counters like the Obelisk Sequencer.
+Scarab is DLog's distributed unique ID generator (inspired by Twitter's Snowflake algorithm, created 2010), and it's one of the most popular use cases for durable counters like the Obelisk Sequencer.
 
 **Structure (64-bit ID):**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Snowflake ID Bit Layout (64 bits total)                    │
+│  Scarab ID Bit Layout (64 bits total)                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  Bit 0:       Sign bit (always 0, keeps ID positive)        │
@@ -1613,10 +1613,10 @@ Decoded:
   Sequence:    7 (8th ID generated in that millisecond)
 ```
 
-**How Snowflake Works:**
+**How Scarab Works:**
 
 ```rust
-pub struct SnowflakeGenerator {
+pub struct ScarabGenerator {
     epoch: u64,                      // Custom epoch (e.g., 2010-11-04)
     datacenter_id: u64,              // 0-31
     worker_id: u64,                  // 0-31
@@ -1624,7 +1624,7 @@ pub struct SnowflakeGenerator {
     last_timestamp: AtomicU64,
 }
 
-impl SnowflakeGenerator {
+impl ScarabGenerator {
     pub fn next_id(&self) -> Result<u64> {
         let mut timestamp = Self::current_millis() - self.epoch;
         
@@ -1655,7 +1655,7 @@ impl SnowflakeGenerator {
 }
 ```
 
-**Why Obelisk Sequencer is Perfect for Snowflake:**
+**Why Obelisk Sequencer is Perfect for Scarab:**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -1680,7 +1680,7 @@ impl SnowflakeGenerator {
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Snowflake Properties:**
+**Scarab Properties:**
 
 - ✅ **Time-ordered**: IDs generated later have larger values
 - ✅ **Distributed**: No coordination between machines
@@ -1693,7 +1693,7 @@ impl SnowflakeGenerator {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Snowflake ID Use Cases in Production                       │
+│  Scarab ID Use Cases in Production                       │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  1. Database Primary Keys                                   │
@@ -1753,10 +1753,10 @@ impl SnowflakeGenerator {
 **Example: Discord Messages**
 
 ```rust
-// Discord generates ~2 billion messages per day using Snowflake IDs
+// Discord generates ~2 billion messages per day using Scarab IDs
 
 // Message creation:
-let message_id = snowflake.next_id()?;  // 175928847299117063
+let message_id = scarab.next_id()?;  // 175928847299117063
 
 // Store message:
 db.execute(
@@ -1771,8 +1771,8 @@ let messages = db.query(
 )?;
 
 // Extract timestamp from message ID:
-fn extract_timestamp(snowflake_id: u64) -> u64 {
-    (snowflake_id >> 22) + DISCORD_EPOCH  // DISCORD_EPOCH = 1420070400000
+fn extract_timestamp(scarab_id: u64) -> u64 {
+    (scarab_id >> 22) + DISCORD_EPOCH  // DISCORD_EPOCH = 1420070400000
 }
 
 // Can show "message sent 2 hours ago" without separate timestamp column!
@@ -1783,12 +1783,12 @@ fn extract_timestamp(snowflake_id: u64) -> u64 {
 - **ULID** (Universally Unique Lexicographically Sortable ID): 128-bit, Base32 encoded
 - **Instagram Sharding ID**: 41 bits timestamp, 13 bits shard, 10 bits sequence
 - **MongoDB ObjectId**: 96-bit, similar time-ordering
-- **Sony PlayStation Network ID**: Snowflake-based
+- **Sony PlayStation Network ID**: Scarab-based
 
-**When NOT to Use Snowflake:**
+**When NOT to Use Scarab:**
 
 ```
-❌ Avoid Snowflake IDs when:
+❌ Avoid Scarab IDs when:
   • Sequential IDs required by regulation (invoice numbers)
   • Need true randomness (security tokens, passwords)
   • IDs must be short/human-readable (URL slugs)
@@ -1797,7 +1797,7 @@ fn extract_timestamp(snowflake_id: u64) -> u64 {
   • Don't need time-ordering (use UUID v4)
 ```
 
-**Companies Using Snowflake/Similar:**
+**Companies Using Scarab/Similar:**
 
 - Twitter (original creator, tweets/users)
 - Discord (messages, users, servers)
@@ -1809,7 +1809,7 @@ fn extract_timestamp(snowflake_id: u64) -> u64 {
 
 **Bottom Line:**
 
-Snowflake IDs are the industry standard for distributed, time-ordered unique IDs. The Obelisk Sequencer makes them **crash-safe**, preventing duplicate ID generation after restarts - critical for production systems.
+Scarab IDs are the industry standard for distributed, time-ordered unique IDs. The Obelisk Sequencer makes them **crash-safe**, preventing duplicate ID generation after restarts - critical for production systems.
 
 ---
 

@@ -2566,7 +2566,7 @@ By integrating **MultiCategory's features** into DLog, we create the **ultimate 
 - ✅ Time-travel queries (temporal consistency)
 - ✅ Cryptographic verification (BLAKE3 Merkle trees)
 - ✅ Zero-trust architecture
-- ✅ Pharaoh Network (Snowflake IDs)
+- ✅ Pharaoh Network (Scarab IDs)
 
 **Result**: A **unified data platform** that handles **any workload** with **mathematical elegance** and **extreme performance**.
 
