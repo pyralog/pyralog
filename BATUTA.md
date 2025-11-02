@@ -7,44 +7,45 @@ Batuta (Spanish/Portuguese/Italian for "baton" - the conductor's tool) is a dyna
 ## Table of Contents
 
 1. [Philosophy](#philosophy)
-2. [Language Overview](#language-overview)
-3. [Syntax](#syntax)
-4. [Data Types](#data-types)
-5. [Pattern Matching](#pattern-matching)
-6. [Functions](#functions)
-7. [Actors & Concurrency](#actors--concurrency)
-8. [Queries](#queries)
-9. [Pipeline Operations](#pipeline-operations)
-10. [Macro System](#macro-system)
-11. [Fault Tolerance](#fault-tolerance)
+2. [Theoretical Foundation: Sulise](#theoretical-foundation-sulise)
+3. [Language Overview](#language-overview)
+4. [Syntax](#syntax)
+5. [Data Types](#data-types)
+6. [Pattern Matching](#pattern-matching)
+7. [Functions](#functions)
+8. [Actors & Concurrency](#actors--concurrency)
+9. [Queries](#queries)
+10. [Pipeline Operations](#pipeline-operations)
+11. [Macro System](#macro-system)
+12. [Fault Tolerance](#fault-tolerance)
     - [Supervision Trees](#supervision-trees)
     - [Restart Strategies](#restart-strategies)
     - [Error Handling (Zig-Style)](#error-handling-zig-style)
     - [Links and Monitors](#links-and-monitors)
-12. [Distributed Execution](#distributed-execution)
-13. [Type System](#type-system)
+13. [Distributed Execution](#distributed-execution)
+14. [Type System](#type-system)
     - [Gradual Typing](#gradual-typing)
     - [Type Inference](#type-inference)
     - [Error Union Types (Zig-Inspired)](#error-union-types-zig-inspired)
     - [Spec-Based Validation](#spec-based-validation)
     - [Actor Protocols](#actor-protocols)
     - [Reference Capabilities (Pony-Inspired)](#reference-capabilities-pony-inspired)
-14. [REPL & Interactive Development](#repl--interactive-development)
-15. [Standard Library](#standard-library)
-16. [DLog Integration](#dlog-integration)
-17. [Performance](#performance)
+15. [REPL & Interactive Development](#repl--interactive-development)
+16. [Standard Library](#standard-library)
+17. [DLog Integration](#dlog-integration)
+18. [Performance](#performance)
     - [Compilation Strategy](#compilation-strategy)
     - [Native Compilation](#1-native-via-rust)
     - [WebAssembly (WASM)](#2-webassembly-wasm)
     - [Optimization Techniques](#optimization-techniques)
     - [Benchmarks](#benchmarks)
-18. [Comparison](#comparison)
-19. [Implementation](#implementation)
-20. [Examples](#examples)
-21. [Getting Started](#getting-started)
-22. [Roadmap](#roadmap)
-23. [Contributing](#contributing)
-24. [Conclusion](#conclusion)
+19. [Comparison](#comparison)
+20. [Implementation](#implementation)
+21. [Examples](#examples)
+22. [Getting Started](#getting-started)
+23. [Roadmap](#roadmap)
+24. [Contributing](#contributing)
+25. [Conclusion](#conclusion)
 
 ---
 
@@ -71,16 +72,189 @@ Batuta is built on seven core principles:
 
 ---
 
+## Theoretical Foundation: Sulise
+
+Batuta's syntax and grammar are built upon **Sulise** - a modular grammar toolkit for Lisp/S-expression and surface syntaxes. Sulise provides the theoretical foundation that enables Batuta to offer multiple syntax profiles while maintaining homoiconicity.
+
+### What is Sulise?
+
+[Sulise](sulise/README.md) is a comprehensive grammar specification system that defines:
+
+1. **Canonical S-expression Core** (Profile A): The homoiconic foundation where code is data
+2. **Surface Syntax Conveniences** (Profile B/C): Modern ergonomic features with explicit desugaring rules
+3. **Modular EBNF Grammar**: Composable grammar components following ISO/IEC 14977
+
+### How Batuta Uses Sulise
+
+Batuta leverages Sulise's three-profile system:
+
+```
+┌─────────────────────────────────────────────┐
+│  Profile A: Pure S-expressions              │
+│  (define factorial (n)                      │
+│    (if (<= n 1) 1                           │
+│        (* n (factorial (- n 1)))))          │
+└─────────────────────────────────────────────┘
+                    ↓
+            Sulise Desugaring
+                    ↓
+┌─────────────────────────────────────────────┐
+│  Profile B: Surface Syntax (Infix/Pipeline) │
+│  define factorial n =                       │
+│    if n <= 1 then 1                         │
+│    else n * factorial (n - 1)               │
+└─────────────────────────────────────────────┘
+                    ↓
+            Sulise Desugaring
+                    ↓
+┌─────────────────────────────────────────────┐
+│  Profile C: Indentation-based               │
+│  define factorial n                         │
+│    if n <= 1 -> 1                           │
+│    else -> n * factorial (n - 1)            │
+└─────────────────────────────────────────────┘
+```
+
+**All profiles desugar to the same canonical S-expression representation**, preserving homoiconicity for the macro system.
+
+### Sulise Features Used by Batuta
+
+| Sulise Feature | Batuta Usage | Example |
+|----------------|--------------|---------|
+| **S-expressions** | Core syntax, macro expansion | `(query users (where (> age 18)))` |
+| **Infix operators** | Arithmetic, comparisons | `x + y * z` → `(+ x (* y z))` |
+| **Pipeline operator** | Data transformations | `data \|> map f \|> filter p` |
+| **Indentation blocks** | Function/actor definitions | Python-style offside rule |
+| **Pattern matching** | Destructuring syntax | `{:type :user :id id}` |
+| **Keywords** | Actor messages, maps | `:keyword`, `{:key value}` |
+| **Numeric literals** | Radix, exactness | `#x1A`, `#b1010`, `1_000_000` |
+| **Collections** | Maps, sets, vectors | `{k: v}`, `#{1 2 3}`, `[1 2 3]` |
+
+### Desugaring Contract
+
+All Batuta surface syntax **desugars to S-expressions** before:
+1. Macro expansion
+2. Type checking
+3. Compilation to Rust/WASM
+
+**Desugaring Rules:**
+
+```clojure
+;; Right-associative application
+a b c  ⇒  (a (b c))
+
+;; Infix operators
+x + y * z  ⇒  (+ x (* y z))
+a op b  ⇒  ((op a) b)
+
+;; Pipeline operator
+x |> f |> g  ⇒  (g (f x))
+
+;; Indentation blocks (Profile C)
+define foo x
+  if x > 0 -> x
+  else -> 0
+
+⇒  (define foo (x)
+     (if (> x 0) x 0))
+```
+
+### Homoiconicity Preserved
+
+**Key property**: Batuta maintains Lisp's homoiconicity through Sulise's desugaring contract:
+
+- **Macros operate on S-expressions**: The canonical representation
+- **Quasiquote/unquote**: Applied to desugared S-expressions
+- **Code is data**: All surface forms reduce to lists, symbols, and atoms
+- **Read/print round-trips**: S-expressions always round-trip; surface sugar may not
+
+### Sulise Grammar Modules Used
+
+Batuta's parser incorporates these Sulise modules:
+
+1. **Core S-expression reader** (01-sexpr-ebnf.md)
+2. **Keywords & escaped symbols** (05-keywords-and-escaped-symbols-ebnf.md)
+3. **Numbers with radix/exactness** (06-numbers-radix-exactness-ebnf.md)
+4. **Block comments** (07-block-comments-ebnf.md)
+5. **Maps and sets** (09-maps-and-sets-ebnf.md)
+6. **Infix operators** (03-infix-operators-ebnf.md)
+7. **Application tighter than infix** (10-app-tighter-than-infix-ebnf.md)
+8. **Minimal precedence** (12-minimal-precedence-ebnf.md)
+9. **Pipeline operator** (13-pipeline-operator-ebnf.md)
+10. **Indentation blocks** (04-indentation-ebnf.md) - optional
+
+### Benefits of Sulise Foundation
+
+1. **Formally Specified**: ISO EBNF grammars with precise desugaring rules
+2. **Modular**: Compose only the features you need
+3. **Tested**: Extensive examples and desugaring validation
+4. **Flexible**: Three profiles for different use cases
+5. **Homoiconic**: Macros work on canonical representation
+6. **Predictable**: Explicit desugaring = no surprises
+
+### Example: Sulise Desugaring in Action
+
+**Input (Batuta surface syntax):**
+```clojure
+;; Query with pipeline and infix
+(query :users
+  |> (where age > 18)
+  |> (group-by :country)
+  |> (aggregate {:count (count *) :avg-age (avg :age)}))
+```
+
+**Step 1: Desugar pipeline (Sulise rule 13):**
+```clojure
+(aggregate {:count (count *) :avg-age (avg :age)}
+  (group-by :country
+    (where (> age 18)
+      (query :users))))
+```
+
+**Step 2: Desugar infix `age > 18` (Sulise rule 03):**
+```clojure
+(aggregate {:count (count *) :avg-age (avg :age)}
+  (group-by :country
+    (where ((> age) 18)
+      (query :users))))
+```
+
+**Final S-expression (ready for macro expansion):**
+```clojure
+(aggregate {:count (count *) :avg-age (avg :age)}
+  (group-by :country
+    (where ((> age) 18)
+      (query :users))))
+```
+
+This canonical form is what Batuta's **macro system**, **type checker**, and **compiler** operate on.
+
+### Batuta Extensions Beyond Sulise
+
+While Sulise provides the syntactic foundation, Batuta adds:
+
+- **Actor semantics**: `defactor`, `spawn`, `send`, `receive`
+- **Error handling**: `!` operator, `deferror`, error union types
+- **Reference capabilities**: `iso`, `val`, `ref`, `box`, `tag` annotations
+- **DLog integration**: Native query functions, time-travel, actors
+- **Type system**: Gradual typing, type inference, actor protocols
+- **Standard library**: Persistent data structures, actor utilities
+
+---
+
 ## Language Overview
 
 Batuta combines:
 
 | Feature | Inspiration | Purpose |
 |---------|-------------|---------|
-| **Lisp S-expressions** | Clojure | Code as data, powerful macros, REPL |
+| **Grammar foundation** | Sulise | Modular EBNF, three profiles, explicit desugaring |
+| **Lisp S-expressions** | Clojure / Sulise Profile A | Code as data, powerful macros, REPL |
+| **Infix operators** | Sulise Profile B | Ergonomic arithmetic and comparisons |
+| **Pipeline operator** | Elixir / Sulise Profile B | Chainable transformations |
+| **Indentation blocks** | Python / Sulise Profile C | Optional offside rule syntax |
 | **Persistent data structures** | Clojure | Immutable collections with structural sharing |
 | **Pattern matching** | Elixir/Erlang | Destructure data, elegant control flow |
-| **Pipe operator** | Elixir | Chainable transformations |
 | **Actors** | Elixir/Erlang | Concurrent, fault-tolerant execution |
 | **Supervision trees** | Elixir/Erlang | Self-healing systems |
 | **Error handling** | Zig | Explicit error union types, no exceptions |
