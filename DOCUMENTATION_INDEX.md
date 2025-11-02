@@ -1,6 +1,8 @@
 # DLog Documentation Index
 
-Complete guide to all DLog documentation.
+**Complete guide to DLog: A platform for secure, parallel, distributed, and decentralized computing.**
+
+DLog unifies cryptographic verification, actor-based concurrency, functional programming, multi-model databases, and decentralized consensus into a single coherent system.
 
 ## 📚 Quick Navigation
 
@@ -32,10 +34,14 @@ Complete guide to all DLog documentation.
 - **[OPERATIONS](OPERATIONS.md)** - Deployment, configuration, and maintenance
 - **[PERFORMANCE](PERFORMANCE.md)** - Performance tuning and optimization
 - **[MEMORY_ONLY_MODE](MEMORY_ONLY_MODE.md)** ⭐ **NEW: Ultra-fast ephemeral storage (10-100× faster)**
-- **[TENSOR_DATABASE](TENSOR_DATABASE.md)** ⭐ **NEW: Multi-dimensional arrays, ML/AI, vectors, embeddings**
-- **[DADBS](DADBS.md)** ⭐ **NEW: Decentralized Autonomous Database Systems**
 - **[COMPARISON](COMPARISON.md)** - How DLog compares to alternatives
 - **[TIKV_COMPARISON](TIKV_COMPARISON.md)** - Detailed comparison with TiKV
+
+### Advanced Computing Primitives
+- **[ACTOR_MODEL](ACTOR_MODEL.md)** ⭐ **NEW: Location-transparent actors, topology-level reactivity, supervision trees**
+- **[TENSOR_DATABASE](TENSOR_DATABASE.md)** ⭐ **NEW: Multi-dimensional arrays, ML/AI, vectors, embeddings**
+- **[DADBS](DADBS.md)** ⭐ **NEW: Decentralized Autonomous Database Systems**
+- **[MPHF](MPHF.md)** ⭐ **NEW: Partitioned Perfect Hash Maps (O(1) lookups, zero collisions)**
 
 ### Development
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to DLog
@@ -723,15 +729,26 @@ Complete guide to all DLog documentation.
 5. Explore Zarr format for cloud-native arrays
 6. Learn about polystore tensor model with mathematical foundations
 
+### "I want fault-tolerant, location-transparent actor systems"
+1. Read [ACTOR_MODEL.md](ACTOR_MODEL.md) ⭐ - complete actor model guide
+2. Study theoretical foundations (formal semantics, session types, category theory)
+3. Review actor-based query execution, partition management, stream processing
+4. Check topology-level reactivity (flocks, deploy-* operators, peer discovery)
+5. Explore supervision trees (let-it-crash, self-healing hierarchies)
+6. Learn about capability-based security and typed actors
+7. Review Stella-inspired actor-reactor unification
+
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 38 markdown files
-  - 32 main documentation files
+- **Total Documents**: 39 markdown files
+  - 33 main documentation files
   - 6 blog posts
-- **Total Lines**: ~67,000+ lines of documentation
+- **Total Lines**: ~70,000+ lines of documentation
 - **Coverage**:
   - ✅ Architecture and design
   - ✅ Research contributions and academic paper
+  - ✅ Actor model with theoretical foundations (formal semantics, session types, category theory)
+  - ✅ Topology-level reactivity (flocks, deploy-* operators, Stella-inspired)
   - ✅ Functional relational algebra and pure functional programming
   - ✅ Immutable knowledge databases and temporal systems
   - ✅ Multi-model databases with category theory
@@ -777,6 +794,7 @@ Complete guide to all DLog documentation.
 | Rust Libraries | [RUST_LIBRARIES.md](RUST_LIBRARIES.md) | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Implementation Plan | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) | [CHANGELOG.md](CHANGELOG.md) |
+| Actor Model | [ACTOR_MODEL.md](ACTOR_MODEL.md) | [ARCHITECTURE.md](ARCHITECTURE.md), [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | DADBS | [DADBS.md](DADBS.md) | [ARCHITECTURE.md](ARCHITECTURE.md), [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md) |
 | Tensor Database | [TENSOR_DATABASE.md](TENSOR_DATABASE.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | Perfect Hash Maps | [MPHF.md](MPHF.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |

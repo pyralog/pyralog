@@ -1,6 +1,6 @@
-# DLog - Unified Distributed Data Platform
+# DLog - Platform for Secure, Parallel, Distributed, and Decentralized Computing
 
-**The world's fastest distributed log system with cryptographic verification, multi-model database support, and functional programming abstractions.**
+**A unified infrastructure for building secure, fault-tolerant distributed systems with cryptographic verification, actor-based concurrency, and functional programming abstractions.**
 
 IMPORTANT: Project in research and design phase. Drafts only.
 
@@ -8,9 +8,20 @@ IMPORTANT: Project in research and design phase. Drafts only.
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
 [![Paper](https://img.shields.io/badge/research-paper-brightgreen.svg)](PAPER.md)
 
-DLog is a revolutionary unified data platform built in Rust that eliminates the need for separate logging, database, stream processing, and analytics systems. Through novel coordination primitives, category theory foundations, and BLAKE3 cryptographic verification, DLog achieves **28+ billion operations per second** while providing strong consistency, exactly-once semantics, and compile-time type safety.
+## What is DLog?
 
-**🎯 One System. Five Platforms. Zero Compromises.**
+DLog has evolved from a distributed log into a **comprehensive computing platform** that unifies secure, parallel, distributed, and decentralized computation. Built in Rust with novel coordination primitives, category theory foundations, and BLAKE3 cryptographic verification, DLog achieves **28+ billion operations per second** while providing strong consistency, exactly-once semantics, and compile-time type safety.
+
+### Four Pillars of DLog
+
+| Pillar | Key Technologies | Benefits |
+|--------|------------------|----------|
+| **🔐 Secure** | BLAKE3 Merkle trees, zero-trust architecture, capability-based security, HSM integration, multi-signature transactions | Cryptographic verification, Byzantine fault tolerance, audit trails, regulatory compliance (SEC, HIPAA, SOC2) |
+| **⚡ Parallel** | Actor model, functional query parallelism, SIMD optimizations, GPU acceleration, tensor operations | Message-passing concurrency, lock-free algorithms, 28B+ ops/sec, automatic parallelization |
+| **🌍 Distributed** | Raft/PBFT consensus, partition management, location transparency, supervision trees, topology-level reactivity | Fault tolerance, linear scalability, instant failover, no single point of failure |
+| **🔗 Decentralized** | Proof of Stake/Work, autonomous agents, peer discovery (flocks), deploy-* operators, perfect hash functions | Autonomous operation, open networks, self-organizing, censorship resistance |
+
+**🎯 One Platform. Infinite Possibilities. Zero Compromises.**
 
 - 🚀 **Distributed Log**: 500M writes/sec (Kafka replacement)
 - 💾 **Multi-Model Database**: SQL, Graph, Document, Key-Value, RDF in one system
@@ -110,20 +121,48 @@ DLog is a revolutionary unified data platform built in Rust that eliminates the 
 - **Dynamic Partitions**: Automatic splitting/merging of hot/cold partitions
 - **Tiered Storage**: S3/GCS/Azure offloading for cost optimization
 
-### 🔗 Decentralized & Advanced Data Structures
+### 🎭 Actor-Based Concurrency
 
-- **[TENSOR_DATABASE](TENSOR_DATABASE.md)**: Multi-dimensional arrays for ML/AI
-  - DLPack integration (PyTorch, TensorFlow, JAX, ONNX, Hugging Face)
-  - Distributed training (data, model, pipeline, 3D parallelism)
-  - GPU memory management, Zarr format, polystore tensor model
-- **[DADBS](DADBS.md)**: Decentralized Autonomous Database Systems
-  - 5 consensus mechanisms (Raft, PBFT, Tendermint, PoW, PoS)
-  - Self-healing, self-optimizing, self-configuring, self-protecting
-  - Smart contracts for databases, economic incentives, on-chain governance
-- **[MPHF](MPHF.md)**: Partitioned Perfect Hash Maps
-  - O(1) guaranteed lookup, zero collisions, zero wasted space
-  - Deterministic, streaming, parallelizable build algorithm
-  - 45ns p50 lookup, 15.8× parallelism speedup
+- **Location-Transparent Actors**: Message-passing concurrency with location transparency
+- **Actor-Based Query Execution**: Queries as actors, operators as actors, backpressure via mailboxes
+- **Partition Management Actors**: Each partition is an actor, zero-downtime migrations
+- **Topology-Level Reactivity**: Flocks for automatic peer discovery, deploy-* operators for time-varying collections
+- **Supervision Trees**: Let-it-crash philosophy, self-healing hierarchies (Erlang-style)
+- **Session Types**: Compile-time protocol verification, type-safe message passing
+- **Capability Security**: Object-capability model, unforgeable references
+- **Reactive Streams**: Publisher/Subscriber with flow control, exactly-once delivery
+- **Formal Foundations**: 12 theorems with proofs, category theory, temporal logic
+
+### 🧮 Tensor Database for ML/AI
+
+- **Native Tensor Storage**: Multi-dimensional arrays as first-class data type
+- **DLPack Integration**: Zero-copy interop with PyTorch, TensorFlow, JAX, ONNX, Hugging Face
+- **Distributed Training**: Data, model, pipeline, and 3D parallelism support
+- **GPU Memory Management**: Unified memory, pinned memory, multi-GPU coordination
+- **Zarr Format**: Cloud-native chunked arrays, S3/GCS optimization
+- **Polystore Tensor Model**: Category-theoretic foundations for cross-model tensor queries
+- **Vector Embeddings**: ANN search, ML feature store, model registry
+- **Scientific Computing**: Time-series tensors, image/video storage, probabilistic tensors
+
+### 🔗 Decentralized Autonomous Systems
+
+- **5 Consensus Mechanisms**: Raft, PBFT, Tendermint, Proof of Work, Proof of Stake
+- **Autonomous Operation**: Self-healing, self-optimizing, self-configuring, self-protecting
+- **Smart Contracts for Databases**: Constraints as contracts, trigger-based automation, ACL enforcement
+- **Economic Incentives**: Token economics, storage mining, bandwidth rewards, stake-based governance
+- **On-Chain Governance**: Proposal system, weighted voting, time-locked upgrades
+- **Byzantine Fault Tolerance**: Tolerate up to 1/3 malicious nodes
+- **Peer Discovery**: Gossip protocols, DHT-based routing, epidemic broadcast
+
+### 🔍 Perfect Hash Functions
+
+- **Partitioned Perfect Hash Maps**: O(1) guaranteed lookup, zero collisions, zero wasted space
+- **6 Deduplication Strategies**: LWW, First-Wins, Max-Value, Priority, Timestamp, Custom
+- **Multiple PHF Builders**: BBHash, RecSplit, PTHash, CHD, BDZ with performance trade-offs
+- **Deterministic Build**: Reproducible builds from same input, parallel partitioning
+- **Memory-Mapped Loading**: Zero-copy deserialization, instant startup
+- **Performance**: 45ns p50 lookup, 80ns p99, 15.8× parallelism speedup on 32 cores
+- **Space Efficiency**: 5.5% overhead (2.3 bits per key)
 
 ## 📊 Unified Architecture
 
@@ -402,7 +441,7 @@ while let Some(batch) = stream.next().await {
 
 ## 📚 Comprehensive Documentation
 
-DLog includes **67,000+ lines** of documentation across **38 files**:
+DLog includes **70,000+ lines** of documentation across **39 files**:
 
 ### 🎯 Getting Started
 - **[QUICK_START.md](QUICK_START.md)** - Get up and running in 5 minutes
@@ -423,7 +462,10 @@ DLog includes **67,000+ lines** of documentation across **38 files**:
 - **[MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md)** - Category theory, 5 data models
 - **[FUNCTIONAL_RELATIONAL_ALGEBRA.md](FUNCTIONAL_RELATIONAL_ALGEBRA.md)** - Monads, type safety
 
-### 🔗 Decentralized & Advanced Algorithms
+### 🎭 Actor-Based Concurrency
+- **[ACTOR_MODEL.md](ACTOR_MODEL.md)** - Location-transparent actors, topology-level reactivity, supervision trees
+
+### 🔗 Advanced Data Structures & Algorithms
 - **[TENSOR_DATABASE.md](TENSOR_DATABASE.md)** - Tensor database (DLPack, distributed training, GPU, Zarr)
 - **[DADBS.md](DADBS.md)** - Decentralized Autonomous Database Systems (5 consensus mechanisms)
 - **[MPHF.md](MPHF.md)** - Partitioned Perfect Hash Maps (O(1) lookup, zero collisions)
@@ -625,11 +667,19 @@ DLog builds upon groundbreaking work from many projects:
 ### Cryptography
 - [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) - High-performance cryptographic hashing
 
+### Actor-Based Systems
+- [Erlang/OTP](https://www.erlang.org/) - Supervision trees, let-it-crash philosophy
+- [Akka](https://akka.io/) - Location-transparent actors, cluster sharding
+- [Stella](https://soft.vub.ac.be/~smarr/projects/stella/) - Actor-reactor unification, topology-level reactivity
+- [Pony](https://www.ponylang.io/) - Deny capabilities, reference capabilities
+- [E Language](http://www.erights.org/) - Object-capability security model
+
 ### Theory & Foundations
 - [MultiCategory](https://multicategory.github.io/) - Category theory for databases
 - [Raft](https://raft.github.io/) - Consensus algorithm
 - [Percolator](https://research.google/pubs/pub36726/) - Distributed transactions (Google)
 - Category Theory community - Mathematical foundations
+- Actor Model (Hewitt, Agha) - Concurrent computation model
 
 ### Rust Ecosystem
 - [Tokio](https://tokio.rs/) - Async runtime

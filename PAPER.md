@@ -60,9 +60,15 @@ This paper makes the following contributions:
 
 10. **Type-Level Query Safety**: Compile-time schema validation using Rust's type system, preventing runtime errors and enabling IDE support.
 
+**Actor-Based Concurrency:**
+
+11. **Location-Transparent Actor Model**: Actor-based query execution, partition management, and stream processing with supervision trees and topology-level reactivity.
+
+12. **Topology-Level Reactivity**: Automatic peer discovery (flocks) and reactive computations over time-varying collections (deploy-* operators) inspired by Stella.
+
 **Unified Platform Architecture:**
 
-11. **Integrated Analytics and Observability**: Native integration of distributed logging, transactional processing, stream analytics, time-travel queries, and observability into a single coherent system built on Apache Arrow's columnar format.
+13. **Integrated Analytics and Observability**: Native integration of distributed logging, transactional processing, stream analytics, time-travel queries, and observability into a single coherent system built on Apache Arrow's columnar format.
 
 We demonstrate that DLog achieves:
 - 4+ billion transactions per second (8,000× faster than TiKV)
@@ -78,7 +84,7 @@ We demonstrate that DLog achieves:
 
 ### 1.3 Paper Organization
 
-The remainder of this paper is organized as follows: Section 2 surveys related work. Section 3 presents DLog's core architecture. Section 4 details coordination primitives. Section 5 describes consensus and replication. Section 6 covers transactions and exactly-once semantics. Section 7 presents cryptographic verification with BLAKE3. Section 8 details the multi-model database with category theory. Section 9 describes the functional relational algebra system. Section 10 covers storage and analytics integration. Section 11 presents performance evaluation. Section 12 discusses implementation lessons. Section 13 explores future work. Section 14 compares with related systems. Section 15 concludes.
+The remainder of this paper is organized as follows: Section 2 surveys related work. Section 3 presents DLog's core architecture. Section 4 details coordination primitives. Section 5 describes consensus and replication. Section 6 covers transactions and exactly-once semantics. Section 7 presents cryptographic verification with BLAKE3. Section 8 details the multi-model database with category theory. Section 9 describes the functional relational algebra system. Section 10 presents the actor model and topology-level reactivity. Section 11 covers tensor database for ML/AI workloads. Section 12 presents decentralized autonomous database systems. Section 13 covers storage and analytics integration. Section 14 presents performance evaluation. Section 15 discusses implementation lessons. Section 16 explores future work. Section 17 compares with related systems. Section 18 concludes.
 
 ---
 
