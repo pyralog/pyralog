@@ -4,7 +4,7 @@ A 10-part technical blog series explaining Pyralog's architecture, innovations, 
 
 ## 📚 The Series
 
-### [1. Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+### [1. Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 *The problem with modern data infrastructure and how Pyralog solves it*
 
 **Key Topics**:
@@ -231,7 +231,7 @@ A 10-part technical blog series explaining Pyralog's architecture, innovations, 
 ## 🎯 Reading Paths
 
 ### For Decision Makers (CTOs, VPs)
-1. [Introducing Pyralog](1-introducing-dlog.md) - Understand the value proposition
+1. [Introducing Pyralog](1-introducing-pyralog.md) - Understand the value proposition
 2. [28 Billion Ops/Sec](4-28-billion-ops.md) - See the performance benefits
 3. [Quantum-Resistant Networking](10-wireguard-networking.md) - Security features
 4. [Building in Rust](5-rust-infrastructure.md) - Understand technology choices
@@ -241,7 +241,7 @@ A 10-part technical blog series explaining Pyralog's architecture, innovations, 
 ---
 
 ### For Architects
-1. [Introducing Pyralog](1-introducing-dlog.md) - System overview
+1. [Introducing Pyralog](1-introducing-pyralog.md) - System overview
 2. [Pharaoh Network](3-pharaoh-network.md) - Scaling pattern
 3. [28 Billion Ops/Sec](4-28-billion-ops.md) - Complete architecture
 4. [Multi-Model Database](7-multi-model-database.md) - Category theory foundation
@@ -284,7 +284,7 @@ A 10-part technical blog series explaining Pyralog's architecture, innovations, 
 ---
 
 ### For Rust Developers
-1. [Introducing Pyralog](1-introducing-dlog.md) - What we're building
+1. [Introducing Pyralog](1-introducing-pyralog.md) - What we're building
 2. [Building in Rust](5-rust-infrastructure.md) - Rust-specific insights
 3. [Obelisk Sequencer](2-obelisk-sequencer.md) - Code example
 4. [Cryptographic Verification](6-cryptographic-verification.md) - BLAKE3 in Rust

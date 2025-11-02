@@ -50,7 +50,7 @@ Memory-Only Mode allows Pyralog to operate entirely in RAM without any disk I/O.
 ### Basic Configuration
 
 ```rust
-use dlog::{PyralogConfig, StorageMode};
+use pyralog::{PyralogConfig, StorageMode};
 
 let config = PyralogConfig {
     storage: StorageConfig {
@@ -167,11 +167,11 @@ Memory-only mode scales linearly with RAM:
 #[tokio::test]
 async fn test_event_processing() {
     // In-memory Pyralog instance
-    let dlog = PyralogServer::memory_only().await?;
+    let pyralog = PyralogServer::memory_only().await?;
     
     // Test logic
-    dlog.produce("events", event).await?;
-    let result = dlog.consume("events", 0, 100).await?;
+    pyralog.produce("events", event).await?;
+    let result = pyralog.consume("events", 0, 100).await?;
     
     assert_eq!(result.len(), 100);
     
@@ -192,7 +192,7 @@ async fn test_event_processing() {
 
 ```bash
 # Start Pyralog in memory-only mode for development
-dlog serve --memory-only --max-memory 4GB
+pyralog serve --memory-only --max-memory 4GB
 
 # Instant startup (no recovery)
 # Hot reload (restart in <1s)
@@ -212,7 +212,7 @@ dlog serve --memory-only --max-memory 4GB
 
 ```rust
 // Real-time analytics with 1-minute windows
-let stream = dlog.stream_sql(r#"
+let stream = pyralog.stream_sql(r#"
     SELECT 
         user_id,
         COUNT(*) as click_count,
@@ -238,7 +238,7 @@ let stream = dlog.stream_sql(r#"
 
 ```rust
 // Session store
-dlog.put_with_ttl(
+pyralog.put_with_ttl(
     "sessions",
     session_id,
     session_data,
@@ -247,11 +247,11 @@ dlog.put_with_ttl(
 
 // Query result cache
 let cache_key = blake3::hash(query);
-if let Some(cached) = dlog.get("query_cache", cache_key).await? {
+if let Some(cached) = pyralog.get("query_cache", cache_key).await? {
     return cached;
 }
 let result = expensive_query();
-dlog.put("query_cache", cache_key, result).await?;
+pyralog.put("query_cache", cache_key, result).await?;
 ```
 
 **Benefits vs. Redis**:
@@ -273,17 +273,17 @@ dlog.put("query_cache", cache_key, result).await?;
 
 ```rust
 // Disaster recovery simulation
-let dlog = PyralogServer::memory_only().await?;
+let pyralog = PyralogServer::memory_only().await?;
 
 // Replay from S3 archive
-dlog.replay_from_archive(
+pyralog.replay_from_archive(
     "s3://backups/logs/2024-01-01",
     timestamp_from, // Start point
     timestamp_to,   // End point
 ).await?;
 
 // Now entire state is in memory for analysis
-let state = dlog.query_sql("SELECT * FROM users WHERE active = true").await?;
+let state = pyralog.query_sql("SELECT * FROM users WHERE active = true").await?;
 ```
 
 **Use cases**:
@@ -299,7 +299,7 @@ let state = dlog.query_sql("SELECT * FROM users WHERE active = true").await?;
 
 ```rust
 // Feature store in memory
-let features = dlog.query_sql(r#"
+let features = pyralog.query_sql(r#"
     SELECT 
         user_id,
         AVG(purchase_amount) as avg_purchase,
@@ -338,7 +338,7 @@ let config = PyralogConfig {
     
     // Sync to cloud periodically
     sync: SyncConfig {
-        upstream: "https://cloud.example.com/dlog",
+        upstream: "https://cloud.example.com/pyralog",
         interval: Duration::from_secs(60),
     },
     
@@ -359,7 +359,7 @@ let config = PyralogConfig {
 
 ```rust
 // Order book in memory (sub-microsecond updates)
-dlog.update_order_book(
+pyralog.update_order_book(
     symbol,
     OrderBookUpdate {
         side: Side::Buy,
@@ -370,7 +370,7 @@ dlog.update_order_book(
 ).await?;
 
 // Query order book (2μs p99 latency)
-let top_bids = dlog.query("SELECT * FROM order_book 
+let top_bids = pyralog.query("SELECT * FROM order_book 
                            WHERE side = 'buy' 
                            ORDER BY price DESC 
                            LIMIT 10").await?;
@@ -388,7 +388,7 @@ let top_bids = dlog.query("SELECT * FROM order_book
 
 ```rust
 // Game lobby state (ephemeral)
-dlog.create_lobby(LobbyData {
+pyralog.create_lobby(LobbyData {
     id: lobby_id,
     players: vec![player1, player2],
     game_mode: "battle_royale",
@@ -396,10 +396,10 @@ dlog.create_lobby(LobbyData {
 }).await?;
 
 // Leaderboard (temporary rankings)
-dlog.update_leaderboard(player_id, score).await?;
+pyralog.update_leaderboard(player_id, score).await?;
 
 // Chat messages (no need to persist)
-dlog.append_chat(lobby_id, ChatMessage {
+pyralog.append_chat(lobby_id, ChatMessage {
     player: player_id,
     message: "gg",
     timestamp: now(),
@@ -419,15 +419,15 @@ dlog.append_chat(lobby_id, ChatMessage {
 ```rust
 // AWS Lambda with Pyralog sidecar (memory-only)
 async fn handler(event: Event) -> Response {
-    let dlog = get_or_create_dlog_sidecar().await;
+    let pyralog = get_or_create_pyralog_sidecar().await;
     
     // Warm cache between invocations
-    if let Some(cached) = dlog.get("cache", event.key).await? {
+    if let Some(cached) = pyralog.get("cache", event.key).await? {
         return Response::from_cache(cached);
     }
     
     let result = process(event).await;
-    dlog.put("cache", event.key, result.clone()).await?;
+    pyralog.put("cache", event.key, result.clone()).await?;
     
     Response::new(result)
 }
@@ -446,7 +446,7 @@ async fn handler(event: Event) -> Response {
 
 ```rust
 // Metrics aggregation (1-minute windows)
-dlog.record_metric(Metric {
+pyralog.record_metric(Metric {
     name: "http_requests",
     value: 1,
     tags: vec![("status", "200"), ("endpoint", "/api/users")],
@@ -454,7 +454,7 @@ dlog.record_metric(Metric {
 }).await?;
 
 // Query recent metrics (last 5 minutes)
-let metrics = dlog.query_sql(r#"
+let metrics = pyralog.query_sql(r#"
     SELECT 
         tags->>'endpoint' as endpoint,
         COUNT(*) as request_count,
@@ -480,7 +480,7 @@ let metrics = dlog.query_sql(r#"
 
 ```rust
 // Mempool (pending transactions)
-dlog.add_to_mempool(Transaction {
+pyralog.add_to_mempool(Transaction {
     from: address1,
     to: address2,
     value: amount,
@@ -489,7 +489,7 @@ dlog.add_to_mempool(Transaction {
 }).await?;
 
 // Query mempool (sorted by gas price)
-let pending = dlog.query_sql(r#"
+let pending = pyralog.query_sql(r#"
     SELECT * FROM mempool
     WHERE status = 'pending'
     ORDER BY gas_price DESC
@@ -652,7 +652,7 @@ storage: StorageConfig {
 ### 4. Monitor Memory Usage
 
 ```rust
-let metrics = dlog.memory_metrics().await?;
+let metrics = pyralog.memory_metrics().await?;
 println!("Memory usage: {:.1}%", metrics.usage_percent);
 println!("Records: {}", metrics.record_count);
 println!("Evictions: {}", metrics.eviction_count);
@@ -666,7 +666,7 @@ if metrics.usage_percent > 90.0 {
 
 ```rust
 // Auto-delete records after 1 hour
-dlog.produce_with_ttl(
+pyralog.produce_with_ttl(
     "temporary_events",
     event,
     Duration::from_secs(3600),

@@ -1,7 +1,7 @@
 use crate::cluster::ClusterManager;
-use crate::config::DLogConfig;
+use crate::config::PyralogConfig;
 use pyralog_consensus::RaftConfig;
-use pyralog_core::{LogId, LogMetadata, LogConfig, PartitionId, Record, RecordHeader, Result, DLogError, RetentionPolicy};
+use pyralog_core::{LogId, LogMetadata, LogConfig, PartitionId, Record, RecordHeader, Result, PyralogError, RetentionPolicy};
 use pyralog_protocol::{
     api::*, Partitioner, PartitionStrategy,
 };
@@ -13,17 +13,17 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use bytes::Bytes;
 
-/// Main DLog server
-pub struct DLogServer {
-    config: DLogConfig,
+/// Main Pyralog server
+pub struct PyralogServer {
+    config: PyralogConfig,
     cluster: Arc<ClusterManager>,
     storage: Arc<RwLock<HashMap<(LogId, PartitionId), Arc<LogStorage>>>>,
     replication: Arc<ReplicationManager>,
 }
 
-impl DLogServer {
-    /// Create a new DLog server
-    pub async fn new(config: DLogConfig) -> Result<Self> {
+impl PyralogServer {
+    /// Create a new Pyralog server
+    pub async fn new(config: PyralogConfig) -> Result<Self> {
         let raft_config = RaftConfig {
             node_id: config.node.node_id,
             cluster_nodes: config.node.cluster_nodes.clone(),
@@ -32,7 +32,7 @@ impl DLogServer {
         };
 
         std::fs::create_dir_all(&config.node.data_dir)
-            .map_err(|e| DLogError::ConfigError(e.to_string()))?;
+            .map_err(|e| PyralogError::ConfigError(e.to_string()))?;
 
         let cluster = Arc::new(ClusterManager::new(raft_config).await?);
         
@@ -51,7 +51,7 @@ impl DLogServer {
 
     /// Start the server
     pub async fn start(self: Arc<Self>) -> Result<()> {
-        tracing::info!("Starting DLog server on {}", self.config.network.listen_address);
+        tracing::info!("Starting Pyralog server on {}", self.config.network.listen_address);
 
         // Start cluster manager
         Arc::clone(&self.cluster).start().await?;
@@ -59,9 +59,9 @@ impl DLogServer {
         // Start network listeners
         let listener = TcpListener::bind(&self.config.network.listen_address)
             .await
-            .map_err(|e| DLogError::NetworkError(e.to_string()))?;
+            .map_err(|e| PyralogError::NetworkError(e.to_string()))?;
 
-        tracing::info!("DLog server listening on {}", self.config.network.listen_address);
+        tracing::info!("Pyralog server listening on {}", self.config.network.listen_address);
 
         // Accept connections
         loop {
@@ -123,13 +123,13 @@ impl DLogServer {
 }
 
 #[async_trait::async_trait]
-impl ProtocolHandler for DLogServer {
+impl ProtocolHandler for PyralogServer {
     async fn produce(&self, request: ProduceRequest) -> Result<ProduceResponse> {
         // Get log metadata
         let metadata = self
             .cluster
             .get_log(&request.log_id)
-            .ok_or_else(|| DLogError::LogNotFound(request.log_id.to_string()))?;
+            .ok_or_else(|| PyralogError::LogNotFound(request.log_id.to_string()))?;
 
         // Determine partition
         let partitioner = Partitioner::new(
@@ -142,7 +142,7 @@ impl ProtocolHandler for DLogServer {
         } else {
             // Use first record's key for partitioning
             let first_record = request.records.first()
-                .ok_or_else(|| DLogError::InvalidRequest("No records in request".to_string()))?;
+                .ok_or_else(|| PyralogError::InvalidRequest("No records in request".to_string()))?;
             
             partitioner.partition(
                 first_record.key.as_ref(),
@@ -152,7 +152,7 @@ impl ProtocolHandler for DLogServer {
 
         // Check if we're the leader for this partition
         if !self.cluster.is_partition_leader(partition) {
-            return Err(DLogError::NotLeader(None));
+            return Err(PyralogError::NotLeader(None));
         }
 
         // Get storage
@@ -177,7 +177,7 @@ impl ProtocolHandler for DLogServer {
         }
 
         let base_offset = base_offset
-            .ok_or_else(|| DLogError::InvalidRequest("No records written".to_string()))?;
+            .ok_or_else(|| PyralogError::InvalidRequest("No records written".to_string()))?;
 
         // Flush if required
         if matches!(request.acks, AckMode::Leader | AckMode::All) {

@@ -202,7 +202,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Clone and build
 git clone https://github.com/pyralog/pyralog.git
-cd dlog
+cd pyralog
 cargo build --release
 ```
 
@@ -213,7 +213,7 @@ cargo build --release
 cargo test
 
 # Specific module
-cargo test --package dlog-storage
+cargo test --package pyralog-storage
 
 # With output
 cargo test -- --nocapture
@@ -312,9 +312,9 @@ Typical recovery time: < 30 seconds
 ### Where are the logs?
 
 Default locations:
-- Application logs: `/var/log/dlog/dlog.log`
-- Data: `/var/lib/dlog/`
-- Configuration: `/etc/dlog/config.json`
+- Application logs: `/var/log/pyralog/pyralog.log`
+- Data: `/var/lib/pyralog/`
+- Configuration: `/etc/pyralog/config.json`
 
 ## Security Questions
 

@@ -172,7 +172,7 @@ tx.commit().await?;  // All-or-nothing
 
 ```
 // Ingest OpenTelemetry traces
-dlog_receiver.ingest_otlp(trace).await?;
+pyralog_receiver.ingest_otlp(trace).await?;
 
 // Query with SQL
 let slow_requests = client.sql("
@@ -305,10 +305,10 @@ We're open-sourcing Pyralog under MIT-0 (code) and CC0-1.0 (documentation) licen
 ```bash
 # Clone the repository
 git clone https://github.com/pyralog/pyralog
-cd dlog
+cd pyralog
 
 # Start a local cluster
-cargo run --bin dlog-server
+cargo run --bin pyralog-server
 
 # Run examples
 cargo run --example basic-producer

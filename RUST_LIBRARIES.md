@@ -681,19 +681,19 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     static ref RECORDS_WRITTEN: Counter = Counter::new(
-        "dlog_records_written_total",
+        "pyralog_records_written_total",
         "Total number of records written"
     ).unwrap();
     
     static ref WRITE_LATENCY: Histogram = Histogram::with_opts(
         prometheus::HistogramOpts::new(
-            "dlog_write_latency_seconds",
+            "pyralog_write_latency_seconds",
             "Write latency distribution"
         )
     ).unwrap();
     
     static ref ACTIVE_CONNECTIONS: IntGauge = IntGauge::new(
-        "dlog_active_connections",
+        "pyralog_active_connections",
         "Number of active client connections"
     ).unwrap();
 }
@@ -944,7 +944,7 @@ clap = { version = "4.5", features = ["derive"] }
 use clap::Parser;
 
 #[derive(Parser)]
-#[command(name = "dlog")]
+#[command(name = "pyralog")]
 #[command(about = "Pyralog distributed log server")]
 struct Cli {
     #[arg(short, long, default_value = "config.toml")]
@@ -953,7 +953,7 @@ struct Cli {
     #[arg(short, long, default_value = "9092")]
     port: u16,
     
-    #[arg(short, long, default_value = "/var/lib/dlog")]
+    #[arg(short, long, default_value = "/var/lib/pyralog")]
     data_dir: String,
     
     #[command(subcommand)]
@@ -998,7 +998,7 @@ impl Settings {
         let s = Config::builder()
             .add_source(File::with_name("config/default"))
             .add_source(File::with_name("config/local").required(false))
-            .add_source(Environment::with_prefix("DLOG"))
+            .add_source(Environment::with_prefix("PYRALOG"))
             .build()?;
         
         s.try_deserialize()
@@ -1060,7 +1060,7 @@ let retention = parse_duration("7d")?;  // 7 days
 
 ```toml
 [package]
-name = "dlog"
+name = "pyralog"
 version = "0.1.0"
 edition = "2021"
 

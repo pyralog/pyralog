@@ -1,6 +1,6 @@
 use bytes::Bytes;
 use pyralog_core::{
-    LogOffset, PartitionId, Record, RecordBatch, Result, DLogError,
+    LogOffset, PartitionId, Record, RecordBatch, Result, PyralogError,
     traits::{ReplicationManager as ReplicationManagerTrait, ReplicationStatus},
 };
 use parking_lot::RwLock;
@@ -91,7 +91,7 @@ impl ReplicationManager {
         if quorum.is_satisfied() {
             Ok(())
         } else {
-            Err(DLogError::QuorumNotAvailable)
+            Err(PyralogError::QuorumNotAvailable)
         }
     }
 
@@ -121,7 +121,7 @@ impl ReplicationManagerTrait for ReplicationManager {
         // Get copyset for this partition
         let copyset = self
             .get_copyset(partition)
-            .ok_or_else(|| DLogError::ReplicationError("Failed to get copyset".to_string()))?;
+            .ok_or_else(|| PyralogError::ReplicationError("Failed to get copyset".to_string()))?;
 
         // Replicate to the copyset nodes
         self.replicate_to_nodes(partition, batch, &copyset.nodes)
@@ -131,7 +131,7 @@ impl ReplicationManagerTrait for ReplicationManager {
     async fn replication_status(&self, partition: PartitionId) -> Result<ReplicationStatus> {
         let copyset = self
             .get_copyset(partition)
-            .ok_or_else(|| DLogError::PartitionNotFound(partition.as_u32() as u64))?;
+            .ok_or_else(|| PyralogError::PartitionNotFound(partition.as_u32() as u64))?;
 
         let leader_offset = self
             .sync_manager

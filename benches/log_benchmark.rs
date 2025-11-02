@@ -1,7 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId, Throughput};
 use bytes::Bytes;
 
-// Placeholder benchmarks - would implement actual benchmarks with real DLog operations
+// Placeholder benchmarks - would implement actual benchmarks with real Pyralog operations
 
 fn benchmark_write_latency(c: &mut Criterion) {
     let mut group = c.benchmark_group("write_latency");

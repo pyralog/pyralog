@@ -350,7 +350,7 @@ let trade = Trade {
     price: 150.25,
 };
 
-let notarization = dlog.notarize(&trade).await?;
+let notarization = pyralog.notarize(&trade).await?;
 // Returns cryptographic proof for regulatory audit
 ```
 
@@ -364,10 +364,10 @@ let notarization = dlog.notarize(&trade).await?;
 ```rust
 // Patient records with tamper detection
 let record = MedicalRecord { ... };
-let hash = dlog.append_verified(&record).await?;
+let hash = pyralog.append_verified(&record).await?;
 
 // Later: verify integrity
-let (record, proof) = dlog.read_with_proof(hash).await?;
+let (record, proof) = pyralog.read_with_proof(hash).await?;
 assert!(proof.verify()); // Cryptographically proven unmodified
 ```
 
@@ -381,7 +381,7 @@ assert!(proof.verify()); // Cryptographically proven unmodified
 ```rust
 // Track product through supply chain
 for event in supply_chain_events {
-    let notarization = dlog.notarize(&event).await?;
+    let notarization = pyralog.notarize(&event).await?;
     product.chain_of_custody.push(notarization);
 }
 
@@ -459,7 +459,7 @@ But for maximum future-proofing, we're exploring:
 Enable cryptographic verification in your Pyralog cluster:
 
 ```toml
-# dlog.toml
+# pyralog.toml
 [cryptography]
 enabled = true
 algorithm = "blake3"
@@ -477,7 +477,7 @@ signature_algorithm = "ed25519"
 **Client-side verification:**
 
 ```rust
-use dlog::VerifiedClient;
+use pyralog::VerifiedClient;
 
 let client = VerifiedClient::connect("localhost:9000").await?;
 
@@ -514,7 +514,7 @@ In the next post, we'll explore **Pyralog's multi-model database capabilities**,
 ---
 
 **Blog Series**:
-1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)

@@ -125,16 +125,16 @@ All three modes are **configurable** via `copyset_strategy` in config file.
 
 ```bash
 # Create workspace
-cargo new --lib dlog
-cd dlog
+cargo new --lib pyralog
+cd pyralog
 
 # Create crates
-cargo new --lib dlog-core
-cargo new --lib dlog-storage
-cargo new --lib dlog-consensus
-cargo new --lib dlog-replication
-cargo new --lib dlog-protocol
-cargo new --bin dlog-server
+cargo new --lib pyralog-core
+cargo new --lib pyralog-storage
+cargo new --lib pyralog-consensus
+cargo new --lib pyralog-replication
+cargo new --lib pyralog-protocol
+cargo new --bin pyralog-server
 
 # Setup CI/CD
 # - GitHub Actions for tests
@@ -150,7 +150,7 @@ cargo new --bin dlog-server
 - [x] Setup pre-commit hooks
 - [x] Create LICENSE files
 
-### 1.2 Core Types (dlog-core)
+### 1.2 Core Types (pyralog-core)
 
 **Files to create:**
 - `src/error.rs` - Error types with thiserror
@@ -218,7 +218,7 @@ pub trait Storage: Send + Sync {
 
 **Implementation order:**
 
-1. **Basic Segment** (`dlog-storage/src/segment.rs`)
+1. **Basic Segment** (`pyralog-storage/src/segment.rs`)
 
 ```rust
 pub struct Segment {
@@ -240,7 +240,7 @@ impl Segment {
 }
 ```
 
-2. **Sparse Index** (`dlog-storage/src/index.rs`)
+2. **Sparse Index** (`pyralog-storage/src/index.rs`)
 
 ```rust
 pub struct Index {
@@ -262,7 +262,7 @@ impl Index {
 }
 ```
 
-3. **Log Storage** (`dlog-storage/src/log_storage.rs`)
+3. **Log Storage** (`pyralog-storage/src/log_storage.rs`)
 
 ```rust
 pub struct LogStorage {
@@ -379,7 +379,7 @@ Option B: Implement from scratch (more control, learning)
 **Implementation:**
 
 ```rust
-// dlog-consensus/src/raft.rs
+// pyralog-consensus/src/raft.rs
 pub struct RaftNode {
     id: u64,
     peers: Vec<u64>,
@@ -439,7 +439,7 @@ impl ClusterManager {
 **Implementation:**
 
 ```rust
-// dlog-replication/src/replicator.rs
+// pyralog-replication/src/replicator.rs
 pub struct Replicator {
     partition: PartitionId,
     strategy: CopySetStrategy,
@@ -473,7 +473,7 @@ impl Replicator {
 **CopySet Strategy (Two Modes):**
 
 ```rust
-// dlog-replication/src/copyset.rs
+// pyralog-replication/src/copyset.rs
 #[derive(Debug, Clone)]
 pub enum CopySetStrategy {
     /// Fixed CopySet per partition (Kafka-style)
@@ -580,7 +580,7 @@ leader_stores_data = false  # Leader is disk-free!
 **Implementation:**
 
 ```rust
-// dlog-core/src/epoch.rs
+// pyralog-core/src/epoch.rs
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Epoch(pub u64);
 
@@ -609,7 +609,7 @@ pub struct RocksDBEpochStore {
 **Sequencer implementation (with coordinator mode support):**
 
 ```rust
-// dlog-core/src/sequencer.rs
+// pyralog-core/src/sequencer.rs
 pub struct Sequencer {
     partition: PartitionId,
     current_epoch: RwLock<EpochMetadata>,
@@ -728,7 +728,7 @@ impl Sequencer {
 **Metadata protocol:**
 
 ```rust
-// dlog-protocol/src/metadata.rs
+// pyralog-protocol/src/metadata.rs
 #[derive(Serialize, Deserialize)]
 pub struct MetadataRequest {
     pub log_ids: Vec<LogId>,
@@ -756,7 +756,7 @@ pub struct PartitionMetadata {
 **Client implementation:**
 
 ```rust
-// dlog-protocol/src/client.rs
+// pyralog-protocol/src/client.rs
 pub struct PyralogClient {
     bootstrap_servers: Vec<String>,
     metadata_cache: Arc<RwLock<MetadataCache>>,
@@ -799,7 +799,7 @@ impl PyralogClient {
 **Define protocol:**
 
 ```protobuf
-// proto/dlog.proto
+// proto/pyralog.proto
 syntax = "proto3";
 
 service PyralogService {
@@ -828,7 +828,7 @@ message Record {
 **Implementation with Tonic:**
 
 ```rust
-// dlog-server/src/grpc.rs
+// pyralog-server/src/grpc.rs
 use tonic::{Request, Response, Status};
 
 pub struct PyralogServiceImpl {
@@ -880,17 +880,17 @@ use prometheus::{Counter, Histogram, IntGauge, Registry};
 
 lazy_static! {
     static ref RECORDS_WRITTEN: Counter = register_counter!(
-        "dlog_records_written_total",
+        "pyralog_records_written_total",
         "Total records written"
     ).unwrap();
     
     static ref WRITE_LATENCY: Histogram = register_histogram!(
-        "dlog_write_latency_seconds",
+        "pyralog_write_latency_seconds",
         "Write latency"
     ).unwrap();
     
     static ref ACTIVE_CONNECTIONS: IntGauge = register_int_gauge!(
-        "dlog_active_connections",
+        "pyralog_active_connections",
         "Active client connections"
     ).unwrap();
 }
@@ -1008,7 +1008,7 @@ impl Sequencer {
 [server]
 node_id = 1
 bind_addr = "0.0.0.0:9092"
-data_dir = "/var/lib/dlog"
+data_dir = "/var/lib/pyralog"
 
 [cluster]
 bootstrap_servers = ["node1:9092", "node2:9092", "node3:9092"]
@@ -1074,7 +1074,7 @@ impl PyralogConfig {
         let config = Config::builder()
             .add_source(File::with_name("config/default"))
             .add_source(File::with_name("config/local").required(false))
-            .add_source(Environment::with_prefix("DLOG"))
+            .add_source(Environment::with_prefix("PYRALOG"))
             .build()?;
         
         config.try_deserialize()
@@ -1412,9 +1412,9 @@ RUN cargo build --release
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates
-COPY --from=builder /app/target/release/dlog-server /usr/local/bin/
+COPY --from=builder /app/target/release/pyralog-server /usr/local/bin/
 EXPOSE 9092 9090
-CMD ["dlog-server"]
+CMD ["pyralog-server"]
 ```
 
 ### Kubernetes
@@ -1424,31 +1424,31 @@ CMD ["dlog-server"]
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: dlog
+  name: pyralog
 spec:
-  serviceName: dlog
+  serviceName: pyralog
   replicas: 3
   selector:
     matchLabels:
-      app: dlog
+      app: pyralog
   template:
     metadata:
       labels:
-        app: dlog
+        app: pyralog
     spec:
       containers:
-      - name: dlog
-        image: dlog:latest
+      - name: pyralog
+        image: pyralog:latest
         ports:
         - containerPort: 9092
-          name: dlog
+          name: pyralog
         - containerPort: 9090
           name: metrics
         volumeMounts:
         - name: data
-          mountPath: /var/lib/dlog
+          mountPath: /var/lib/pyralog
         env:
-        - name: DLOG_NODE_ID
+        - name: PYRALOG_NODE_ID
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
@@ -1471,7 +1471,7 @@ cargo build --release --target x86_64-apple-darwin
 cargo build --release --target aarch64-apple-darwin
 
 # Create release tarball
-tar -czf dlog-v0.1.0-linux-x64.tar.gz -C target/x86_64-unknown-linux-gnu/release dlog-server
+tar -czf pyralog-v0.1.0-linux-x64.tar.gz -C target/x86_64-unknown-linux-gnu/release pyralog-server
 ```
 
 ---

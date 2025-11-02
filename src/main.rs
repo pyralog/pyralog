@@ -1,4 +1,4 @@
-use dlog::{DLogServer, DLogConfig};
+use pyralog::{PyralogServer, PyralogConfig};
 use std::sync::Arc;
 use tracing_subscriber;
 
@@ -12,12 +12,12 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     // Load configuration
-    let config = DLogConfig::default();
+    let config = PyralogConfig::default();
 
-    tracing::info!("Starting DLog server with node_id={}", config.node.node_id);
+    tracing::info!("Starting Pyralog server with node_id={}", config.node.node_id);
 
     // Create and start server
-    let server = Arc::new(DLogServer::new(config).await?);
+    let server = Arc::new(PyralogServer::new(config).await?);
     server.start().await?;
 
     Ok(())

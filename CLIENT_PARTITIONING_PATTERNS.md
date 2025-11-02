@@ -74,7 +74,7 @@ client.send_to_partition(partition, record);
 ### Example
 
 ```rust
-use dlog_client::PyralogClient;
+use pyralog_client::PyralogClient;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -166,7 +166,7 @@ client.send_to_partition(partition, record.with_key(vlsn));
 
 ```rust
 use std::sync::atomic::{AtomicU64, Ordering};
-use dlog_client::{PyralogClient, Record};
+use pyralog_client::{PyralogClient, Record};
 
 pub struct VLSNClient {
     client: PyralogClient,
@@ -2289,7 +2289,7 @@ impl UnifiedConsumer {
 **Example 1: Per-Partition Commits (Kafka-style)**
 
 ```rust
-use dlog_client::{PyralogClient, CommitStrategy, UnifiedConsumer};
+use pyralog_client::{PyralogClient, CommitStrategy, UnifiedConsumer};
 
 #[tokio::main]
 async fn main() -> Result<()> {

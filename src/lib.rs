@@ -1,6 +1,6 @@
-//! DLog - High-Performance Distributed Log System
+//! Pyralog - High-Performance Distributed Log System
 //!
-//! DLog is a modern distributed log system built in Rust, inspired by
+//! Pyralog is a modern distributed log system built in Rust, inspired by
 //! Redpanda and LogDevice. It provides:
 //!
 //! - High-performance, low-latency writes with write caching
@@ -22,9 +22,9 @@ pub use pyralog_consensus as consensus;
 pub use pyralog_replication as replication;
 pub use pyralog_protocol as protocol;
 
-pub use server::DLogServer;
-pub use client::DLogClient;
-pub use config::DLogConfig;
+pub use server::PyralogServer;
+pub use client::PyralogClient;
+pub use config::PyralogConfig;
 
 /// Re-export commonly used types
 pub mod prelude {
@@ -34,7 +34,7 @@ pub mod prelude {
     pub use crate::protocol::{
         ProduceRequest, ConsumeRequest, ProduceResponse, ConsumeResponse,
     };
-    pub use crate::client::DLogClient;
-    pub use crate::server::DLogServer;
+    pub use crate::client::PyralogClient;
+    pub use crate::server::PyralogServer;
 }
 

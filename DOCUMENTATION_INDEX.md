@@ -18,7 +18,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 - **[BRANDING](BRANDING.md)** 🎨 - **Brand identity guide** (Egyptian theme, visual identity, terminology)
 - **[PAPER](PAPER.md)** ⭐ - **Academic research paper** on Pyralog's novel contributions
 - **[Blog Series](blog/README.md)** 🎯 - **5-part technical blog series** explaining Pyralog
-  - [1. Introducing Pyralog](blog/1-introducing-dlog.md) - Why we need unified infrastructure
+  - [1. Introducing Pyralog](blog/1-introducing-pyralog.md) - Why we need unified infrastructure
   - [2. Obelisk Sequencer](blog/2-obelisk-sequencer.md) - Novel persistent atomic primitive
   - [3. ☀️ Pharaoh Network](blog/3-pharaoh-network.md) - Eliminating bottlenecks
   - [4. 28 Billion Ops/Sec](blog/4-28-billion-ops.md) - Architectural deep-dive

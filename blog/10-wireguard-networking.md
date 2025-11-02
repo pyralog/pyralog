@@ -219,7 +219,7 @@ tunnel.send(data).await?;
 **Configuration:**
 
 ```toml
-# dlog.toml
+# pyralog.toml
 [network]
 protocol = "wireguard"
 
@@ -341,7 +341,7 @@ Pyralog handles WireGuard configuration automatically:
 
 ```bash
 # Start Pyralog node (first time)
-$ dlog-server --bootstrap
+$ pyralog-server --bootstrap
 
 Generating WireGuard keys...
   ✓ Private key: generated
@@ -365,10 +365,10 @@ WireGuard endpoint: 10.0.0.3
 ### Client Connection
 
 ```rust
-use dlog::Client;
+use pyralog::Client;
 
 // Connect to cluster (WireGuard automatic)
-let client = Client::connect("dlog://cluster.example.com").await?;
+let client = Client::connect("pyralog://cluster.example.com").await?;
 
 // Behind the scenes:
 // 1. Fetch cluster WireGuard config
@@ -393,33 +393,33 @@ WireGuard integrates seamlessly with Kubernetes:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: dlog-wireguard-config
+  name: pyralog-wireguard-config
 data:
   wireguard.conf: |
     [Interface]
-    PrivateKey = <generated-by-dlog>
+    PrivateKey = <generated-by-pyralog>
     ListenPort = 51820
     
     [Peer]
     # Auto-populated by Pyralog
     PublicKey = <peer-public-key>
     AllowedIPs = 10.0.0.0/24
-    Endpoint = dlog-node-1:51820
+    Endpoint = pyralog-node-1:51820
     PersistentKeepalive = 25
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: dlog-cluster
+  name: pyralog-cluster
 spec:
-  serviceName: dlog
+  serviceName: pyralog
   replicas: 3
   template:
     spec:
       containers:
-      - name: dlog
-        image: dlog:latest
+      - name: pyralog
+        image: pyralog:latest
         env:
         - name: WIREGUARD_ENABLED
           value: "true"
@@ -457,7 +457,7 @@ Region: US-East               Region: EU-West
 **Configuration:**
 
 ```toml
-# dlog.toml (US-East cluster)
+# pyralog.toml (US-East cluster)
 [replication]
 mode = "multi-region"
 
@@ -525,7 +525,7 @@ Tamarin Prover Analysis (2018):
 ### Enable WireGuard
 
 ```toml
-# dlog.toml
+# pyralog.toml
 [network]
 protocol = "wireguard"
 
@@ -544,10 +544,10 @@ decoy_traffic = true
 
 ```bash
 # Pyralog auto-generates keys on first run
-$ dlog-server
+$ pyralog-server
 
 # Or manually:
-$ dlog-keygen
+$ pyralog-keygen
 Private key: <...>
 Public key: <...>
 Rosenpass key: <...>
@@ -556,10 +556,10 @@ Rosenpass key: <...>
 ### Client Connection
 
 ```rust
-use dlog::Client;
+use pyralog::Client;
 
 // Connect (WireGuard automatic)
-let client = Client::connect("dlog://cluster.example.com").await?;
+let client = Client::connect("pyralog://cluster.example.com").await?;
 
 // Query (encrypted over WireGuard)
 let result = client.query("SELECT * FROM users").await?;
@@ -608,10 +608,10 @@ This concludes our 10-part blog series on Pyralog. We've covered:
 ```bash
 # Clone repository
 git clone https://github.com/pyralog/pyralog
-cd dlog
+cd pyralog
 
 # Start cluster
-cargo run --bin dlog-server
+cargo run --bin pyralog-server
 
 # Run examples
 cargo run --example quick-start
@@ -634,7 +634,7 @@ cargo run --example quick-start
 ---
 
 **Blog Series** (Complete):
-1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)

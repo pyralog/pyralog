@@ -32,7 +32,7 @@ Batuta (Spanish/Portuguese/Italian for "baton" - the conductor's tool) is a dyna
     - [Reference Capabilities (Pony-Inspired)](#reference-capabilities-pony-inspired)
 15. [REPL & Interactive Development](#repl--interactive-development)
 16. [Standard Library](#standard-library)
-17. [Pyralog Integration](#dlog-integration)
+17. [Pyralog Integration](#pyralog-integration)
 18. [Performance](#performance)
     - [Compilation Strategy](#compilation-strategy)
     - [Native Compilation](#1-native-via-rust)
@@ -1420,20 +1420,20 @@ batuta> (profile
 
 ```clojure
 ;; Obelisk Sequencer
-(def counter (dlog/sparse-counter "my-counter"))
-(dlog/increment counter)
-(dlog/get-value counter)  ; => 42
+(def counter (pyralog/sparse-counter "my-counter"))
+(pyralog/increment counter)
+(pyralog/get-value counter)  ; => 42
 
 ;; Scarab IDs
-(dlog/scarab-id)  ; => 175928847299117063
+(pyralog/scarab-id)  ; => 175928847299117063
 
 ;; Merkle Tree Verification
-(def receipt (dlog/write-with-proof :audit-log data))
-(dlog/verify receipt)  ; => true or false
+(def receipt (pyralog/write-with-proof :audit-log data))
+(pyralog/verify receipt)  ; => true or false
 
 ;; Raft Operations
-(dlog/raft-leader?)  ; => true or false
-(dlog/raft-members)  ; => ["node-1" "node-2" "node-3"]
+(pyralog/raft-leader?)  ; => true or false
+(pyralog/raft-members)  ; => ["node-1" "node-2" "node-3"]
 ```
 
 ### Multi-Model Queries
@@ -1469,10 +1469,10 @@ batuta> (profile
 (blake3/hash data)  ; => [u8; 32]
 
 ;; Notarization
-(def notarization (dlog/notarize document-hash))
+(def notarization (pyralog/notarize document-hash))
 
 ;; Multi-signature
-(def tx (dlog/multi-sig-tx
+(def tx (pyralog/multi-sig-tx
           [:alice :bob :charlie]
           2  ; Require 2 of 3 signatures
           operation))

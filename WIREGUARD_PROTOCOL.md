@@ -16,7 +16,7 @@
    - [Admin → Cluster](#4-admin--cluster)
 5. [Security Model](#security-model)
    - [Cryptographic Primitives](#cryptographic-primitives)
-   - [Pyralog's Complete Encryption Strategy](#dlogs-complete-encryption-strategy)
+   - [Pyralog's Complete Encryption Strategy](#pyralogs-complete-encryption-strategy)
    - [Zero-Trust Architecture](#zero-trust-architecture)
    - [Key Rotation](#key-rotation)
    - [DPI (Deep Packet Inspection) Resistance](#dpi-deep-packet-inspection-resistance)
@@ -345,9 +345,9 @@ PersistentKeepalive = 25
 
 ```bash
 # Admin commands work directly
-dlog-admin --host 10.0.0.1 cluster status
-dlog-admin --host 10.0.0.1 partition list
-dlog-admin --host 10.0.0.1 replication check
+pyralog-admin --host 10.0.0.1 cluster status
+pyralog-admin --host 10.0.0.1 partition list
+pyralog-admin --host 10.0.0.1 replication check
 
 # All traffic encrypted and authenticated via WireGuard
 ```
@@ -462,7 +462,7 @@ Apple M1 (AES instructions):
 **Recommendation:**
 
 ```toml
-# /etc/dlog/encryption.toml
+# /etc/pyralog/encryption.toml
 
 [encryption]
 # Auto-select cipher based on CPU
@@ -822,13 +822,13 @@ Based on testing against common DPI systems:
 #### Configuration Example
 
 ```toml
-# /etc/dlog/wireguard.toml
+# /etc/pyralog/wireguard.toml
 
 [wireguard]
 backend = "kernel"  # or "boringtun"
 
 [interface]
-private_key_file = "/etc/dlog/wireguard-private.key"
+private_key_file = "/etc/pyralog/wireguard-private.key"
 address = "10.0.0.1/24"
 listen_port = 443  # Use HTTPS port for stealth
 
@@ -1000,13 +1000,13 @@ impl QuantumResistantWireGuard {
 ##### 3. Configuration
 
 ```toml
-# /etc/dlog/wireguard.toml
+# /etc/pyralog/wireguard.toml
 
 [wireguard]
 backend = "kernel"
 
 [interface]
-private_key_file = "/etc/dlog/wireguard-private.key"
+private_key_file = "/etc/pyralog/wireguard-private.key"
 address = "10.0.0.1/24"
 listen_port = 51820
 
@@ -1015,8 +1015,8 @@ enabled = true
 mode = "rosenpass"  # Options: "rosenpass", "psk-only", "disabled"
 
 [rosenpass]
-private_key_file = "/etc/dlog/rosenpass-private.key"
-public_key_file = "/etc/dlog/rosenpass-public.key"
+private_key_file = "/etc/pyralog/rosenpass-private.key"
+public_key_file = "/etc/pyralog/rosenpass-public.key"
 exchange_interval_sec = 120  # Key rotation every 2 minutes
 listen_port = 9999
 
@@ -1134,7 +1134,7 @@ impl HybridKeyDerivation {
     pub fn derive_key(&self) -> [u8; 32] {
         // Combine both secrets using HKDF
         let mut hasher = blake3::Hasher::new();
-        hasher.update(b"dlog-hybrid-key-v1");
+        hasher.update(b"pyralog-hybrid-key-v1");
         hasher.update(&self.classical_secret);
         hasher.update(&self.pq_secret);
         
@@ -1479,17 +1479,17 @@ impl WireGuardBootstrap {
 ### Configuration File Format
 
 ```toml
-# /etc/dlog/wireguard.toml
+# /etc/pyralog/wireguard.toml
 
 [interface]
-private_key_file = "/etc/dlog/wireguard-private.key"
+private_key_file = "/etc/pyralog/wireguard-private.key"
 address = "10.0.0.1/24"
 listen_port = 51820
 mtu = 1420
 
 [bootstrap]
 # Automatic peer discovery via cluster coordinator
-coordinator_endpoint = "bootstrap.dlog.example.com:9092"
+coordinator_endpoint = "bootstrap.pyralog.example.com:9092"
 cluster_id = "production-us-west"
 
 # Or manual peer configuration
@@ -1506,42 +1506,42 @@ persistent_keepalive = 25
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: dlog-wireguard-config
+  name: pyralog-wireguard-config
 data:
   wireguard.toml: |
     [interface]
-    private_key_file = "/etc/dlog/secrets/wireguard-private.key"
+    private_key_file = "/etc/pyralog/secrets/wireguard-private.key"
     address = "10.244.0.0/16"
     listen_port = 51820
     
     [bootstrap]
-    coordinator_endpoint = "dlog-coordinator.default.svc.cluster.local:9092"
+    coordinator_endpoint = "pyralog-coordinator.default.svc.cluster.local:9092"
     cluster_id = "k8s-production"
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: dlog-node
+  name: pyralog-node
 spec:
-  serviceName: dlog
+  serviceName: pyralog
   replicas: 3
   template:
     spec:
       initContainers:
       - name: wireguard-setup
-        image: dlog:latest
-        command: ["dlog-wireguard-init"]
+        image: pyralog:latest
+        command: ["pyralog-wireguard-init"]
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
         volumeMounts:
         - name: wireguard-config
-          mountPath: /etc/dlog
+          mountPath: /etc/pyralog
       
       containers:
-      - name: dlog
-        image: dlog:latest
+      - name: pyralog
+        image: pyralog:latest
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
@@ -1550,7 +1550,7 @@ spec:
           name: wireguard
           protocol: UDP
         - containerPort: 9092
-          name: dlog
+          name: pyralog
           protocol: TCP
 ```
 
@@ -1560,30 +1560,30 @@ spec:
 version: '3.8'
 
 services:
-  dlog-node-1:
-    image: dlog:latest
+  pyralog-node-1:
+    image: pyralog:latest
     cap_add:
       - NET_ADMIN
     environment:
-      - DLOG_NODE_ID=1
-      - DLOG_WIREGUARD_PORT=51820
-      - DLOG_CLUSTER_BOOTSTRAP=dlog-coordinator:9092
+      - PYRALOG_NODE_ID=1
+      - PYRALOG_WIREGUARD_PORT=51820
+      - PYRALOG_CLUSTER_BOOTSTRAP=pyralog-coordinator:9092
     volumes:
-      - ./wireguard-keys/node1:/etc/dlog/wireguard
+      - ./wireguard-keys/node1:/etc/pyralog/wireguard
     ports:
       - "51820:51820/udp"
       - "9092:9092"
   
-  dlog-node-2:
-    image: dlog:latest
+  pyralog-node-2:
+    image: pyralog:latest
     cap_add:
       - NET_ADMIN
     environment:
-      - DLOG_NODE_ID=2
-      - DLOG_WIREGUARD_PORT=51820
-      - DLOG_CLUSTER_BOOTSTRAP=dlog-coordinator:9092
+      - PYRALOG_NODE_ID=2
+      - PYRALOG_WIREGUARD_PORT=51820
+      - PYRALOG_CLUSTER_BOOTSTRAP=pyralog-coordinator:9092
     volumes:
-      - ./wireguard-keys/node2:/etc/dlog/wireguard
+      - ./wireguard-keys/node2:/etc/pyralog/wireguard
     ports:
       - "51821:51820/udp"
       - "9093:9092"
@@ -1597,11 +1597,11 @@ services:
 
 ```bash
 # Generate keys for a new node
-dlog-wireguard keygen \
+pyralog-wireguard keygen \
   --node-id node-1 \
-  --output /etc/dlog/wireguard-private.key
+  --output /etc/pyralog/wireguard-private.key
 
-# Output: Private key written to /etc/dlog/wireguard-private.key
+# Output: Private key written to /etc/pyralog/wireguard-private.key
 # Output: Public key: xYzAbC123...
 ```
 
@@ -1647,7 +1647,7 @@ impl KeyDistribution {
 ```yaml
 # Ansible playbook
 - name: Deploy Pyralog with WireGuard
-  hosts: dlog_cluster
+  hosts: pyralog_cluster
   tasks:
     - name: Generate WireGuard keys
       command: wg genkey
@@ -1662,7 +1662,7 @@ impl KeyDistribution {
         src: wireguard.conf.j2
         dest: /etc/wireguard/wg0.conf
       vars:
-        peers: "{{ groups['dlog_cluster'] }}"
+        peers: "{{ groups['pyralog_cluster'] }}"
 ```
 
 **Option 3: HashiCorp Vault**
@@ -1674,12 +1674,12 @@ pub async fn fetch_wireguard_config_from_vault(
 ) -> Result<WireGuardConfig> {
     // Fetch private key from Vault
     let private_key = vault_client
-        .read_secret(&format!("dlog/wireguard/{}/private-key", node_id))
+        .read_secret(&format!("pyralog/wireguard/{}/private-key", node_id))
         .await?;
     
     // Fetch peer configuration
     let peers = vault_client
-        .read_secret(&format!("dlog/wireguard/{}/peers", node_id))
+        .read_secret(&format!("pyralog/wireguard/{}/peers", node_id))
         .await?;
     
     Ok(WireGuardConfig {
@@ -1696,7 +1696,7 @@ pub async fn fetch_wireguard_config_from_vault(
 
 ```bash
 # Rotate keys for a compromised node
-dlog-admin wireguard rotate-key \
+pyralog-admin wireguard rotate-key \
   --node-id node-3 \
   --notify-peers \
   --apply
@@ -2060,7 +2060,7 @@ Tested on AWS c5.4xlarge (16 vCPU, 32GB RAM):
 Enable BoringTun in Pyralog configuration:
 
 ```toml
-# /etc/dlog/wireguard.toml
+# /etc/pyralog/wireguard.toml
 
 [wireguard]
 # Auto-detect best backend
@@ -2070,7 +2070,7 @@ backend = "auto"  # Options: "auto", "kernel", "boringtun"
 # backend = "boringtun"
 
 [interface]
-private_key_file = "/etc/dlog/wireguard-private.key"
+private_key_file = "/etc/pyralog/wireguard-private.key"
 address = "10.0.0.1/24"
 listen_port = 51820
 
@@ -2086,7 +2086,7 @@ ring_capacity = 2048     # Packet ring buffer size
 ```rust
 // Everything in Rust - easier debugging
 use boringtun::*;
-use dlog::*;
+use pyralog::*;
 
 // Stack traces make sense
 // No kernel/userspace boundary
@@ -2108,11 +2108,11 @@ cargo build --release --target x86_64-unknown-linux-gnu
 # No NET_ADMIN capability required with BoringTun
 FROM rust:1.70
 
-COPY --from=builder /app/dlog /usr/local/bin/
+COPY --from=builder /app/pyralog /usr/local/bin/
 
 # BoringTun works in unprivileged containers
 USER nobody
-CMD ["dlog", "start"]
+CMD ["pyralog", "start"]
 ```
 
 **4. Easier Testing**
@@ -2519,7 +2519,7 @@ sudo cat /etc/wireguard/private.key | wg pubkey
 **Fix:**
 ```bash
 # Update peer configuration
-dlog-admin wireguard update-peer \
+pyralog-admin wireguard update-peer \
   --peer-id node-2 \
   --public-key <correct-public-key>
 ```

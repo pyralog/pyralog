@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DLogConfig {
+pub struct PyralogConfig {
     /// Node configuration
     pub node: NodeConfig,
     
@@ -46,7 +46,7 @@ pub struct NetworkConfig {
     pub request_timeout_ms: u64,
 }
 
-impl Default for DLogConfig {
+impl Default for PyralogConfig {
     fn default() -> Self {
         Self {
             node: NodeConfig {
@@ -77,7 +77,7 @@ impl Default for DLogConfig {
     }
 }
 
-impl DLogConfig {
+impl PyralogConfig {
     /// Load configuration from a file
     pub fn from_file(path: &str) -> anyhow::Result<Self> {
         let content = std::fs::read_to_string(path)?;

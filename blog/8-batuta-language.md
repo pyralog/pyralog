@@ -265,7 +265,7 @@ Batuta is **native to Pyralog**:
 
 ```clojure
 ; Query Pyralog directly
-(use dlog.core)
+(use pyralog.core)
 
 ; Simple query
 (def users
@@ -574,7 +574,7 @@ batuta --version
 
 ```clojure
 ; hello.ba
-(use dlog.core)
+(use pyralog.core)
 
 (defn main []
   (let [users (query :users
@@ -653,7 +653,7 @@ In the next post, we'll explore **Actor-Based Concurrency** in Pyralog, showing 
 ---
 
 **Blog Series**:
-1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)

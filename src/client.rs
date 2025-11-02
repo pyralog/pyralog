@@ -1,16 +1,16 @@
 use bytes::Bytes;
-use pyralog_core::{LogId, LogOffset, PartitionId, Record, Result, DLogError};
+use pyralog_core::{LogId, LogOffset, PartitionId, Record, Result, PyralogError};
 use pyralog_protocol::{api::*, request::Request, response::Response};
 use std::sync::Arc;
 use tokio::net::TcpStream;
 
-/// DLog client for connecting to a DLog cluster
-pub struct DLogClient {
+/// Pyralog client for connecting to a Pyralog cluster
+pub struct PyralogClient {
     address: String,
     // In production, this would maintain connection pools
 }
 
-impl DLogClient {
+impl PyralogClient {
     /// Create a new client
     pub fn new(address: impl Into<String>) -> Self {
         Self {

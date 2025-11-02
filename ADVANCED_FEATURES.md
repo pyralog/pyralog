@@ -1600,7 +1600,7 @@ orders
 ```rust
 use datafusion::prelude::*;
 use datafusion::arrow::datatypes::{DataType, Field, Schema};
-use dlog::datafusion::PyralogStreamProvider;
+use pyralog::datafusion::PyralogStreamProvider;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -1608,8 +1608,8 @@ async fn main() -> Result<()> {
     let ctx = SessionContext::new();
     
     // Register Pyralog as a streaming table source
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
-    let stream_provider = PyralogStreamProvider::new(dlog_client);
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
+    let stream_provider = PyralogStreamProvider::new(pyralog_client);
     
     ctx.register_table("orders", Arc::new(stream_provider))?;
     
@@ -1636,7 +1636,7 @@ async fn main() -> Result<()> {
         println!("Batch: {} rows", batch.num_rows());
         
         // Write results back to Pyralog
-        dlog_client.produce("high_value_users", batch).await?;
+        pyralog_client.produce("high_value_users", batch).await?;
     }
     
     Ok(())
@@ -1647,15 +1647,15 @@ async fn main() -> Result<()> {
 
 ```rust
 use datafusion::prelude::*;
-use dlog::datafusion::PyralogStreamProvider;
+use pyralog::datafusion::PyralogStreamProvider;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let ctx = SessionContext::new();
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Register streaming source
-    let orders = PyralogStreamProvider::new(dlog_client.clone())
+    let orders = PyralogStreamProvider::new(pyralog_client.clone())
         .with_log("orders")
         .with_read_committed();  // Exactly-once!
     
@@ -1736,14 +1736,14 @@ let df = ctx.sql("
 
 ```rust
 use polars::prelude::*;
-use dlog::polars::PyralogStreamReader;
+use pyralog::polars::PyralogStreamReader;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Create streaming reader
-    let stream_reader = PyralogStreamReader::new(dlog_client)
+    let stream_reader = PyralogStreamReader::new(pyralog_client)
         .with_log("orders")
         .with_batch_size(10000)
         .with_read_committed()  // Exactly-once!
@@ -1775,21 +1775,21 @@ async fn main() -> Result<()> {
 
 ```rust
 use polars::prelude::*;
-use dlog::polars::*;
+use pyralog::polars::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Stream 1: Orders
-    let orders = PyralogStreamReader::new(dlog_client.clone())
+    let orders = PyralogStreamReader::new(pyralog_client.clone())
         .with_log("orders")
         .build()?
         .scan_log()?
         .lazy();
     
     // Stream 2: Payments
-    let payments = PyralogStreamReader::new(dlog_client.clone())
+    let payments = PyralogStreamReader::new(pyralog_client.clone())
         .with_log("payments")
         .build()?
         .scan_log()?
@@ -1812,7 +1812,7 @@ async fn main() -> Result<()> {
         .filter(col("difference").abs().gt(0.01));  // Find discrepancies
     
     // Write back to Pyralog
-    let mut tx_producer = TransactionalProducer::new(dlog_client).await?;
+    let mut tx_producer = TransactionalProducer::new(pyralog_client).await?;
     
     for batch in joined.collect_streaming()? {
         let mut tx = tx_producer.begin_transaction().await?;
@@ -1939,7 +1939,7 @@ let anomalies = df.collect()?;
 ### Pyralog Native Integration
 
 ```rust
-// dlog/src/datafusion.rs
+// pyralog/src/datafusion.rs
 use datafusion::datasource::streaming::StreamingTable;
 use datafusion::physical_plan::RecordBatchStream;
 
@@ -2095,11 +2095,11 @@ impl Stream for PyralogRecordBatchStream {
 
 ```rust
 use datafusion::prelude::*;
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Create DataFusion context
     let ctx = SessionContext::new();
@@ -2107,20 +2107,20 @@ async fn main() -> Result<()> {
     // Register Pyralog streams
     ctx.register_table(
         "orders",
-        Arc::new(PyralogStreamProvider::new(dlog_client.clone())
+        Arc::new(PyralogStreamProvider::new(pyralog_client.clone())
             .with_log("orders")
             .with_read_committed())  // Read only committed transactions
     )?;
     
     ctx.register_table(
         "users",
-        Arc::new(PyralogStreamProvider::new(dlog_client.clone())
+        Arc::new(PyralogStreamProvider::new(pyralog_client.clone())
             .with_log("users")
             .with_read_committed())
     )?;
     
     // Create transactional producer for output
-    let mut producer = TransactionalProducer::new(dlog_client).await?;
+    let mut producer = TransactionalProducer::new(pyralog_client).await?;
     
     loop {
         // SQL query with windowing
@@ -2170,25 +2170,25 @@ async fn main() -> Result<()> {
 
 ```rust
 use polars::prelude::*;
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
     
     // Create stream readers
-    let orders_reader = PyralogStreamReader::new(dlog_client.clone())
+    let orders_reader = PyralogStreamReader::new(pyralog_client.clone())
         .with_log("orders")
         .with_read_committed()
         .build()?;
     
-    let users_reader = PyralogStreamReader::new(dlog_client.clone())
+    let users_reader = PyralogStreamReader::new(pyralog_client.clone())
         .with_log("users")
         .with_read_committed()
         .build()?;
     
     // Create transactional producer
-    let mut producer = TransactionalProducer::new(dlog_client).await?;
+    let mut producer = TransactionalProducer::new(pyralog_client).await?;
     
     loop {
         // Lazy operations (optimized before execution)
@@ -3748,13 +3748,13 @@ use datafusion::prelude::*;
 let ctx = SessionContext::new();
 
 // Register Pyralog with timestamp index
-let dlog_table = PyralogTableWithTimeTravel::new(
-    dlog_client,
+let pyralog_table = PyralogTableWithTimeTravel::new(
+    pyralog_client,
     log_id,
     HybridTimestampIndex::new(log_id, storage).await?
 )?;
 
-ctx.register_table("orders", Arc::new(dlog_table))?;
+ctx.register_table("orders", Arc::new(pyralog_table))?;
 
 // SQL time-travel query
 let df = ctx.sql("
@@ -3908,13 +3908,13 @@ use prometheus::*;
 
 lazy_static! {
     static ref WRITE_LATENCY: HistogramVec = register_histogram_vec!(
-        "dlog_write_latency_seconds",
+        "pyralog_write_latency_seconds",
         "Write latency distribution",
         &["partition"]
     ).unwrap();
     
     static ref RECORDS_WRITTEN: CounterVec = register_counter_vec!(
-        "dlog_records_written_total",
+        "pyralog_records_written_total",
         "Total records written",
         &["partition"]
     ).unwrap();
@@ -4111,7 +4111,7 @@ use opentelemetry_proto::tonic::collector::metrics::v1::{
 use tonic::{Request, Response, Status};
 
 pub struct PyralogOTLPReceiver {
-    dlog_client: PyralogClient,
+    pyralog_client: PyralogClient,
     traces_log: LogId,
     metrics_log: LogId,
     logs_log: LogId,
@@ -4137,7 +4137,7 @@ impl TraceService for PyralogOTLPReceiver {
             .map_err(|e| Status::internal(e.to_string()))?;
         
         // Write to Pyralog traces log
-        self.dlog_client
+        self.pyralog_client
             .produce_arrow_batch(self.traces_log, arrow_batch)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -4167,7 +4167,7 @@ impl MetricsService for PyralogOTLPReceiver {
             .map_err(|e| Status::internal(e.to_string()))?;
         
         // Write to Pyralog metrics log
-        self.dlog_client
+        self.pyralog_client
             .produce_arrow_batch(self.metrics_log, arrow_batch)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
@@ -4180,11 +4180,11 @@ impl MetricsService for PyralogOTLPReceiver {
 
 // Start gRPC server
 pub async fn start_otlp_receiver(
-    dlog_client: PyralogClient,
+    pyralog_client: PyralogClient,
     addr: SocketAddr,
 ) -> Result<()> {
     let receiver = PyralogOTLPReceiver {
-        dlog_client,
+        pyralog_client,
         traces_log: LogId::from("otlp-traces"),
         metrics_log: LogId::from("otlp-metrics"),
         logs_log: LogId::from("otlp-logs"),
@@ -4357,28 +4357,28 @@ use datafusion::prelude::*;
 
 pub struct PyralogTracesQuery {
     ctx: SessionContext,
-    dlog_client: PyralogClient,
+    pyralog_client: PyralogClient,
 }
 
 impl PyralogTracesQuery {
-    pub async fn new(dlog_client: PyralogClient) -> Result<Self> {
+    pub async fn new(pyralog_client: PyralogClient) -> Result<Self> {
         let ctx = SessionContext::new();
         
         // Register traces table
-        let traces_table = PyralogStreamProvider::new(dlog_client.clone())
+        let traces_table = PyralogStreamProvider::new(pyralog_client.clone())
             .with_log("otlp-traces")
             .with_schema(trace_schema());
         
         ctx.register_table("traces", Arc::new(traces_table))?;
         
         // Register metrics table
-        let metrics_table = PyralogStreamProvider::new(dlog_client.clone())
+        let metrics_table = PyralogStreamProvider::new(pyralog_client.clone())
             .with_log("otlp-metrics")
             .with_schema(metrics_schema());
         
         ctx.register_table("metrics", Arc::new(metrics_table))?;
         
-        Ok(Self { ctx, dlog_client })
+        Ok(Self { ctx, pyralog_client })
     }
     
     // Find traces by service and operation
@@ -4517,13 +4517,13 @@ use opentelemetry_otlp::WithExportConfig;
 #[tokio::main]
 async fn main() -> Result<()> {
     // 1. Start Pyralog
-    let dlog_server = PyralogServer::new(config).await?;
-    dlog_server.start().await?;
+    let pyralog_server = PyralogServer::new(config).await?;
+    pyralog_server.start().await?;
     
     // 2. Start OTLP receiver
-    let dlog_client = PyralogClient::connect("localhost:9092").await?;
+    let pyralog_client = PyralogClient::connect("localhost:9092").await?;
     tokio::spawn(start_otlp_receiver(
-        dlog_client.clone(),
+        pyralog_client.clone(),
         "0.0.0.0:4317".parse()?,
     ));
     
@@ -4551,7 +4551,7 @@ async fn main() -> Result<()> {
     span.end();
     
     // 5. Query traces with DataFusion
-    let query = PyralogTracesQuery::new(dlog_client).await?;
+    let query = PyralogTracesQuery::new(pyralog_client).await?;
     
     // Find slow requests
     let slow_traces = query.find_traces(
@@ -4942,7 +4942,7 @@ impl ExternalTableManager {
         // Register external table pointing to archived logs in S3
         self.register_external_table(
             "archived_logs",
-            "s3://my-bucket/dlog-archives/logs/year=2023/month=*/*.parquet"
+            "s3://my-bucket/pyralog-archives/logs/year=2023/month=*/*.parquet"
         ).await?;
         
         // Query without loading data into Pyralog
@@ -5625,7 +5625,7 @@ snapshot.clone_to_log("test-logs").await?;
 ### Complete Example: Advanced Log Analytics
 
 ```rust
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -6127,7 +6127,7 @@ impl StreamingIngestor {
     ) -> Result<()> {
         let consumer: StreamConsumer = ClientConfig::new()
             .set("bootstrap.servers", kafka_brokers)
-            .set("group.id", "dlog-ingestor")
+            .set("group.id", "pyralog-ingestor")
             .set("enable.auto.commit", "false")
             .create()?;
         
@@ -6214,7 +6214,7 @@ tokio::spawn(async move {
         client,
         "localhost:9092",
         "application-logs",
-        "dlog-application-logs",
+        "pyralog-application-logs",
         FileFormat::Json { array: false },
     ).await
 });
@@ -6681,7 +6681,7 @@ tokio::spawn(async move {
 ### Complete Example: Production Ingestion Setup
 
 ```rust
-use dlog::ingestion::*;
+use pyralog::ingestion::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {

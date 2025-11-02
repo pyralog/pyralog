@@ -1,4 +1,4 @@
-//! DLog Protocol - Protocol abstraction layer
+//! Pyralog Protocol - Protocol abstraction layer
 //!
 //! Provides protocol implementations including Kafka-compatible API
 

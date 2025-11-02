@@ -1,4 +1,4 @@
-use pyralog_core::{LogOffset, Result, DLogError};
+use pyralog_core::{LogOffset, Result, PyralogError};
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::sync::Arc;

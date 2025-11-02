@@ -1688,7 +1688,7 @@ impl Cost {
 │  │  • Streaming evaluation                          │    │
 │  └──────────────────────────────────────────────────┘    │
 │                          ↓                                 │
-│  DLOG CORE                                                 │
+│  PYRALOG CORE                                                 │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  • Arrow columnar storage                        │    │
 │  │  • Distributed execution                         │    │

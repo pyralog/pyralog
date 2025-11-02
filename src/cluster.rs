@@ -1,4 +1,4 @@
-use pyralog_core::{LogId, LogMetadata, PartitionId, Result, DLogError};
+use pyralog_core::{LogId, LogMetadata, PartitionId, Result, PyralogError};
 use pyralog_consensus::{RaftNode, RaftConfig};
 use pyralog_storage::LogStorage;
 use parking_lot::RwLock;

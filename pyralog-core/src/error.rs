@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-pub type Result<T> = std::result::Result<T, DLogError>;
+pub type Result<T> = std::result::Result<T, PyralogError>;
 
 #[derive(Error, Debug, Clone)]
-pub enum DLogError {
+pub enum PyralogError {
     #[error("Log not found: {0}")]
     LogNotFound(String),
 
@@ -50,9 +50,9 @@ pub enum DLogError {
     IoError(String),
 }
 
-impl From<std::io::Error> for DLogError {
+impl From<std::io::Error> for PyralogError {
     fn from(err: std::io::Error) -> Self {
-        DLogError::IoError(err.to_string())
+        PyralogError::IoError(err.to_string())
     }
 }
 

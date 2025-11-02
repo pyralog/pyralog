@@ -36,13 +36,13 @@
     - [Discovery Mechanisms](#discovery-mechanisms)
     - [Deploy-* Operators](#deploy--operators)
     - [Deploy-Reduce: Aggregate Over Flock](#deploy-reduce-aggregate-over-flock)
-    - [Pyralog Integration: Partition Discovery](#dlog-integration-partition-discovery)
+    - [Pyralog Integration: Partition Discovery](#pyralog-integration-partition-discovery)
 12. [Supervision & Fault Tolerance](#supervision--fault-tolerance)
 13. [Actor Isolation & Capabilities](#actor-isolation--capabilities)
 14. [Typed Actors](#typed-actors)
 15. [Actor Persistence](#actor-persistence)
 16. [Reactive Streams](#reactive-streams)
-17. [Pyralog Integration](#dlog-integration)
+17. [Pyralog Integration](#pyralog-integration)
 18. [Performance Considerations](#performance-considerations)
 19. [Use Cases](#use-cases)
 20. [Implementation Roadmap](#implementation-roadmap)
@@ -2651,7 +2651,7 @@ impl PyralogPartitionDiscovery {
         let mut partition_flock = Flock::new(
             RegistryDiscovery::new(
                 "http://consul:8500",
-                "dlog-partition",
+                "pyralog-partition",
             )
         );
         

@@ -14,7 +14,7 @@ This document provides practical examples of using Pyralog.
 ### Creating a Log
 
 ```rust
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -78,7 +78,7 @@ for record in records {
 ### Consumer Group
 
 ```rust
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 struct ConsumerGroup {
     client: PyralogClient,
@@ -111,14 +111,14 @@ impl ConsumerGroup {
 ### Server Configuration
 
 ```rust
-use dlog::{PyralogServer, PyralogConfig};
+use pyralog::{PyralogServer, PyralogConfig};
 use std::path::PathBuf;
 
 let mut config = PyralogConfig::default();
 
 // Node configuration
 config.node.node_id = 1;
-config.node.data_dir = PathBuf::from("/var/lib/dlog");
+config.node.data_dir = PathBuf::from("/var/lib/pyralog");
 config.node.cluster_nodes = vec![1, 2, 3];
 
 // Network configuration
@@ -142,11 +142,11 @@ let server = PyralogServer::new(config).await?;
 ### From Configuration File
 
 ```toml
-# dlog.toml
+# pyralog.toml
 
 [node]
 node_id = 1
-data_dir = "/var/lib/dlog"
+data_dir = "/var/lib/pyralog"
 cluster_nodes = [1, 2, 3]
 
 [network]
@@ -172,7 +172,7 @@ read_quorum = 2
 ```
 
 ```rust
-let config = PyralogConfig::from_file("dlog.toml")?;
+let config = PyralogConfig::from_file("pyralog.toml")?;
 let server = PyralogServer::new(config).await?;
 ```
 
@@ -181,7 +181,7 @@ let server = PyralogServer::new(config).await?;
 ### Custom Partitioning
 
 ```rust
-use dlog::protocol::{Partitioner, PartitionStrategy};
+use pyralog::protocol::{Partitioner, PartitionStrategy};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
@@ -198,7 +198,7 @@ println!("Record will go to partition: {}", partition);
 ### Headers
 
 ```rust
-use dlog_core::RecordHeader;
+use pyralog_core::RecordHeader;
 
 let mut record = Record::new(
     Some(Bytes::from("key")),
@@ -404,5 +404,5 @@ async fn load_test(
 
 ## Conclusion
 
-These examples demonstrate the flexibility and power of Pyralog. For more information, see the [Architecture Documentation](ARCHITECTURE.md) and [API Documentation](https://docs.rs/dlog).
+These examples demonstrate the flexibility and power of Pyralog. For more information, see the [Architecture Documentation](ARCHITECTURE.md) and [API Documentation](https://docs.rs/pyralog).
 

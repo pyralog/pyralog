@@ -275,17 +275,17 @@ But with **proper project structure**, we got it down to **30-60 seconds**:
 ### Split into Small Crates
 
 ```
-dlog/
-├── dlog-core/           (types, traits)
-├── dlog-storage/        (segments, indexes)
-├── dlog-consensus/      (Raft implementation)
-├── dlog-replication/    (CopySet, quorums)
-├── dlog-protocol/       (Kafka protocol)
-├── dlog-client/         (client library)
-└── dlog-server/         (main binary)
+pyralog/
+├── pyralog-core/           (types, traits)
+├── pyralog-storage/        (segments, indexes)
+├── pyralog-consensus/      (Raft implementation)
+├── pyralog-replication/    (CopySet, quorums)
+├── pyralog-protocol/       (Kafka protocol)
+├── pyralog-client/         (client library)
+└── pyralog-server/         (main binary)
 ```
 
-**Incremental compilation**: Changing `dlog-protocol` doesn't recompile `dlog-storage`.
+**Incremental compilation**: Changing `pyralog-protocol` doesn't recompile `pyralog-storage`.
 
 ### Use `sccache` or `mold`
 
@@ -375,7 +375,7 @@ Errors have **full context chains**:
 ```
 Error: Failed to parse data
 Caused by:
-    0: Failed to read /etc/dlog/config.toml
+    0: Failed to read /etc/pyralog/config.toml
     1: No such file or directory (os error 2)
 ```
 
@@ -413,7 +413,7 @@ Run with `cargo test`. Simple and fast.
 
 ```rust
 // tests/integration_test.rs
-use dlog::PyralogClient;
+use pyralog::PyralogClient;
 
 #[tokio::test]
 async fn test_end_to_end() {
@@ -716,7 +716,7 @@ Let's build the future of data infrastructure together—in Rust! 🦀
 ---
 
 **Blog Series**:
-1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)

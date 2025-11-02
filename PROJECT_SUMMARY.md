@@ -6,7 +6,7 @@ Pyralog is a **high-performance distributed log system** built in Rust, inspired
 
 ## What Was Built
 
-### 1. Core Architecture (dlog-core)
+### 1. Core Architecture (pyralog-core)
 ✅ Fundamental types and abstractions
 - `LogOffset`: 64-bit offset tracking
 - `Record` & `RecordBatch`: Data structures for log entries
@@ -14,7 +14,7 @@ Pyralog is a **high-performance distributed log system** built in Rust, inspired
 - Core traits for storage, consensus, and replication
 - Comprehensive error handling
 
-### 2. High-Performance Storage Engine (dlog-storage)
+### 2. High-Performance Storage Engine (pyralog-storage)
 ✅ Log-structured storage with advanced features
 - **Segment-based storage**: 1GB segments with sparse indexes
 - **Memory-mapped I/O**: Zero-copy reads for maximum performance
@@ -22,7 +22,7 @@ Pyralog is a **high-performance distributed log system** built in Rust, inspired
 - **Tiered storage**: Cloud storage integration (S3, Azure, GCS)
 - **Indexes**: Fast offset lookups with O(log n) performance
 
-### 3. Raft Consensus Protocol (dlog-consensus)
+### 3. Raft Consensus Protocol (pyralog-consensus)
 ✅ Production-ready consensus implementation
 - **Leader election**: Randomized timeouts, fast failover
 - **Log replication**: Strong consistency guarantees
@@ -30,7 +30,7 @@ Pyralog is a **high-performance distributed log system** built in Rust, inspired
 - **RPC layer**: AppendEntries and RequestVote
 - **State management**: Follower, Candidate, Leader transitions
 
-### 4. Flexible Replication System (dlog-replication)
+### 4. Flexible Replication System (pyralog-replication)
 ✅ LogDevice-inspired replication with quorums
 - **Flexible quorums**: Configurable W, R, RF values
 - **CopySet replication**: Intelligent replica placement
@@ -38,7 +38,7 @@ Pyralog is a **high-performance distributed log system** built in Rust, inspired
 - **Synchronization**: Offset tracking and lag monitoring
 - **Multiple strategies**: Write-optimized, read-optimized, balanced
 
-### 5. Protocol Layer (dlog-protocol)
+### 5. Protocol Layer (pyralog-protocol)
 ✅ Kafka-compatible API with modern design
 - **Partitioning strategies**: Key-hash, round-robin, sticky, random
 - **Kafka compatibility**: Wire format translation
@@ -76,12 +76,12 @@ Pyralog is a **high-performance distributed log system** built in Rust, inspired
 
 ### Modular Design
 ```
-dlog (main crate)
-├── dlog-core (types & traits)
-├── dlog-storage (storage engine)
-├── dlog-consensus (Raft protocol)
-├── dlog-replication (quorum replication)
-└── dlog-protocol (API layer)
+pyralog (main crate)
+├── pyralog-core (types & traits)
+├── pyralog-storage (storage engine)
+├── pyralog-consensus (Raft protocol)
+├── pyralog-replication (quorum replication)
+└── pyralog-protocol (API layer)
 ```
 
 ### Clean Separation of Concerns

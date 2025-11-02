@@ -1,5 +1,5 @@
 use bytes::{Bytes, BytesMut};
-use pyralog_core::{Result, DLogError};
+use pyralog_core::{Result, PyralogError};
 use serde::{Deserialize, Serialize};
 
 /// Wire format for requests
@@ -17,13 +17,13 @@ impl Request {
     pub fn to_bytes(&self) -> Result<Bytes> {
         bincode::serialize(self)
             .map(Bytes::from)
-            .map_err(|e| DLogError::SerializationError(e.to_string()))
+            .map_err(|e| PyralogError::SerializationError(e.to_string()))
     }
 
     /// Deserialize request from bytes
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
         bincode::deserialize(bytes)
-            .map_err(|e| DLogError::SerializationError(e.to_string()))
+            .map_err(|e| PyralogError::SerializationError(e.to_string()))
     }
 }
 

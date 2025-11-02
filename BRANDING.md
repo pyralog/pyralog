@@ -199,7 +199,7 @@ let pharaoh_node = pharaoh_network.get(coordinator_id);
 (defquery user-activity
   "Find active users using Pyralog primitives"
   [db time-range]
-  (->> (dlog/query db
+  (->> (pyralog/query db
          {:find [?user ?count]
           :where [[?e :event/user ?user]
                   [?e :event/timestamp ?t]
@@ -208,7 +208,7 @@ let pharaoh_node = pharaoh_network.get(coordinator_id);
        (map (fn [[user events]] 
               {:user user 
                :count (count events)
-               :id (dlog/scarab-id)}))))  ; 🪲 Scarab IDs
+               :id (pyralog/scarab-id)}))))  ; 🪲 Scarab IDs
 ```
 
 **Visual Flow**:
@@ -319,7 +319,7 @@ Hieroglyph Black:     #000000  ■  Strong emphasis
 - **Pharaoh Network** (not "pharaoh network" or "Pharaoh")
 - **Scarab IDs** (not "scarab IDs" or "Scarab")
 - **Batuta** (not "batuta" or "BATUTA")
-- **Pyralog** (not "dlog" or "DLOG" or "D-Log")
+- **Pyralog** (not "pyralog" or "PYRALOG" or "D-Log")
 
 ### When to Use Icons
 

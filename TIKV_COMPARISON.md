@@ -436,11 +436,11 @@ Best for:
 ```rust
 // High-throughput event ingestion
 for event in events {
-    dlog.append(event).await?;
+    pyralog.append(event).await?;
 }
 
 // Sequential consumption
-let records = dlog.read_from_offset(offset, 1000).await?;
+let records = pyralog.read_from_offset(offset, 1000).await?;
 ```
 
 **2. Message Queues**
@@ -455,7 +455,7 @@ consumer_group.consume(log_id, |record| {
 ```rust
 // Database changes → Pyralog → downstream systems
 db.on_change(|change| {
-    dlog.append(change).await;
+    pyralog.append(change).await;
 });
 ```
 
@@ -463,7 +463,7 @@ db.on_change(|change| {
 ```rust
 // Metrics, logs, traces
 metrics.on_sample(|sample| {
-    dlog.append(sample).await;
+    pyralog.append(sample).await;
 });
 ```
 
@@ -728,7 +728,7 @@ Application → Pyralog (event stream)
 Example:
 ```rust
 // Write events to Pyralog (high throughput)
-dlog.append(Event {
+pyralog.append(Event {
     user_id: 123,
     action: "purchase",
     amount: 99.99,
@@ -757,13 +757,13 @@ Example:
 ```rust
 // Capture TiDB changes to Pyralog
 tidb.on_change(|change| {
-    dlog.append(change).await;
+    pyralog.append(change).await;
 });
 
 // Multiple consumers process changes
-search_indexer.consume_from(dlog);
-analytics.consume_from(dlog);
-cache_invalidator.consume_from(dlog);
+search_indexer.consume_from(pyralog);
+analytics.consume_from(pyralog);
+cache_invalidator.consume_from(pyralog);
 ```
 
 ---

@@ -1,5 +1,5 @@
 use bytes::{Bytes, BytesMut};
-use pyralog_core::{LogOffset, Result, DLogError};
+use pyralog_core::{LogOffset, Result, PyralogError};
 use memmap2::{Mmap, MmapMut};
 use parking_lot::RwLock;
 use std::fs::{File, OpenOptions};
@@ -49,7 +49,7 @@ impl Segment {
             .read(true)
             .write(true)
             .open(&path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         Ok(Self {
             base_offset,
@@ -66,21 +66,21 @@ impl Segment {
         let filename = path
             .file_stem()
             .and_then(|s| s.to_str())
-            .ok_or_else(|| DLogError::StorageError("Invalid segment path".to_string()))?;
+            .ok_or_else(|| PyralogError::StorageError("Invalid segment path".to_string()))?;
 
         let base_offset = filename
             .parse::<u64>()
-            .map_err(|e| DLogError::StorageError(format!("Invalid offset in filename: {}", e)))?;
+            .map_err(|e| PyralogError::StorageError(format!("Invalid offset in filename: {}", e)))?;
 
         let file = OpenOptions::new()
             .read(true)
             .write(true)
             .open(&path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         let current_size = file
             .metadata()
-            .map_err(|e| DLogError::StorageError(e.to_string()))?
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?
             .len();
 
         let mut segment = Self {
@@ -106,17 +106,17 @@ impl Segment {
         let mut size = self.current_size.write();
 
         if *size + data.len() as u64 > self.config.max_size {
-            return Err(DLogError::StorageError("Segment is full".to_string()));
+            return Err(PyralogError::StorageError("Segment is full".to_string()));
         }
 
         let offset = *size;
         
         file.write_all(data)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         if self.config.sync_on_write {
             file.sync_all()
-                .map_err(|e| DLogError::StorageError(e.to_string()))?;
+                .map_err(|e| PyralogError::StorageError(e.to_string()))?;
         }
 
         *size += data.len() as u64;
@@ -129,7 +129,7 @@ impl Segment {
         let size = *self.current_size.read();
         
         if offset + length as u64 > size {
-            return Err(DLogError::InvalidOffset(offset));
+            return Err(PyralogError::InvalidOffset(offset));
         }
 
         // Try to read from mmap first
@@ -145,10 +145,10 @@ impl Segment {
         let mut buffer = vec![0u8; length];
         
         file.seek(SeekFrom::Start(offset))
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
         
         file.read_exact(&mut buffer)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         Ok(Bytes::from(buffer))
     }
@@ -157,7 +157,7 @@ impl Segment {
     pub fn sync(&self) -> Result<()> {
         let file = self.file.read();
         file.sync_all()
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
         Ok(())
     }
 
@@ -181,7 +181,7 @@ impl Segment {
         let file = self.file.read();
         let mmap = unsafe {
             Mmap::map(&*file)
-                .map_err(|e| DLogError::StorageError(e.to_string()))?
+                .map_err(|e| PyralogError::StorageError(e.to_string()))?
         };
         *self.mmap.write() = Some(mmap);
         Ok(())

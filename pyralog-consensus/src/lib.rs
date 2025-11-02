@@ -1,4 +1,4 @@
-//! DLog Consensus - Raft-based consensus protocol
+//! Pyralog Consensus - Raft-based consensus protocol
 //!
 //! This module implements a robust Raft consensus algorithm for
 //! distributed log coordination and metadata management.

@@ -64,7 +64,7 @@ cargo bench --profile-time 10
 ### Custom Load Test
 
 ```rust
-use dlog::prelude::*;
+use pyralog::prelude::*;
 use std::time::Instant;
 
 async fn benchmark_writes(
@@ -127,7 +127,7 @@ println!("max: {}μs", histogram.max());
 cargo install flamegraph
 
 # Generate flamegraph
-cargo flamegraph --bin dlog
+cargo flamegraph --bin pyralog
 
 # Open flamegraph.svg in browser
 ```
@@ -139,17 +139,17 @@ cargo flamegraph --bin dlog
 sudo apt-get install heaptrack
 
 # Profile Pyralog
-heaptrack target/release/dlog
+heaptrack target/release/pyralog
 
 # Analyze results
-heaptrack_gui heaptrack.dlog.<pid>.gz
+heaptrack_gui heaptrack.pyralog.<pid>.gz
 ```
 
 #### Perf (Linux)
 
 ```bash
 # Record
-sudo perf record -g target/release/dlog
+sudo perf record -g target/release/pyralog
 
 # Report
 sudo perf report
@@ -406,13 +406,13 @@ Example Grafana queries:
 
 ```promql
 # p99 write latency
-histogram_quantile(0.99, rate(dlog_write_duration_seconds_bucket[5m]))
+histogram_quantile(0.99, rate(pyralog_write_duration_seconds_bucket[5m]))
 
 # Throughput
-rate(dlog_writes_total[1m])
+rate(pyralog_writes_total[1m])
 
 # Replication lag
-dlog_replication_lag_seconds
+pyralog_replication_lag_seconds
 ```
 
 ## Common Bottlenecks
@@ -463,7 +463,7 @@ ifconfig | grep bytes
 **Solutions**:
 ```bash
 # Check CPU usage
-top -H -p $(pидof dlog)
+top -H -p $(pидof pyralog)
 
 # Add more CPU cores
 # Optimize hot paths
@@ -499,7 +499,7 @@ free -h
 **Solutions**:
 ```bash
 # Profile with perf
-sudo perf record -g -p $(pidof dlog)
+sudo perf record -g -p $(pidof pyralog)
 
 # Reduce critical sections
 # Use finer-grained locks

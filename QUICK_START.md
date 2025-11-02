@@ -13,12 +13,12 @@ Get Pyralog up and running in 5 minutes!
 ```bash
 # Clone the repository
 git clone https://github.com/pyralog/pyralog.git
-cd dlog
+cd pyralog
 
 # Build the project
 cargo build --release
 
-# The binary will be in target/release/dlog
+# The binary will be in target/release/pyralog
 ```
 
 ## Single Node Setup
@@ -36,15 +36,15 @@ The server will start on `localhost:9092` by default.
 Create a new Rust project:
 
 ```bash
-cargo new my-dlog-app
-cd my-dlog-app
+cargo new my-pyralog-app
+cd my-pyralog-app
 ```
 
 Add Pyralog to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-dlog = { path = "../dlog" }
+pyralog = { path = "../pyralog" }
 tokio = { version = "1.35", features = ["full"] }
 bytes = "1.5"
 ```
@@ -52,7 +52,7 @@ bytes = "1.5"
 Create a simple producer:
 
 ```rust
-use dlog::prelude::*;
+use pyralog::prelude::*;
 use bytes::Bytes;
 
 #[tokio::main]
@@ -127,7 +127,7 @@ Create a `docker-compose.yml`:
 version: '3.8'
 
 services:
-  dlog-1:
+  pyralog-1:
     build: .
     ports:
       - "9092:9092"
@@ -138,7 +138,7 @@ services:
     volumes:
       - ./data1:/data
 
-  dlog-2:
+  pyralog-2:
     build: .
     ports:
       - "9094:9092"
@@ -149,7 +149,7 @@ services:
     volumes:
       - ./data2:/data
 
-  dlog-3:
+  pyralog-3:
     build: .
     ports:
       - "9096:9092"
@@ -280,7 +280,7 @@ Check that:
 ### Can't Connect from Client
 
 Verify:
-- Server is running (`ps aux | grep dlog`)
+- Server is running (`ps aux | grep pyralog`)
 - Firewall allows connections on port 9092
 - Using correct address (localhost vs 0.0.0.0)
 

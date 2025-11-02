@@ -553,7 +553,7 @@ actor.send(NotifyComplete { handle: opaque }).await?;  // OK: tag can be sent
 ### Spawn an Actor
 
 ```rust
-use dlog::actors::*;
+use pyralog::actors::*;
 
 // Define actor
 struct MyActor {
@@ -606,7 +606,7 @@ supervisor.supervise(|| AnotherActor::new());
 
 ```rust
 // Define flock
-let cluster = Flock::new("dlog-cluster")
+let cluster = Flock::new("pyralog-cluster")
     .discover_via(DiscoveryMethod::mDNS);
 
 // Distributed query
@@ -644,7 +644,7 @@ In the final post of this series, we'll explore **Pyralog's quantum-resistant ne
 ---
 
 **Blog Series**:
-1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)

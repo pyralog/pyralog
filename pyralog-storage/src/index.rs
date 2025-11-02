@@ -1,4 +1,4 @@
-use pyralog_core::{LogOffset, Result, DLogError};
+use pyralog_core::{LogOffset, Result, PyralogError};
 use parking_lot::RwLock;
 use std::collections::BTreeMap;
 use std::fs::{File, OpenOptions};
@@ -32,7 +32,7 @@ impl Index {
             .read(true)
             .write(true)
             .open(&path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         Ok(Self {
             path,
@@ -47,7 +47,7 @@ impl Index {
             .read(true)
             .write(true)
             .open(&path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         let mut entries = BTreeMap::new();
         let mut buffer = vec![0u8; INDEX_ENTRY_SIZE];
@@ -69,7 +69,7 @@ impl Index {
                     );
                 }
                 Err(e) if e.kind() == io::ErrorKind::UnexpectedEof => break,
-                Err(e) => return Err(DLogError::StorageError(e.to_string())),
+                Err(e) => return Err(PyralogError::StorageError(e.to_string())),
             }
         }
 
@@ -97,7 +97,7 @@ impl Index {
         buffer[16..20].copy_from_slice(&size.to_le_bytes());
 
         file.write_all(&buffer)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         // Update in-memory index
         self.entries.write().insert(offset.as_u64(), entry);
@@ -135,7 +135,7 @@ impl Index {
     pub fn sync(&self) -> Result<()> {
         let file = self.file.read();
         file.sync_all()
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
         Ok(())
     }
 }

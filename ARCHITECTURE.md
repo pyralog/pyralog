@@ -27,12 +27,12 @@ Pyralog is a distributed log system designed for:
 
 ## Core Components
 
-### 1. dlog-core
+### 1. pyralog-core
 
 Provides fundamental abstractions:
 
 ```
-dlog-core/
+pyralog-core/
 ├── error.rs          # Error types
 ├── log.rs            # Log metadata
 ├── offset.rs         # Offset types
@@ -48,12 +48,12 @@ dlog-core/
 - `LogId`: Namespaced log identifier
 - `PartitionId`: Partition identifier within a log
 
-### 2. dlog-storage
+### 2. pyralog-storage
 
 High-performance storage engine:
 
 ```
-dlog-storage/
+pyralog-storage/
 ├── segment.rs        # Segment file management
 ├── index.rs          # Offset index
 ├── log_storage.rs    # Main storage interface
@@ -67,12 +67,12 @@ dlog-storage/
 - Sparse indexes for fast lookups
 - Memory-mapped I/O for zero-copy reads
 
-### 3. dlog-consensus
+### 3. pyralog-consensus
 
 Raft-based consensus protocol:
 
 ```
-dlog-consensus/
+pyralog-consensus/
 ├── raft.rs           # Main Raft implementation
 ├── state.rs          # Node state management
 ├── rpc.rs            # RPC types
@@ -86,12 +86,12 @@ dlog-consensus/
 - Metadata replication
 - Configuration changes
 
-### 4. dlog-replication
+### 4. pyralog-replication
 
 Flexible quorum-based replication:
 
 ```
-dlog-replication/
+pyralog-replication/
 ├── quorum.rs         # Quorum configuration
 ├── copyset.rs        # CopySet selection
 ├── replicator.rs     # Replication manager
@@ -104,12 +104,12 @@ dlog-replication/
 - ISR tracking
 - Replication lag monitoring
 
-### 5. dlog-protocol
+### 5. pyralog-protocol
 
 Protocol abstraction layer:
 
 ```
-dlog-protocol/
+pyralog-protocol/
 ├── api.rs            # API types
 ├── partitioner.rs    # Partitioning strategies
 ├── kafka.rs          # Kafka compatibility
@@ -1160,7 +1160,7 @@ pub struct ClusterManager {
 **File System Layout:**
 
 ```
-/var/lib/dlog/
+/var/lib/pyralog/
 ├── raft/
 │   └── raft.log              ← CopySet changes in Raft log
 ├── metadata/

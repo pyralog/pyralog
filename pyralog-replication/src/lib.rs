@@ -1,4 +1,4 @@
-//! DLog Replication - Flexible quorum-based replication
+//! Pyralog Replication - Flexible quorum-based replication
 //!
 //! Inspired by LogDevice's flexible quorums for high availability
 //! and low latency replication.

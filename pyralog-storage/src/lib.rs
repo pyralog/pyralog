@@ -1,4 +1,4 @@
-//! DLog Storage - High-performance storage engine
+//! Pyralog Storage - High-performance storage engine
 //!
 //! Features:
 //! - Segment-based log storage

@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use pyralog_core::{Result, DLogError, LogOffset};
+use pyralog_core::{Result, PyralogError, LogOffset};
 use parking_lot::RwLock;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -81,7 +81,7 @@ impl RaftNode {
         let mut state = self.state.write();
 
         if state.role != NodeRole::Leader {
-            return Err(DLogError::NotLeader(None));
+            return Err(PyralogError::NotLeader(None));
         }
 
         let term = state.persistent.current_term;

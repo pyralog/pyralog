@@ -1,4 +1,4 @@
-use pyralog_core::{LogOffset, Result, DLogError};
+use pyralog_core::{LogOffset, Result, PyralogError};
 use std::path::{Path, PathBuf};
 use tokio::fs;
 
@@ -44,13 +44,13 @@ impl TieredStorage {
             RemoteStorageConfig::Local { path } => {
                 let filename = segment_path
                     .file_name()
-                    .ok_or_else(|| DLogError::StorageError("Invalid segment path".to_string()))?;
+                    .ok_or_else(|| PyralogError::StorageError("Invalid segment path".to_string()))?;
                 
                 let remote_path = path.join(filename);
                 
                 fs::copy(segment_path, &remote_path)
                     .await
-                    .map_err(|e| DLogError::StorageError(e.to_string()))?;
+                    .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
                 Ok(remote_path.to_string_lossy().to_string())
             }
@@ -59,7 +59,7 @@ impl TieredStorage {
                 // For now, return a mock remote URL
                 let filename = segment_path
                     .file_name()
-                    .ok_or_else(|| DLogError::StorageError("Invalid segment path".to_string()))?
+                    .ok_or_else(|| PyralogError::StorageError("Invalid segment path".to_string()))?
                     .to_string_lossy();
                 
                 Ok(format!("s3://{}/{}", bucket, filename))
@@ -67,7 +67,7 @@ impl TieredStorage {
             RemoteStorageConfig::Azure { container, .. } => {
                 let filename = segment_path
                     .file_name()
-                    .ok_or_else(|| DLogError::StorageError("Invalid segment path".to_string()))?
+                    .ok_or_else(|| PyralogError::StorageError("Invalid segment path".to_string()))?
                     .to_string_lossy();
                 
                 Ok(format!("azure://{}/{}", container, filename))
@@ -75,7 +75,7 @@ impl TieredStorage {
             RemoteStorageConfig::Gcs { bucket, .. } => {
                 let filename = segment_path
                     .file_name()
-                    .ok_or_else(|| DLogError::StorageError("Invalid segment path".to_string()))?
+                    .ok_or_else(|| PyralogError::StorageError("Invalid segment path".to_string()))?
                     .to_string_lossy();
                 
                 Ok(format!("gs://{}/{}", bucket, filename))
@@ -91,13 +91,13 @@ impl TieredStorage {
                 
                 fs::copy(&remote_path, local_path)
                     .await
-                    .map_err(|e| DLogError::StorageError(e.to_string()))?;
+                    .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
                 Ok(())
             }
             _ => {
                 // In production, implement download from cloud providers
-                Err(DLogError::StorageError(
+                Err(PyralogError::StorageError(
                     "Remote download not yet implemented".to_string(),
                 ))
             }
@@ -110,12 +110,12 @@ impl TieredStorage {
 
         let mut entries = fs::read_dir(&self.local_path)
             .await
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         while let Some(entry) = entries
             .next_entry()
             .await
-            .map_err(|e| DLogError::StorageError(e.to_string()))?
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?
         {
             let path = entry.path();
             
@@ -129,14 +129,14 @@ impl TieredStorage {
                         let remote_url = self.upload_segment(&path).await?;
                         fs::remove_file(&path)
                             .await
-                            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+                            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
                         
                         // Also remove index file
                         let index_path = path.with_extension("index");
                         if index_path.exists() {
                             fs::remove_file(&index_path)
                                 .await
-                                .map_err(|e| DLogError::StorageError(e.to_string()))?;
+                                .map_err(|e| PyralogError::StorageError(e.to_string()))?;
                         }
 
                         archived.push(remote_url);

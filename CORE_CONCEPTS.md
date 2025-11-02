@@ -138,7 +138,7 @@ LogMetadata {
 **Via client:**
 
 ```rust
-use dlog_client::PyralogClient;
+use pyralog_client::PyralogClient;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -165,7 +165,7 @@ async fn main() -> Result<()> {
 **Via configuration file:**
 
 ```toml
-# dlog.toml
+# pyralog.toml
 
 [logs.user_events]
 partition_count = 10
@@ -354,7 +354,7 @@ client.produce(&log_id, record).await?;
 
 **Python:**
 ```python
-from dlog import PyralogClient
+from pyralog import PyralogClient
 
 client = PyralogClient("localhost:9092")
 client.produce("user-events", record)
@@ -368,7 +368,7 @@ client.produce("user-events", record);
 
 **Go:**
 ```go
-client := dlog.NewClient("localhost:9092")
+client := pyralog.NewClient("localhost:9092")
 client.Produce("user-events", record)
 ```
 
@@ -491,7 +491,7 @@ LogId::new("events-2025-03")
 ### Example: Complete Log Setup
 
 ```rust
-use dlog_client::{PyralogClient, LogConfig, RetentionConfig};
+use pyralog_client::{PyralogClient, LogConfig, RetentionConfig};
 
 #[tokio::main]
 async fn main() -> Result<()> {

@@ -445,7 +445,7 @@ let v2_schema = Schema::add_document_collection(...);
 let migration: NatTrans = v1_schema.to(v2_schema);
 
 // Apply migration
-dlog.migrate(migration).await?;
+pyralog.migrate(migration).await?;
 ```
 
 **Properties guaranteed by category theory**:
@@ -482,7 +482,7 @@ dlog.migrate(migration).await?;
 Define multiple models in one schema:
 
 ```rust
-use dlog::schema::*;
+use pyralog::schema::*;
 
 let schema = SchemaBuilder::new()
     // Relational tables
@@ -511,7 +511,7 @@ let schema = SchemaBuilder::new()
     })
     .build()?;
 
-dlog.apply_schema(schema).await?;
+pyralog.apply_schema(schema).await?;
 ```
 
 **Query across all models:**
@@ -554,7 +554,7 @@ In the next post, we'll introduce **Batuta**, Pyralog's programming language tha
 ---
 
 **Blog Series**:
-1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-dlog.md)
+1. [Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
 2. [The Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
 3. [Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
 4. [28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)

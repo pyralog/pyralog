@@ -270,13 +270,13 @@ Pyralog's revolutionary layered architecture eliminates traditional boundaries:
 
 ### Core Components
 
-1. **dlog-core**: Fundamental types, epochs, offsets, records
-2. **dlog-storage**: Arrow-based columnar storage with Parquet segments
-3. **dlog-consensus**: Dual Raft architecture (global + per-partition)
-4. **dlog-replication**: Flexible CopySet replication with cryptographic verification
-5. **dlog-protocol**: Kafka-compatible + multi-model query protocols
-6. **dlog-crypto**: BLAKE3 Merkle trees, zero-trust verification
-7. **dlog-analytics**: DataFusion SQL, Polars DataFrames, functional algebra
+1. **pyralog-core**: Fundamental types, epochs, offsets, records
+2. **pyralog-storage**: Arrow-based columnar storage with Parquet segments
+3. **pyralog-consensus**: Dual Raft architecture (global + per-partition)
+4. **pyralog-replication**: Flexible CopySet replication with cryptographic verification
+5. **pyralog-protocol**: Kafka-compatible + multi-model query protocols
+6. **pyralog-crypto**: BLAKE3 Merkle trees, zero-trust verification
+7. **pyralog-analytics**: DataFusion SQL, Polars DataFrames, functional algebra
 
 ## 🔧 Installation
 
@@ -288,7 +288,7 @@ Pyralog's revolutionary layered architecture eliminates traditional boundaries:
 
 ```bash
 git clone https://github.com/pyralog/pyralog.git
-cd dlog
+cd pyralog
 cargo build --release
 ```
 
@@ -341,7 +341,7 @@ See [CAP_THEOREM.md](CAP_THEOREM.md) for detailed analysis and recommendations.
 ### 1. Distributed Log (Kafka Replacement)
 
 ```rust
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -368,7 +368,7 @@ async fn main() -> Result<()> {
 ### 2. Multi-Model Queries
 
 ```rust
-use dlog::query::*;
+use pyralog::query::*;
 
 // SQL Query (relational)
 let results = client.query_sql(r#"
@@ -397,7 +397,7 @@ let entities = client.query_sparql(r#"
 ### 3. Functional Query DSL
 
 ```rust
-use dlog::functional::*;
+use pyralog::functional::*;
 
 // Pure functional query with type safety
 let result = Query::from_table("users")
@@ -423,7 +423,7 @@ let complex_query = query! {
 ### 4. Cryptographic Verification
 
 ```rust
-use dlog::crypto::*;
+use pyralog::crypto::*;
 
 // Write with cryptographic proof
 let receipt = client.write_with_proof(
@@ -449,7 +449,7 @@ let notarization = client.notarize(
 ### 5. Immutable Knowledge Base (Datomic-style)
 
 ```rust
-use dlog::knowledge::*;
+use pyralog::knowledge::*;
 
 // Add facts
 client.transact(vec![
@@ -469,7 +469,7 @@ let name_history = client.history(entity!("user:123"), attr!("name")).await?;
 ### 6. Stream Processing with DataFusion
 
 ```rust
-use dlog::streaming::*;
+use pyralog::streaming::*;
 
 // Real-time aggregation with windowing
 let stream = client.stream_sql(r#"
@@ -494,7 +494,7 @@ while let Some(batch) = stream.next().await {
 Pyralog can monitor itself using its own OpenTelemetry backend:
 
 ```rust
-use dlog::observability::*;
+use pyralog::observability::*;
 use opentelemetry::trace::Tracer;
 
 #[tokio::main]
@@ -502,9 +502,9 @@ async fn main() -> Result<()> {
     // Configure Pyralog to ingest its own telemetry
     let config = PyralogConfig {
         otlp_endpoint: "localhost:4317",
-        traces_log: "dlog_traces",
-        metrics_log: "dlog_metrics",
-        logs_log: "dlog_logs",
+        traces_log: "pyralog_traces",
+        metrics_log: "pyralog_metrics",
+        logs_log: "pyralog_logs",
     };
     
     let client = PyralogClient::new_with_observability(config).await?;
@@ -518,7 +518,7 @@ async fn main() -> Result<()> {
             AVG(duration_ms) as avg_latency,
             MAX(duration_ms) as p99_latency,
             COUNT(*) as request_count
-        FROM dlog_traces
+        FROM pyralog_traces
         WHERE timestamp > NOW() - INTERVAL '5' MINUTE
         GROUP BY span_name
         ORDER BY avg_latency DESC
@@ -527,7 +527,7 @@ async fn main() -> Result<()> {
     // Time-travel debugging - what happened during that incident?
     let incident_traces = client.query_sql(r#"
         SELECT *
-        FROM dlog_traces
+        FROM pyralog_traces
         WHERE timestamp BETWEEN 
             '2024-01-15 14:30:00' AND '2024-01-15 14:35:00'
         AND span_name LIKE '%partition_rebalance%'
@@ -535,7 +535,7 @@ async fn main() -> Result<()> {
     "#).await?;
     
     // Cryptographic audit trail - verify observability data hasn't been tampered
-    let verified = client.verify_log("dlog_traces", start_offset, end_offset).await?;
+    let verified = client.verify_log("pyralog_traces", start_offset, end_offset).await?;
     assert!(verified, "Observability data is tamper-proof!");
     
     Ok(())

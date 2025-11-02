@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use pyralog_core::{LogOffset, Record, RecordBatch, Result, DLogError, OffsetRange};
+use pyralog_core::{LogOffset, Record, RecordBatch, Result, PyralogError, OffsetRange};
 use parking_lot::RwLock;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -42,7 +42,7 @@ impl LogStorage {
     /// Create a new log storage
     pub async fn create(base_path: PathBuf, config: LogStorageConfig) -> Result<Self> {
         std::fs::create_dir_all(&base_path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         let segment = Segment::create(
             LogOffset::ZERO,
@@ -66,7 +66,7 @@ impl LogStorage {
     /// Open an existing log storage
     pub async fn open(base_path: PathBuf, config: LogStorageConfig) -> Result<Self> {
         let mut segment_files = std::fs::read_dir(&base_path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?
             .filter_map(|entry| entry.ok())
             .filter(|entry| {
                 entry.path().extension().and_then(|s| s.to_str()) == Some("log")
@@ -165,7 +165,7 @@ impl LogStorage {
                 if let Some((position, size)) = seg.index.lookup(offset) {
                     let data = seg.segment.read(position, size as usize)?;
                     let record: Record = bincode::deserialize(&data)
-                        .map_err(|e| DLogError::SerializationError(e.to_string()))?;
+                        .map_err(|e| PyralogError::SerializationError(e.to_string()))?;
                     return Ok(Some(record));
                 }
             }
@@ -200,11 +200,11 @@ impl LogStorage {
     /// Write a single record directly to storage
     async fn write_record(&self, record: Record) -> Result<()> {
         let data = bincode::serialize(&record)
-            .map_err(|e| DLogError::SerializationError(e.to_string()))?;
+            .map_err(|e| PyralogError::SerializationError(e.to_string()))?;
 
         let segments = self.segments.read();
         let current_segment = segments.last()
-            .ok_or_else(|| DLogError::StorageError("No segments available".to_string()))?;
+            .ok_or_else(|| PyralogError::StorageError("No segments available".to_string()))?;
 
         if !current_segment.segment.can_fit(data.len() as u64) {
             drop(segments);

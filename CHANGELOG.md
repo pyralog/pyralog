@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features in Detail
 
-#### Storage Engine (`dlog-storage`)
+#### Storage Engine (`pyralog-storage`)
 - Segment-based log-structured storage
 - Sparse indexes for O(log n) lookups
 - Memory-mapped files for zero-copy reads
@@ -29,28 +29,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compression support (gzip, snappy, lz4, zstd)
 - Tiered storage for cold data archival
 
-#### Consensus (`dlog-consensus`)
+#### Consensus (`pyralog-consensus`)
 - Raft consensus protocol implementation
 - Leader election with randomized timeouts
 - Log replication with AppendEntries RPC
 - Persistent state management
 - Fast failover (< 300ms target)
 
-#### Replication (`dlog-replication`)
+#### Replication (`pyralog-replication`)
 - Flexible quorum configuration
 - CopySet-based replica selection
 - ISR (In-Sync Replica) tracking
 - Replication lag monitoring
 - Datacenter-aware placement
 
-#### Protocol (`dlog-protocol`)
+#### Protocol (`pyralog-protocol`)
 - Kafka-compatible API
 - Multiple partitioning strategies
 - Request/response wire format
 - Error code mapping
 - Kafka API compatibility layer
 
-#### Core (`dlog-core`)
+#### Core (`pyralog-core`)
 - Epoch tracking and management
 - Sequencer for epoch coordination
 - Record and batch types

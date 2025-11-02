@@ -14,7 +14,7 @@
 6. [Trust & Verification](#trust--verification)
 7. [Smart Contracts for Databases](#smart-contracts-for-databases)
 8. [Economic Incentives](#economic-incentives)
-9. [Pyralog as DADBS](#dlog-as-dadbs)
+9. [Pyralog as DADBS](#pyralog-as-dadbs)
 10. [Use Cases](#use-cases)
 11. [Implementation Patterns](#implementation-patterns)
 12. [Performance Considerations](#performance-considerations)
@@ -1224,7 +1224,7 @@ Pyralog implements many DADBS principles:
 ```rust
 pub struct PyralogDADBS {
     // Existing Pyralog core
-    dlog: PyralogServer,
+    pyralog: PyralogServer,
     
     // DADBS extensions
     autonomy_controller: AutonomyController,
@@ -1237,7 +1237,7 @@ pub struct PyralogDADBS {
 
 impl PyralogDADBS {
     pub async fn new(config: DADBSConfig) -> Result<Self> {
-        let dlog = PyralogServer::new(config.dlog_config).await?;
+        let pyralog = PyralogServer::new(config.pyralog_config).await?;
         
         let autonomy_controller = AutonomyController::new(
             config.autonomy_policies,
@@ -1258,7 +1258,7 @@ impl PyralogDADBS {
         };
         
         Ok(Self {
-            dlog,
+            pyralog,
             autonomy_controller,
             smart_contracts,
             incentive_system,

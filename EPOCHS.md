@@ -292,7 +292,7 @@ pub struct Record {
 ### 1. Becoming a Leader
 
 ```rust
-use dlog_core::{Sequencer, PartitionId};
+use pyralog_core::{Sequencer, PartitionId};
 
 let sequencer = Sequencer::new(node_id);
 let partition = PartitionId::new(0);
@@ -305,7 +305,7 @@ println!("Now leader with epoch: {}", epoch);
 ### 2. Writing Records
 
 ```rust
-use dlog_core::{Record, Epoch};
+use pyralog_core::{Record, Epoch};
 use bytes::Bytes;
 
 // Create record

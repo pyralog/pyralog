@@ -637,19 +637,19 @@ All data models accessible via **tensor operations**:
 
 ```rust
 // Relational: SELECT * FROM users WHERE age > 30
-let users_tensor = dlog.get_tensor("users").await?;
+let users_tensor = pyralog.get_tensor("users").await?;
 let filtered = users_tensor.filter(|row| row[2] > 30.0);
 
 // Graph: Find neighbors
-let graph_tensor = dlog.get_graph_adjacency("social").await?;
+let graph_tensor = pyralog.get_graph_adjacency("social").await?;
 let neighbors = graph_tensor.matmul(node_vector);
 
 // Time-Series: Sliding window
-let ts_tensor = dlog.get_tensor("metrics").await?;
+let ts_tensor = pyralog.get_tensor("metrics").await?;
 let windows = ts_tensor.window(size=100, stride=10);
 
 // Image: Extract patches
-let image_tensor = dlog.get_tensor("images/cat.jpg").await?;
+let image_tensor = pyralog.get_tensor("images/cat.jpg").await?;
 let patches = image_tensor.unfold(kernel=(224, 224));
 ```
 
@@ -756,7 +756,7 @@ pub enum DType {
 
 ```rust
 // Create tensor table
-dlog.create_table("embeddings", TensorSchema {
+pyralog.create_table("embeddings", TensorSchema {
     columns: vec![
         Column::scalar("id", DataType::Int64),
         Column::scalar("document", DataType::Utf8),
@@ -779,7 +779,7 @@ dlog.create_table("embeddings", TensorSchema {
 
 ```rust
 // Insert vector
-dlog.insert("embeddings", TensorRow {
+pyralog.insert("embeddings", TensorRow {
     id: 1,
     document: "Hello world",
     embedding: Tensor::from_vec(vec![0.1, 0.2, ..., 0.9]), // 768D
@@ -787,7 +787,7 @@ dlog.insert("embeddings", TensorRow {
 }).await?;
 
 // Batch insert (efficient)
-dlog.insert_batch("embeddings", vec![
+pyralog.insert_batch("embeddings", vec![
     TensorRow { /* ... */ },
     TensorRow { /* ... */ },
     // ...
@@ -798,11 +798,11 @@ dlog.insert_batch("embeddings", vec![
 
 ```rust
 // Retrieve by ID
-let row = dlog.query("SELECT * FROM embeddings WHERE id = 1").await?;
+let row = pyralog.query("SELECT * FROM embeddings WHERE id = 1").await?;
 let embedding: Tensor<f32> = row.get_tensor("embedding")?;
 
 // Range scan
-let embeddings = dlog.query(
+let embeddings = pyralog.query(
     "SELECT embedding FROM embeddings WHERE id BETWEEN 1 AND 1000"
 ).await?;
 ```
@@ -891,7 +891,7 @@ pub enum AnnAlgorithm {
 
 ```rust
 // K-nearest neighbors
-let results = dlog.ann_search(AnnQuery {
+let results = pyralog.ann_search(AnnQuery {
     table: "embeddings",
     column: "embedding",
     query_vector: query_embedding,
@@ -930,7 +930,7 @@ pub enum Distance {
 
 ```rust
 // Store document chunks with embeddings
-dlog.ingest_documents(vec![
+pyralog.ingest_documents(vec![
     Document {
         id: "doc1",
         text: "Pyralog is a distributed log system...",
@@ -940,7 +940,7 @@ dlog.ingest_documents(vec![
 ]).await?;
 
 // Automatic chunking + embedding
-dlog.embed_documents(
+pyralog.embed_documents(
     table: "documents",
     text_column: "text",
     embedding_model: "text-embedding-3-large", // OpenAI
@@ -949,7 +949,7 @@ dlog.embed_documents(
 ).await?;
 
 // Semantic search
-let context = dlog.semantic_search(
+let context = pyralog.semantic_search(
     query: "How does Pyralog handle replication?",
     k: 5,
 ).await?;
@@ -962,7 +962,7 @@ let response = llm.generate(prompt + context).await?;
 
 ```rust
 // Combine semantic search + keyword search
-let results = dlog.hybrid_search(HybridQuery {
+let results = pyralog.hybrid_search(HybridQuery {
     table: "documents",
     
     // Vector search
@@ -1019,7 +1019,7 @@ SELECT RESHAPE(tensor, [32, 32, 3]) FROM flat_images;
 
 ```rust
 // Load tensor
-let tensor = dlog.get_tensor("features", id).await?;
+let tensor = pyralog.get_tensor("features", id).await?;
 
 // Element-wise operations
 let scaled = tensor.mul(2.0).add(1.0);
@@ -1047,7 +1047,7 @@ let broadcast = tensor.add_scalar(5.0);
 
 ```rust
 // Build computation graph (no execution yet)
-let pipeline = dlog.tensor("input")
+let pipeline = pyralog.tensor("input")
     .normalize()
     .matmul(weights)
     .relu()
@@ -1085,7 +1085,7 @@ tensor.fused_mul_add_relu(2.0, 1.0);
 
 ```rust
 // Define feature table
-dlog.create_feature_table("user_features", FeatureSchema {
+pyralog.create_feature_table("user_features", FeatureSchema {
     entity: "user_id",
     features: vec![
         Feature::scalar("age", DataType::Int32),
@@ -1096,7 +1096,7 @@ dlog.create_feature_table("user_features", FeatureSchema {
 }).await?;
 
 // Query features as of specific time (no data leakage!)
-let features = dlog.get_features_at_time(
+let features = pyralog.get_features_at_time(
     entity_ids: vec![1, 2, 3],
     feature_table: "user_features",
     timestamp: "2024-01-01T00:00:00Z",
@@ -1107,7 +1107,7 @@ let features = dlog.get_features_at_time(
 
 ```rust
 // Offline: Batch feature generation for training
-let training_data = dlog.get_historical_features(
+let training_data = pyralog.get_historical_features(
     entity_df: entities,        // DataFrame with entity_id + timestamp
     features: vec![
         "user_features:age",
@@ -1117,7 +1117,7 @@ let training_data = dlog.get_historical_features(
 ).await?;
 
 // Online: Low-latency feature retrieval for inference
-let online_features = dlog.get_online_features(
+let online_features = pyralog.get_online_features(
     entity_ids: vec![user_id],
     features: vec!["user_features"],
 ).await?;
@@ -1127,7 +1127,7 @@ let online_features = dlog.get_online_features(
 
 ```rust
 // Define transformations
-dlog.create_feature_view("user_features_transformed", FeatureView {
+pyralog.create_feature_view("user_features_transformed", FeatureView {
     source: "user_features",
     transformations: vec![
         // Normalize
@@ -1151,7 +1151,7 @@ dlog.create_feature_view("user_features_transformed", FeatureView {
 
 ```rust
 // Monitor feature drift
-let drift_metrics = dlog.compute_drift(
+let drift_metrics = pyralog.compute_drift(
     reference_data: training_data,
     production_data: inference_data,
     features: vec!["age", "purchase_embedding"],
@@ -1171,7 +1171,7 @@ if drift_metrics.max_drift > 0.1 {
 
 ```rust
 // Register model
-dlog.register_model(ModelMetadata {
+pyralog.register_model(ModelMetadata {
     name: "recommendation_model",
     version: "v1.0",
     framework: "pytorch",
@@ -1185,7 +1185,7 @@ dlog.register_model(ModelMetadata {
 }).await?;
 
 // Store weights as tensors
-dlog.save_model_weights("recommendation_model", "v1.0", ModelWeights {
+pyralog.save_model_weights("recommendation_model", "v1.0", ModelWeights {
     layers: vec![
         ("encoder.weight", tensor1),
         ("encoder.bias", tensor2),
@@ -1195,14 +1195,14 @@ dlog.save_model_weights("recommendation_model", "v1.0", ModelWeights {
 }).await?;
 
 // Load model
-let weights = dlog.load_model_weights("recommendation_model", "v1.0").await?;
+let weights = pyralog.load_model_weights("recommendation_model", "v1.0").await?;
 ```
 
 ### Model Lineage
 
 ```rust
 // Track model training
-dlog.log_training_run(TrainingRun {
+pyralog.log_training_run(TrainingRun {
     model: "recommendation_model",
     version: "v1.0",
     
@@ -1231,27 +1231,27 @@ dlog.log_training_run(TrainingRun {
 }).await?;
 
 // Query lineage
-let lineage = dlog.get_model_lineage("recommendation_model", "v1.0").await?;
+let lineage = pyralog.get_model_lineage("recommendation_model", "v1.0").await?;
 ```
 
 ### A/B Testing
 
 ```rust
 // Deploy multiple model versions
-dlog.deploy_model_version("recommendation_model", "v1.0", DeployConfig {
+pyralog.deploy_model_version("recommendation_model", "v1.0", DeployConfig {
     traffic_percentage: 50,  // 50% of traffic
 }).await?;
 
-dlog.deploy_model_version("recommendation_model", "v1.1", DeployConfig {
+pyralog.deploy_model_version("recommendation_model", "v1.1", DeployConfig {
     traffic_percentage: 50,  // 50% of traffic
 }).await?;
 
 // Route inference requests
-let model_version = dlog.route_inference(user_id).await?;
+let model_version = pyralog.route_inference(user_id).await?;
 let prediction = model_version.predict(features).await?;
 
 // Compare metrics
-let comparison = dlog.compare_model_versions(
+let comparison = pyralog.compare_model_versions(
     models: vec!["v1.0", "v1.1"],
     metrics: vec!["auc", "latency", "conversion_rate"],
     duration: Duration::from_days(7),
@@ -1342,20 +1342,20 @@ impl From<PyObject> for PyralogTensor {
 
 ```python
 import torch
-import dlog
+import pyralog
 
 # Create tensor in PyTorch
 torch_tensor = torch.randn(1000, 768, device='cuda')
 
 # Zero-copy transfer to Pyralog
-dlog_tensor = dlog.from_torch(torch_tensor)  # No copy!
+pyralog_tensor = pyralog.from_torch(torch_tensor)  # No copy!
 
 # Store in Pyralog
-client.insert("embeddings", id=1, embedding=dlog_tensor)
+client.insert("embeddings", id=1, embedding=pyralog_tensor)
 
 # Retrieve and use in PyTorch
-dlog_tensor = client.get_tensor("embeddings", id=1)
-torch_tensor = dlog_tensor.to_torch()  # Zero-copy!
+pyralog_tensor = client.get_tensor("embeddings", id=1)
+torch_tensor = pyralog_tensor.to_torch()  # Zero-copy!
 
 # Use in model
 output = model(torch_tensor)
@@ -1380,19 +1380,19 @@ pub fn to_tensorflow(&self) -> PyObject {
 
 ```python
 import tensorflow as tf
-import dlog
+import pyralog
 
 # Pyralog → TensorFlow (zero-copy)
-dlog_tensor = client.get_tensor("features", id=123)
-tf_tensor = dlog.to_tensorflow(dlog_tensor)
+pyralog_tensor = client.get_tensor("features", id=123)
+tf_tensor = pyralog.to_tensorflow(pyralog_tensor)
 
 # Use in Keras model
 model = tf.keras.Sequential([...])
 predictions = model(tf_tensor)
 
 # TensorFlow → Pyralog
-dlog_result = dlog.from_tensorflow(predictions)
-client.insert("predictions", id=123, result=dlog_result)
+pyralog_result = pyralog.from_tensorflow(predictions)
+client.insert("predictions", id=123, result=pyralog_result)
 ```
 
 ### JAX/Flax Integration
@@ -1414,11 +1414,11 @@ pub fn to_jax(&self) -> PyObject {
 
 ```python
 import jax.numpy as jnp
-import dlog
+import pyralog
 
 # Pyralog → JAX (zero-copy)
-dlog_tensor = client.get_tensor("weights", layer="encoder")
-jax_array = dlog.to_jax(dlog_tensor)
+pyralog_tensor = client.get_tensor("weights", layer="encoder")
+jax_array = pyralog.to_jax(pyralog_tensor)
 
 # Use in JAX computation
 @jax.jit
@@ -1473,14 +1473,14 @@ pub async fn export_to_onnx(
 
 ```rust
 // Import pre-trained ONNX model
-let weights = dlog.import_onnx_model("resnet50.onnx").await?;
+let weights = pyralog.import_onnx_model("resnet50.onnx").await?;
 
 // Store in Pyralog
-dlog.save_model_weights("resnet50", "v1.0", weights).await?;
+pyralog.save_model_weights("resnet50", "v1.0", weights).await?;
 
 // Later: Export to ONNX for deployment
-let weights = dlog.load_model_weights("resnet50", "v1.0").await?;
-dlog.export_to_onnx(&weights, "resnet50_deployed.onnx").await?;
+let weights = pyralog.load_model_weights("resnet50", "v1.0").await?;
+pyralog.export_to_onnx(&weights, "resnet50_deployed.onnx").await?;
 ```
 
 ### Hugging Face Transformers Integration
@@ -1497,14 +1497,14 @@ pub async fn save_hf_model(
     let mut weights = ModelWeights::new();
     for (name, tensor) in state_dict {
         // Convert to Pyralog tensor (zero-copy via DLPack)
-        let dlog_tensor = PyralogTensor::from_torch(tensor);
-        weights.insert(name, dlog_tensor);
+        let pyralog_tensor = PyralogTensor::from_torch(tensor);
+        weights.insert(name, pyralog_tensor);
     }
     
     // Save metadata
     let config = model.config();
     
-    dlog.save_model(SaveModelRequest {
+    pyralog.save_model(SaveModelRequest {
         name: model_name,
         weights,
         config: serde_json::to_value(config)?,
@@ -1518,15 +1518,15 @@ pub async fn save_hf_model(
 pub async fn load_hf_model(
     model_name: &str,
 ) -> Result<PreTrainedModel> {
-    let saved = dlog.load_model(model_name).await?;
+    let saved = pyralog.load_model(model_name).await?;
     
     // Reconstruct model
     let config = serde_json::from_value(saved.config)?;
     let mut model = PreTrainedModel::from_config(config);
     
     // Load weights (zero-copy)
-    for (name, dlog_tensor) in saved.weights {
-        let torch_tensor = dlog_tensor.to_torch();
+    for (name, pyralog_tensor) in saved.weights {
+        let torch_tensor = pyralog_tensor.to_torch();
         model.load_state_dict_key(name, torch_tensor);
     }
     
@@ -1538,16 +1538,16 @@ pub async fn load_hf_model(
 
 ```python
 from transformers import AutoModel, AutoTokenizer
-import dlog
+import pyralog
 
 # Save Hugging Face model to Pyralog
 model = AutoModel.from_pretrained("bert-base-uncased")
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
-dlog.save_hf_model("bert-base-uncased", model, tokenizer)
+pyralog.save_hf_model("bert-base-uncased", model, tokenizer)
 
 # Later: Load from Pyralog (faster than downloading)
-model, tokenizer = dlog.load_hf_model("bert-base-uncased")
+model, tokenizer = pyralog.load_hf_model("bert-base-uncased")
 
 # Use model
 inputs = tokenizer("Hello world", return_tensors="pt")
@@ -1600,7 +1600,7 @@ pub enum SyncStrategy {
 
 ```rust
 // Create distributed training job
-let training_job = dlog.create_training_job(TrainingConfig {
+let training_job = pyralog.create_training_job(TrainingConfig {
     model: "recommendation_model",
     dataset: "user_interactions",
     
@@ -1666,7 +1666,7 @@ pub struct TensorParallelConfig {
 
 // Example: Split a large linear layer
 // W: [10000, 10000] → W1: [10000, 5000], W2: [10000, 5000]
-let layer = dlog.create_tensor_parallel_layer(TensorParallelLayer {
+let layer = pyralog.create_tensor_parallel_layer(TensorParallelLayer {
     weight: large_weight_matrix,
     config: TensorParallelConfig {
         split_dim: 1,  // Split columns
@@ -1713,7 +1713,7 @@ pub enum PipelineSchedule {
 
 ```rust
 // 12-layer transformer, split into 4 stages (3 layers each)
-let pipeline = dlog.create_pipeline(PipelineConfig {
+let pipeline = pyralog.create_pipeline(PipelineConfig {
     model: "gpt_12layer",
     stages: vec![
         PipelineStage { layers: 0..3, device: "gpu:0" },
@@ -1755,7 +1755,7 @@ let config = Parallelism3DConfig {
     // Total: 64 * 4 * 2 = 512 GPUs
 };
 
-let training_job = dlog.create_3d_parallel_training(
+let training_job = pyralog.create_3d_parallel_training(
     model: "gpt3_175b",
     dataset: "web_corpus",
     config,
@@ -1921,10 +1921,10 @@ ORDER BY hour;
 
 ```rust
 // 1. Time-series → 2D tensor
-let ts_tensor = dlog.get_tensor("timeseries_metrics").await?;  // ℝᵗˣᶠ
+let ts_tensor = pyralog.get_tensor("timeseries_metrics").await?;  // ℝᵗˣᶠ
 
 // 2. Document → embeddings
-let documents = dlog.query_documents("documents").await?;
+let documents = pyralog.query_documents("documents").await?;
 let doc_embeddings = documents.map(|doc| embed(doc.text));  // ℝⁿˣᵈ
 
 // 3. Vector similarity (tensor operation)
@@ -1985,16 +1985,16 @@ LIMIT 20;
 
 ```rust
 // 1. Graph BFS (tensor power iteration)
-let adjacency = dlog.get_graph_adjacency("social_network").await?;
+let adjacency = pyralog.get_graph_adjacency("social_network").await?;
 let start_node = 12345;
 let reachable = graph_bfs(adjacency, start_node, max_hops=2);
 
 // 2. Image embeddings (CNN features)
-let products = dlog.query("SELECT product_id, seller_id, image_tensor FROM products").await?;
+let products = pyralog.query("SELECT product_id, seller_id, image_tensor FROM products").await?;
 let filtered_products = products.filter(|p| reachable.contains(p.seller_id));
 
 // 3. Image similarity (tensor cosine similarity)
-let target_image = dlog.get_tensor("products", id=999, column="image_tensor").await?;
+let target_image = pyralog.get_tensor("products", id=999, column="image_tensor").await?;
 let target_features = cnn_extract_features(target_image);  // ℝᵈ
 
 let similarities = filtered_products.map(|p| {
@@ -2034,7 +2034,7 @@ LIMIT 50;
 
 ```rust
 // Hybrid index scan + tensor operations
-let products_tensor = dlog.get_tensor("products").await?;
+let products_tensor = pyralog.get_tensor("products").await?;
 
 // 1. Relational filters (fast index scan)
 let filtered = products_tensor
@@ -2042,7 +2042,7 @@ let filtered = products_tensor
     .filter(|row| categories.contains(row.category));
 
 // 2. Text embedding similarity (ANN search)
-let text_scores = dlog.ann_search(
+let text_scores = pyralog.ann_search(
     table="products",
     column="description_embedding",
     query=query_embedding,
@@ -2050,7 +2050,7 @@ let text_scores = dlog.ann_search(
 ).await?;
 
 // 3. Image embedding similarity (ANN search)
-let image_scores = dlog.ann_search(
+let image_scores = pyralog.ann_search(
     table="products",
     column="image_embedding",
     query=image_embedding,
@@ -2225,7 +2225,7 @@ pub enum CompressionCodec {
 
 ```rust
 // Store tensor with compression
-dlog.insert_tensor("embeddings", TensorInsert {
+pyralog.insert_tensor("embeddings", TensorInsert {
     id: 1,
     tensor: embedding,
     
@@ -2247,7 +2247,7 @@ dlog.insert_tensor("embeddings", TensorInsert {
 ```rust
 // Server: Serve tensors via Flight
 let flight_server = FlightServer::new(TensorFlightService {
-    dlog_client: dlog.clone(),
+    pyralog_client: pyralog.clone(),
 });
 
 impl FlightService for TensorFlightService {
@@ -2259,7 +2259,7 @@ impl FlightService for TensorFlightService {
         let query: TensorQuery = serde_json::from_slice(&ticket.ticket)?;
         
         // Stream tensor data (zero-copy)
-        let tensor_stream = self.dlog_client.stream_tensor(query).await?;
+        let tensor_stream = self.pyralog_client.stream_tensor(query).await?;
         
         // Convert to Arrow Flight stream
         let flight_stream = tensor_to_flight_stream(tensor_stream);
@@ -2346,7 +2346,7 @@ pub enum EvictionPolicy {
 
 ```rust
 // Allocate tensor in unified memory
-let tensor = dlog.alloc_tensor_unified(TensorSpec {
+let tensor = pyralog.alloc_tensor_unified(TensorSpec {
     shape: vec![1000, 768],
     dtype: DType::F32,
     initial_location: Location::GPU(0),
@@ -2365,10 +2365,10 @@ let cpu_slice = tensor.as_slice();  // Automatic GPU → CPU if necessary
 
 ```rust
 // Allocate pinned memory
-let pinned_buffer = dlog.alloc_pinned_memory(size_bytes).await?;
+let pinned_buffer = pyralog.alloc_pinned_memory(size_bytes).await?;
 
 // Fast async transfer (2-3× faster than pageable memory)
-let gpu_tensor = dlog.copy_to_gpu_async(
+let gpu_tensor = pyralog.copy_to_gpu_async(
     pinned_buffer,
     device_id: 0,
     stream: cuda_stream,
@@ -2411,7 +2411,7 @@ pub enum ShardingStrategy {
 
 ```rust
 // Large embedding table sharded across 4 GPUs
-let embeddings = dlog.create_multi_gpu_tensor(MultiGPUTensorSpec {
+let embeddings = pyralog.create_multi_gpu_tensor(MultiGPUTensorSpec {
     shape: vec![10_000_000, 768],  // 10M embeddings
     dtype: DType::F32,
     strategy: ShardingStrategy::DimShard { dim: 0 },  // Shard rows
@@ -2477,7 +2477,7 @@ let tensor3 = pool.alloc_tensor([1000, 768]).await?;  // Reuses tensor1's memory
 
 ```rust
 // Capture CUDA graph (one-time cost)
-let graph = dlog.cuda_capture_graph(|| {
+let graph = pyralog.cuda_capture_graph(|| {
     // Sequence of GPU operations
     let x = tensor_a.matmul(&tensor_b);
     let y = x.relu();
@@ -2526,7 +2526,7 @@ let memory_manager = GpuMemoryManager::new(defrag_policy);
 
 ```rust
 // Real-time memory statistics
-let stats = dlog.gpu_memory_stats(device_id: 0).await?;
+let stats = pyralog.gpu_memory_stats(device_id: 0).await?;
 
 println!("GPU 0 Memory:");
 println!("  Total: {} GB", stats.total_bytes / 1e9);
@@ -2539,7 +2539,7 @@ println!("  Fragmentation: {:.1}%", stats.fragmentation * 100.0);
 println!("  Peak usage: {} GB", stats.peak_bytes / 1e9);
 
 // Set memory limit
-dlog.set_gpu_memory_limit(device_id: 0, limit: 14 * 1024 * 1024 * 1024).await?;  // 14GB
+pyralog.set_gpu_memory_limit(device_id: 0, limit: 14 * 1024 * 1024 * 1024).await?;  // 14GB
 
 // Alerts
 if stats.used_bytes > 0.9 * stats.total_bytes {
@@ -2555,7 +2555,7 @@ if stats.used_bytes > 0.9 * stats.total_bytes {
 
 ```rust
 // Shard large tensor across cluster
-let sharded_tensor = dlog.create_sharded_tensor(
+let sharded_tensor = pyralog.create_sharded_tensor(
     name: "large_matrix",
     shape: [1_000_000, 10_000],  // 1M × 10K matrix
     dtype: DType::F32,
@@ -2569,11 +2569,11 @@ let sharded_tensor = dlog.create_sharded_tensor(
 
 ```rust
 // A (m×k) @ B (k×n) = C (m×n)
-let a = dlog.get_sharded_tensor("matrix_a").await?;  // Sharded by row
-let b = dlog.get_sharded_tensor("matrix_b").await?;  // Sharded by column
+let a = pyralog.get_sharded_tensor("matrix_a").await?;  // Sharded by row
+let b = pyralog.get_sharded_tensor("matrix_b").await?;  // Sharded by column
 
 // Distributed computation
-let c = dlog.distributed_matmul(a, b, DistributedConfig {
+let c = pyralog.distributed_matmul(a, b, DistributedConfig {
     algorithm: MatmulAlgorithm::Cannon,  // Cannon's algorithm
     communication: CommPattern::AllToAll,
 }).await?;
@@ -2583,20 +2583,20 @@ let c = dlog.distributed_matmul(a, b, DistributedConfig {
 
 ```rust
 // Map: Apply function to each tensor shard
-let mapped = dlog.tensor_map(
+let mapped = pyralog.tensor_map(
     tensor: "embeddings",
     map_fn: |shard| shard.normalize(),
 ).await?;
 
 // Reduce: Aggregate across shards
-let reduced = dlog.tensor_reduce(
+let reduced = pyralog.tensor_reduce(
     tensor: "embeddings",
     reduce_fn: ReduceOp::Sum,
     axis: 0,
 ).await?;
 
 // MapReduce: Combined
-let result = dlog.tensor_mapreduce(
+let result = pyralog.tensor_mapreduce(
     tensor: "user_interactions",
     map_fn: |shard| shard.sum(axis=0),
     reduce_fn: |partials| partials.sum(),
@@ -2611,14 +2611,14 @@ let result = dlog.tensor_mapreduce(
 
 ```rust
 // Import NetCDF file
-dlog.import_netcdf("climate_data.nc", ImportConfig {
+pyralog.import_netcdf("climate_data.nc", ImportConfig {
     table: "climate",
     dimensions: vec!["time", "lat", "lon"],
     variables: vec!["temperature", "precipitation"],
 }).await?;
 
 // Query multi-dimensional data
-let data = dlog.query_sql(r#"
+let data = pyralog.query_sql(r#"
     SELECT temperature[:, 40:50, -120:-110]  -- time, lat, lon
     FROM climate
     WHERE time BETWEEN '2020-01-01' AND '2020-12-31'
@@ -2629,7 +2629,7 @@ let data = dlog.query_sql(r#"
 
 ```rust
 // Store gridded climate data
-dlog.create_tensor_table("weather", TensorSchema {
+pyralog.create_tensor_table("weather", TensorSchema {
     columns: vec![
         Column::scalar("time", DataType::Timestamp),
         Column::tensor("temperature", TensorType::Tensor3D(180, 360, 1)),  // lat×lon×level
@@ -2642,7 +2642,7 @@ dlog.create_tensor_table("weather", TensorSchema {
 }).await?;
 
 // Spatial queries
-let regional_temp = dlog.query_sql(r#"
+let regional_temp = pyralog.query_sql(r#"
     SELECT AVG(temperature[30:40, 100:110, :])  -- Region average
     FROM weather
     WHERE time > NOW() - INTERVAL '7' DAYS
@@ -2653,7 +2653,7 @@ let regional_temp = dlog.query_sql(r#"
 
 ```rust
 // Store DICOM images as tensors
-dlog.store_medical_image(MedicalImage {
+pyralog.store_medical_image(MedicalImage {
     patient_id: "P123",
     study_id: "S456",
     series_id: "SER789",
@@ -2669,7 +2669,7 @@ dlog.store_medical_image(MedicalImage {
 }).await?;
 
 // Extract region of interest
-let roi = dlog.query_sql(r#"
+let roi = pyralog.query_sql(r#"
     SELECT image_tensor[100:200, 100:200, :]  -- Crop region
     FROM medical_images
     WHERE patient_id = 'P123'
@@ -2708,7 +2708,7 @@ pub async fn import_zarr(
     let zarr_array = ZarrArray::open(store).await?;
     
     // Convert to Pyralog tensor
-    let tensor = dlog.create_tensor_table(config.table_name, TensorSchema {
+    let tensor = pyralog.create_tensor_table(config.table_name, TensorSchema {
         shape: zarr_array.shape().to_vec(),
         dtype: zarr_array.dtype(),
         chunks: zarr_array.chunks().to_vec(),
@@ -2722,7 +2722,7 @@ pub async fn import_zarr(
             let store = store.clone();
             async move {
                 let chunk_data = zarr_array.read_chunk(&store, coord).await?;
-                dlog.write_tensor_chunk(tensor.id, coord, chunk_data).await
+                pyralog.write_tensor_chunk(tensor.id, coord, chunk_data).await
             }
         })
         .buffer_unordered(config.parallelism)
@@ -2737,7 +2737,7 @@ pub async fn import_zarr(
 
 ```rust
 // Import Zarr array from S3
-dlog.import_zarr(
+pyralog.import_zarr(
     "s3://my-bucket/climate-data.zarr",
     ZarrImportConfig {
         table_name: "climate_zarr",
@@ -2747,7 +2747,7 @@ dlog.import_zarr(
 ).await?;
 
 // Query imported data (same as native Pyralog tensors)
-let data = dlog.query_sql(r#"
+let data = pyralog.query_sql(r#"
     SELECT temperature[:, 40:50, -120:-110]
     FROM climate_zarr
     WHERE time BETWEEN '2020-01-01' AND '2020-12-31'
@@ -2763,7 +2763,7 @@ pub async fn export_zarr(
     zarr_path: &str,
     config: ZarrExportConfig,
 ) -> Result<()> {
-    let tensor = dlog.get_tensor(tensor_id).await?;
+    let tensor = pyralog.get_tensor(tensor_id).await?;
     
     // Create Zarr array
     let zarr_array = ZarrArray::create(ZarrArrayConfig {
@@ -2804,7 +2804,7 @@ pub async fn export_zarr(
 
 ```rust
 // Export Pyralog tensor to Zarr on S3
-dlog.export_zarr(
+pyralog.export_zarr(
     "climate_tensor",
     "s3://my-bucket/output/climate.zarr",
     ZarrExportConfig {
@@ -3032,7 +3032,7 @@ pub enum ZarrCodec {
 **1. Climate Model Output**:
 ```rust
 // Write climate model output directly to Zarr on S3
-dlog.export_zarr_incremental(
+pyralog.export_zarr_incremental(
     "climate_model_output",
     "s3://climate-data/model-run-2024/output.zarr",
     ZarrIncrementalConfig {
@@ -3047,7 +3047,7 @@ dlog.export_zarr_incremental(
 **2. Satellite Imagery**:
 ```rust
 // Ingest satellite tiles as Zarr
-dlog.create_zarr_mosaic(ZarrMosaicConfig {
+pyralog.create_zarr_mosaic(ZarrMosaicConfig {
     output: "s3://satellite/global-mosaic.zarr",
     inputs: satellite_tiles,  // List of GeoTIFF files
     chunk_shape: vec![1, 4096, 4096, 3],  // Single tile per chunk
@@ -3062,7 +3062,7 @@ dlog.create_zarr_mosaic(ZarrMosaicConfig {
 **3. Genomics Data**:
 ```rust
 // Store variant call matrices as Zarr
-dlog.export_zarr(
+pyralog.export_zarr(
     "variant_calls",
     "s3://genomics/variants.zarr",
     ZarrExportConfig {
@@ -3109,7 +3109,7 @@ GROUP BY s.station_id, s.name;
 
 ```rust
 // Store multivariate time-series as 2D tensor (time × features)
-dlog.store_timeseries(TimeSeriesTensor {
+pyralog.store_timeseries(TimeSeriesTensor {
     name: "sensor_data",
     shape: [1_000_000, 50],  // 1M time steps, 50 sensors
     timestamp_start: "2024-01-01T00:00:00Z",
@@ -3123,13 +3123,13 @@ dlog.store_timeseries(TimeSeriesTensor {
 
 ```rust
 // Compute rolling statistics
-let rolling_mean = dlog.query_sql(r#"
+let rolling_mean = pyralog.query_sql(r#"
     SELECT ROLLING_MEAN(sensor_data, window=100, axis=0)
     FROM timeseries
 "#).await?;
 
 // Convolution (filtering)
-let filtered = dlog.query_sql(r#"
+let filtered = pyralog.query_sql(r#"
     SELECT CONVOLVE(sensor_data, kernel=[0.25, 0.5, 0.25])
     FROM timeseries
 "#).await?;
@@ -3143,7 +3143,7 @@ let filtered = dlog.query_sql(r#"
 
 ```rust
 // Store images as tensors (H×W×C)
-dlog.store_image(ImageTensor {
+pyralog.store_image(ImageTensor {
     id: "cat_123",
     image: Tensor3D::from_file("cat.jpg"),  // 224×224×3
     format: ImageFormat::RGB,
@@ -3151,7 +3151,7 @@ dlog.store_image(ImageTensor {
 }).await?;
 
 // Generate thumbnails (lazy)
-let thumbnail = dlog.query_sql(r#"
+let thumbnail = pyralog.query_sql(r#"
     SELECT RESIZE(image, [64, 64]) FROM images WHERE id = 'cat_123'
 "#).await?;
 ```
@@ -3160,7 +3160,7 @@ let thumbnail = dlog.query_sql(r#"
 
 ```rust
 // Store video as 4D tensor (T×H×W×C)
-dlog.store_video(VideoTensor {
+pyralog.store_video(VideoTensor {
     id: "video_456",
     video: Tensor4D::from_file("video.mp4"),  // 1000×720×1280×3
     fps: 30,
@@ -3168,7 +3168,7 @@ dlog.store_video(VideoTensor {
 }).await?;
 
 // Extract frames
-let frames = dlog.query_sql(r#"
+let frames = pyralog.query_sql(r#"
     SELECT video[100:200, :, :, :]  -- Frames 100-200
     FROM videos
     WHERE id = 'video_456'
@@ -3198,7 +3198,7 @@ let config = PyralogConfig {
 
 ```rust
 // Keep tensor on GPU (zero-copy)
-let gpu_tensor = dlog.get_tensor_gpu("embeddings", id).await?;
+let gpu_tensor = pyralog.get_tensor_gpu("embeddings", id).await?;
 
 // Compute on GPU
 let result = gpu_tensor
@@ -3214,7 +3214,7 @@ let cpu_result = result.to_cpu().await?;
 
 ```rust
 // Use FP16 for inference (2× faster, half memory)
-let result = dlog.query_tensor_gpu("model_weights", TensorQuery {
+let result = pyralog.query_tensor_gpu("model_weights", TensorQuery {
     dtype: DType::F16,
     operation: TensorOp::Matmul {
         a: input_fp16,
@@ -3236,7 +3236,7 @@ let result = dlog.query_tensor_gpu("model_weights", TensorQuery {
 
 ```rust
 // Store mean and variance as tensors
-dlog.store_probabilistic_tensor(ProbTensor {
+pyralog.store_probabilistic_tensor(ProbTensor {
     name: "sales_forecast",
     distribution: Distribution::Normal {
         mean: mean_tensor,      // Expected values
@@ -3246,14 +3246,14 @@ dlog.store_probabilistic_tensor(ProbTensor {
 }).await?;
 
 // Sample from distribution
-let samples = dlog.sample_tensor("sales_forecast", num_samples=1000).await?;
+let samples = pyralog.sample_tensor("sales_forecast", num_samples=1000).await?;
 ```
 
 ### Bayesian Inference
 
 ```rust
 // Update posterior with new observations
-dlog.bayesian_update(
+pyralog.bayesian_update(
     prior: "sales_forecast",
     observations: new_data,
     likelihood: Likelihood::Gaussian,
@@ -3268,7 +3268,7 @@ dlog.bayesian_update(
 
 ```rust
 // Store graph with node embeddings
-dlog.create_graph_with_embeddings("social_network", GraphSchema {
+pyralog.create_graph_with_embeddings("social_network", GraphSchema {
     nodes: NodeSchema {
         id: DataType::Int64,
         embedding: TensorType::Vector(128),
@@ -3283,7 +3283,7 @@ dlog.create_graph_with_embeddings("social_network", GraphSchema {
 }).await?;
 
 // Query neighbors with embeddings
-let neighbors = dlog.query_sql(r#"
+let neighbors = pyralog.query_sql(r#"
     SELECT n.id, n.embedding, e.weight
     FROM social_network.nodes n
     JOIN social_network.edges e ON e.to = n.id
@@ -3297,7 +3297,7 @@ let neighbors = dlog.query_sql(r#"
 
 ```rust
 // Graph Neural Network primitives
-let updated_embeddings = dlog.gnn_aggregate(
+let updated_embeddings = pyralog.gnn_aggregate(
     graph: "social_network",
     aggregation: AggregationFn::Mean,
     num_hops: 2,

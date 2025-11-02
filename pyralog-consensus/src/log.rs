@@ -1,4 +1,4 @@
-use pyralog_core::{Result, DLogError};
+use pyralog_core::{Result, PyralogError};
 use parking_lot::RwLock;
 use std::path::{Path, PathBuf};
 use std::fs::{File, OpenOptions};
@@ -19,7 +19,7 @@ impl RaftLog {
             .read(true)
             .write(true)
             .open(&path)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         Ok(Self {
             path,
@@ -30,15 +30,15 @@ impl RaftLog {
     /// Save persistent state to disk
     pub fn save_state(&self, state: &PersistentState) -> Result<()> {
         let data = bincode::serialize(state)
-            .map_err(|e| DLogError::SerializationError(e.to_string()))?;
+            .map_err(|e| PyralogError::SerializationError(e.to_string()))?;
 
         let mut file = self.file.write();
         file.seek(SeekFrom::Start(0))
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
         file.write_all(&data)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
         file.sync_all()
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         Ok(())
     }
@@ -47,18 +47,18 @@ impl RaftLog {
     pub fn load_state(&self) -> Result<PersistentState> {
         let mut file = self.file.write();
         file.seek(SeekFrom::Start(0))
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)
-            .map_err(|e| DLogError::StorageError(e.to_string()))?;
+            .map_err(|e| PyralogError::StorageError(e.to_string()))?;
 
         if buffer.is_empty() {
             return Ok(PersistentState::default());
         }
 
         bincode::deserialize(&buffer)
-            .map_err(|e| DLogError::SerializationError(e.to_string()))
+            .map_err(|e| PyralogError::SerializationError(e.to_string()))
     }
 }
 

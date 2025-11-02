@@ -5,7 +5,7 @@ Understanding consistency, availability, and partition tolerance in Pyralog's de
 ## Table of Contents
 
 1. [CAP Theorem Overview](#cap-theorem-overview)
-2. [Pyralog's Position in CAP Space](#dlogs-position-in-cap-space)
+2. [Pyralog's Position in CAP Space](#pyralogs-position-in-cap-space)
 3. [Flexible Quorums and CAP](#flexible-quorums-and-cap)
 4. [Practical Tradeoffs](#practical-tradeoffs)
 5. [Configuration Examples](#configuration-examples)
@@ -641,17 +641,17 @@ impl ConsistentClient {
 
 ```rust
 // Consistency metrics
-dlog_stale_reads_total         // Reads that returned old data
-dlog_consistency_violations    // Detected inconsistencies
+pyralog_stale_reads_total         // Reads that returned old data
+pyralog_consistency_violations    // Detected inconsistencies
 
 // Availability metrics
-dlog_write_failures_total      // Failed writes
-dlog_read_failures_total       // Failed reads
-dlog_quorum_unavailable        // Quorum not available
+pyralog_write_failures_total      // Failed writes
+pyralog_read_failures_total       // Failed reads
+pyralog_quorum_unavailable        // Quorum not available
 
 // Latency metrics
-dlog_write_latency_seconds     // Write latency
-dlog_read_latency_seconds      // Read latency
+pyralog_write_latency_seconds     // Write latency
+pyralog_read_latency_seconds      // Read latency
 ```
 
 ### Alerting
@@ -659,15 +659,15 @@ dlog_read_latency_seconds      // Read latency
 ```yaml
 # High stale read rate (consistency issue)
 - alert: HighStaleReads
-  expr: rate(dlog_stale_reads_total[5m]) > 0.01
+  expr: rate(pyralog_stale_reads_total[5m]) > 0.01
   
 # Quorum frequently unavailable (availability issue)
 - alert: QuorumUnavailable
-  expr: rate(dlog_quorum_unavailable[5m]) > 0.05
+  expr: rate(pyralog_quorum_unavailable[5m]) > 0.05
   
 # High write latency (latency issue)
 - alert: HighWriteLatency
-  expr: histogram_quantile(0.99, dlog_write_latency_seconds) > 0.1
+  expr: histogram_quantile(0.99, pyralog_write_latency_seconds) > 0.1
 ```
 
 ---

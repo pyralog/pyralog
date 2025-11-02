@@ -82,7 +82,7 @@ Look for issues labeled:
 
 # Clone your fork
 git clone https://github.com/YOUR_USERNAME/pyralog.git
-cd dlog
+cd pyralog
 
 # Add upstream remote
 git remote add upstream https://github.com/pyralog/pyralog.git
@@ -205,7 +205,7 @@ cargo test
 cargo test test_name
 
 # Run tests for a specific module
-cargo test --package dlog-storage
+cargo test --package pyralog-storage
 
 # Run with output
 cargo test -- --nocapture
@@ -237,7 +237,7 @@ Create files in `tests/` directory:
 
 ```rust
 // tests/integration_test.rs
-use dlog::prelude::*;
+use pyralog::prelude::*;
 
 #[tokio::test]
 async fn test_end_to_end() {
@@ -353,7 +353,7 @@ cargo clippy -- -D warnings
 /// # Example
 ///
 /// ```
-/// use dlog::prelude::*;
+/// use pyralog::prelude::*;
 /// use bytes::Bytes;
 ///
 /// # async fn example() -> Result<()> {
@@ -477,7 +477,7 @@ Before optimizing:
 ```bash
 # Profiling with cargo-flamegraph
 cargo install flamegraph
-cargo flamegraph --bin dlog
+cargo flamegraph --bin pyralog
 
 # Benchmarking
 cargo bench

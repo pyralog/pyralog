@@ -8,7 +8,7 @@
 
 1. [What is an Immutable Knowledge Database?](#what-is-an-immutable-knowledge-database)
 2. [Why Immutable Knowledge Databases?](#why-immutable-knowledge-databases)
-3. [Pyralog's Perfect Fit](#dlogs-perfect-fit)
+3. [Pyralog's Perfect Fit](#pyralogs-perfect-fit)
 4. [Architecture for Knowledge Databases](#architecture-for-knowledge-databases)
 5. [Data Model](#data-model)
 6. [Use Cases](#use-cases)
@@ -1140,7 +1140,7 @@ Efficiency: 98%+ (near-linear scaling)
 ### 1. Define Your Schema
 
 ```rust
-use dlog_knowledge::*;
+use pyralog_knowledge::*;
 
 let kb = KnowledgeBase::connect("localhost:9092").await?;
 

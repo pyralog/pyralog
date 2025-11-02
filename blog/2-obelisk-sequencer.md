@@ -466,6 +466,6 @@ In the next post, we'll show how combining Obelisk Sequencers with Scarab IDs el
 
 ---
 
-*← [Previous: Introducing Pyralog](1-introducing-dlog.md)*
+*← [Previous: Introducing Pyralog](1-introducing-pyralog.md)*
 *→ [Next: Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)*
 

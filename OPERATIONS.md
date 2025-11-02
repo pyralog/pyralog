@@ -110,11 +110,11 @@ echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag
 wget https://github.com/pyralog/pyralog/releases/download/v0.1.0/pyralog-linux-amd64.tar.gz
 
 # Extract
-tar -xzf dlog-linux-amd64.tar.gz
+tar -xzf pyralog-linux-amd64.tar.gz
 
 # Install
-sudo mv dlog /usr/local/bin/
-sudo chmod +x /usr/local/bin/dlog
+sudo mv pyralog /usr/local/bin/
+sudo chmod +x /usr/local/bin/pyralog
 ```
 
 #### From Source
@@ -125,27 +125,27 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Clone and build
 git clone https://github.com/pyralog/pyralog.git
-cd dlog
+cd pyralog
 cargo build --release
 
 # Install
-sudo cp target/release/dlog /usr/local/bin/
+sudo cp target/release/pyralog /usr/local/bin/
 ```
 
 #### Docker
 
 ```bash
 # Pull image
-docker pull dlog/dlog:latest
+docker pull pyralog/pyralog:latest
 
 # Run
 docker run -d \
-  --name dlog-1 \
+  --name pyralog-1 \
   -p 9092:9092 \
   -p 9093:9093 \
-  -v /data/dlog:/data \
+  -v /data/pyralog:/data \
   -e NODE_ID=1 \
-  dlog/dlog:latest
+  pyralog/pyralog:latest
 ```
 
 ### Cluster Deployment
@@ -157,7 +157,7 @@ docker run -d \
 {
   "node": {
     "node_id": 1,
-    "data_dir": "/var/lib/dlog",
+    "data_dir": "/var/lib/pyralog",
     "cluster_nodes": [1, 2, 3]
   },
   "network": {
@@ -172,7 +172,7 @@ docker run -d \
 {
   "node": {
     "node_id": 2,
-    "data_dir": "/var/lib/dlog",
+    "data_dir": "/var/lib/pyralog",
     "cluster_nodes": [1, 2, 3]
   },
   "network": {
@@ -187,7 +187,7 @@ docker run -d \
 {
   "node": {
     "node_id": 3,
-    "data_dir": "/var/lib/dlog",
+    "data_dir": "/var/lib/pyralog",
     "cluster_nodes": [1, 2, 3]
   },
   "network": {
@@ -199,7 +199,7 @@ docker run -d \
 
 #### Systemd Service
 
-Create `/etc/systemd/system/dlog.service`:
+Create `/etc/systemd/system/pyralog.service`:
 ```ini
 [Unit]
 Description=Pyralog Distributed Log Service
@@ -207,9 +207,9 @@ After=network.target
 
 [Service]
 Type=simple
-User=dlog
-Group=dlog
-ExecStart=/usr/local/bin/dlog --config /etc/dlog/config.json
+User=pyralog
+Group=pyralog
+ExecStart=/usr/local/bin/pyralog --config /etc/pyralog/config.json
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=1048576
@@ -222,21 +222,21 @@ WantedBy=multi-user.target
 Enable and start:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable dlog
-sudo systemctl start dlog
-sudo systemctl status dlog
+sudo systemctl enable pyralog
+sudo systemctl start pyralog
+sudo systemctl status pyralog
 ```
 
 ## Configuration
 
 ### Configuration File
 
-Full example (`/etc/dlog/config.json`):
+Full example (`/etc/pyralog/config.json`):
 ```json
 {
   "node": {
     "node_id": 1,
-    "data_dir": "/var/lib/dlog",
+    "data_dir": "/var/lib/pyralog",
     "cluster_nodes": [1, 2, 3]
   },
   "network": {
@@ -270,10 +270,10 @@ Full example (`/etc/dlog/config.json`):
 ### Environment Variables
 
 ```bash
-DLOG_NODE_ID=1
-DLOG_DATA_DIR=/var/lib/dlog
-DLOG_LISTEN_ADDRESS=0.0.0.0:9092
-DLOG_CLUSTER_NODES=1,2,3
+PYRALOG_NODE_ID=1
+PYRALOG_DATA_DIR=/var/lib/pyralog
+PYRALOG_LISTEN_ADDRESS=0.0.0.0:9092
+PYRALOG_CLUSTER_NODES=1,2,3
 RUST_LOG=info
 ```
 
@@ -311,13 +311,13 @@ Key metrics to monitor:
 
 Configure logging levels:
 ```bash
-RUST_LOG=dlog=info,dlog::storage=debug
+RUST_LOG=pyralog=info,pyralog::storage=debug
 ```
 
 Log locations:
-- System logs: `/var/log/dlog/dlog.log`
-- Audit logs: `/var/log/dlog/audit.log`
-- Error logs: `/var/log/dlog/error.log`
+- System logs: `/var/log/pyralog/pyralog.log`
+- Audit logs: `/var/log/pyralog/audit.log`
+- Error logs: `/var/log/pyralog/error.log`
 
 ### Health Checks
 
@@ -339,28 +339,28 @@ curl http://localhost:9092/partitions/0/status
 #### Full Backup
 ```bash
 # Stop node
-sudo systemctl stop dlog
+sudo systemctl stop pyralog
 
 # Backup data directory
-sudo tar -czf dlog-backup-$(date +%Y%m%d).tar.gz /var/lib/dlog/
+sudo tar -czf pyralog-backup-$(date +%Y%m%d).tar.gz /var/lib/pyralog/
 
 # Copy to backup location
-sudo cp dlog-backup-*.tar.gz /backup/
+sudo cp pyralog-backup-*.tar.gz /backup/
 
 # Start node
-sudo systemctl start dlog
+sudo systemctl start pyralog
 ```
 
 #### Incremental Backup
 ```bash
 # Backup only new segments
 rsync -av --include='*.log' --include='*.index' \
-  /var/lib/dlog/ /backup/dlog-incremental/
+  /var/lib/pyralog/ /backup/pyralog-incremental/
 ```
 
 #### Cloud Backup (S3)
 ```bash
-aws s3 sync /var/lib/dlog/ s3://my-bucket/dlog-backups/node-1/
+aws s3 sync /var/lib/pyralog/ s3://my-bucket/pyralog-backups/node-1/
 ```
 
 ### Disaster Recovery
@@ -368,14 +368,14 @@ aws s3 sync /var/lib/dlog/ s3://my-bucket/dlog-backups/node-1/
 #### Restore from Backup
 ```bash
 # Stop node
-sudo systemctl stop dlog
+sudo systemctl stop pyralog
 
 # Restore data
-sudo rm -rf /var/lib/dlog/*
-sudo tar -xzf dlog-backup-20250101.tar.gz -C /
+sudo rm -rf /var/lib/pyralog/*
+sudo tar -xzf pyralog-backup-20250101.tar.gz -C /
 
 # Start node
-sudo systemctl start dlog
+sudo systemctl start pyralog
 ```
 
 #### Partition Recovery
@@ -405,17 +405,17 @@ If a partition loses all replicas:
 
 3. **Restart existing nodes** (one at a time)
    ```bash
-   sudo systemctl restart dlog
+   sudo systemctl restart pyralog
    ```
 
 4. **Start new node**
    ```bash
-   sudo systemctl start dlog
+   sudo systemctl start pyralog
    ```
 
 5. **Rebalance partitions**
    ```bash
-   dlog-admin rebalance --cluster localhost:9092
+   pyralog-admin rebalance --cluster localhost:9092
    ```
 
 ### Removing Nodes
@@ -424,7 +424,7 @@ If a partition loses all replicas:
 2. **Wait for replication** to complete
 3. **Stop node**
    ```bash
-   sudo systemctl stop dlog
+   sudo systemctl stop pyralog
    ```
 4. **Update cluster configuration** on remaining nodes
 5. **Remove from monitoring**
@@ -503,10 +503,10 @@ curl http://localhost:9092/replication/status
 
 ```bash
 # Enable debug logging
-RUST_LOG=debug dlog --config config.json
+RUST_LOG=debug pyralog --config config.json
 
 # Enable trace logging
-RUST_LOG=trace dlog --config config.json
+RUST_LOG=trace pyralog --config config.json
 ```
 
 ### Support Information

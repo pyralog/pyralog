@@ -1,16 +1,16 @@
 //! Kafka protocol compatibility layer
 //!
 //! This module provides Kafka wire protocol compatibility,
-//! allowing existing Kafka clients to work with DLog.
+//! allowing existing Kafka clients to work with Pyralog.
 
 use pyralog_core::{LogId, PartitionId};
 
-/// Map Kafka topic to DLog LogId
+/// Map Kafka topic to Pyralog LogId
 pub fn kafka_topic_to_log_id(topic: &str) -> LogId {
     LogId::new("kafka", topic)
 }
 
-/// Map DLog LogId to Kafka topic
+/// Map Pyralog LogId to Kafka topic
 pub fn log_id_to_kafka_topic(log_id: &LogId) -> String {
     if log_id.namespace == "kafka" {
         log_id.name.clone()
@@ -81,15 +81,15 @@ pub enum KafkaErrorCode {
     NotEnoughReplicasAfterAppend = 20,
 }
 
-impl From<&pyralog_core::DLogError> for KafkaErrorCode {
-    fn from(error: &pyralog_core::DLogError) -> Self {
+impl From<&pyralog_core::PyralogError> for KafkaErrorCode {
+    fn from(error: &pyralog_core::PyralogError) -> Self {
         match error {
-            pyralog_core::DLogError::InvalidOffset(_) => KafkaErrorCode::OffsetOutOfRange,
-            pyralog_core::DLogError::LogNotFound(_) => KafkaErrorCode::UnknownTopicOrPartition,
-            pyralog_core::DLogError::LeaderNotAvailable => KafkaErrorCode::LeaderNotAvailable,
-            pyralog_core::DLogError::NotLeader(_) => KafkaErrorCode::NotLeaderForPartition,
-            pyralog_core::DLogError::Timeout => KafkaErrorCode::RequestTimedOut,
-            pyralog_core::DLogError::QuorumNotAvailable => KafkaErrorCode::NotEnoughReplicas,
+            pyralog_core::PyralogError::InvalidOffset(_) => KafkaErrorCode::OffsetOutOfRange,
+            pyralog_core::PyralogError::LogNotFound(_) => KafkaErrorCode::UnknownTopicOrPartition,
+            pyralog_core::PyralogError::LeaderNotAvailable => KafkaErrorCode::LeaderNotAvailable,
+            pyralog_core::PyralogError::NotLeader(_) => KafkaErrorCode::NotLeaderForPartition,
+            pyralog_core::PyralogError::Timeout => KafkaErrorCode::RequestTimedOut,
+            pyralog_core::PyralogError::QuorumNotAvailable => KafkaErrorCode::NotEnoughReplicas,
             _ => KafkaErrorCode::NetworkException,
         }
     }
