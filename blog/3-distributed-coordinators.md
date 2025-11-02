@@ -161,9 +161,9 @@ Result:       DUPLICATE ID! ✗
 
 For DLog's exactly-once semantics, duplicate IDs break correctness.
 
-## The Solution: Snowflake + Sparse Append Counter
+## The Solution: Snowflake + Obelisk Sequencer
 
-Combine Snowflake IDs with our Sparse Append Counter (from the previous post):
+Combine Snowflake IDs with our Obelisk Sequencer (from the previous post):
 
 ```rust
 pub struct SnowflakeGenerator {
@@ -187,7 +187,7 @@ impl SnowflakeGenerator {
 }
 ```
 
-**After crash**: The Sparse Append Counter recovers instantly, sequence continues from where it left off.
+**After crash**: The Obelisk Sequencer recovers instantly, sequence continues from where it left off.
 
 **Result**: No duplicate IDs, ever. Exactly-once semantics preserved.
 
@@ -593,7 +593,7 @@ If a coordinator needs more:
 
 ### 3. Requires Modern NVMe
 
-Sparse Append Counter relies on fast fsync (~1-2µs).
+Obelisk Sequencer relies on fast fsync (~1-2µs).
 
 On slow disks (SATA SSD: 1-10ms), throughput drops to 100-1000 ops/sec per coordinator.
 
@@ -605,7 +605,7 @@ On slow disks (SATA SSD: 1-10ms), throughput drops to 100-1000 ops/sec per coord
 
 By combining:
 1. **Snowflake IDs** (distributed unique ID generation)
-2. **Sparse Append Counters** (crash-safe persistent counters)
+2. **Obelisk Sequencers** (crash-safe persistent counters)
 3. **Client-side routing** (hash-based coordinator selection)
 
 We've eliminated **every centralized coordinator** in DLog.

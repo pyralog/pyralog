@@ -93,7 +93,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 - [PAPER.md](PAPER.md) ⭐ **Academic research paper**
   - Abstract and contributions
   - Background and related work survey
-  - Novel coordination primitives (Sparse Append Counter)
+  - Novel coordination primitives (Obelisk Sequencer)
   - Distributed coordinators via Snowflake IDs
   - Dual Raft architecture
   - Configurable CopySet strategies
@@ -135,7 +135,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
   - Ordering guarantees
   - Performance characteristics
   - Best practices
-  - **Sparse Append Counter pattern** (novel primitive) ⭐
+  - **Obelisk Sequencer pattern** (novel primitive) ⭐
     - **Persistent atomic counter** - Like `AtomicU64`, but crash-safe!
     - General-purpose building block for durable counters
     - Detailed comparison with mmap (performance, durability, scalability)
@@ -147,7 +147,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - **Use Case Deep Dive: Snowflake IDs**
       - Twitter's distributed ID generator algorithm
       - 64-bit structure (timestamp + machine ID + sequence)
-      - How Sparse Append Counter prevents duplicate IDs
+      - How Obelisk Sequencer prevents duplicate IDs
       - 10 real-world use cases (Twitter, Discord, Instagram, etc.)
       - Discord message example with code
       - Variants (ULID, Instagram, MongoDB ObjectId)
@@ -501,7 +501,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Actor introspection
     - Time-travel debugging
   - **DLog Native Integration**
-    - Snowflake IDs, Sparse Append Counters
+    - Snowflake IDs, Obelisk Sequencers
     - Merkle tree verification
     - Multi-model queries (SQL, Cypher, SPARQL, JSONPath)
     - Tensor operations, cryptographic primitives
@@ -516,7 +516,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
   - **DLog's Architectural Advantages** (new section)
-    - Sparse Append Counter primitive
+    - Obelisk Sequencer primitive
     - Dual Raft clusters
     - Smart client pattern
     - Per-record CopySet optimization
@@ -546,10 +546,10 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
     - Complete end-to-end examples
     - Performance benchmarks (10-100x faster than JVM)
     - State management with DLog changelog
-  - Schema registry (Sparse Append Counter for schema IDs)
-  - Consumer groups (Sparse Append Counter for generations)
+  - Schema registry (Obelisk Sequencer for schema IDs)
+  - Consumer groups (Obelisk Sequencer for generations)
   - Connectors framework
-  - Change data capture (Sparse Append Counter for event IDs)
+  - Change data capture (Obelisk Sequencer for event IDs)
   - Multi-DC replication
   - **Time-travel queries** ⭐ **NEW: Hybrid Sparse + Arrow DataFusion index**
     - Two-tier indexing (segment stats + sparse checkpoints)
@@ -801,7 +801,7 @@ DLog unifies cryptographic verification, actor-based concurrency, functional pro
 ### "I want to understand DLog's research contributions"
 1. Read [PAPER.md](PAPER.md) ⭐ - comprehensive research paper
 2. Study [ARCHITECTURE.md](ARCHITECTURE.md) for architectural innovations
-3. Review [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Sparse Append Counter details
+3. Review [CLIENT_PARTITIONING_PATTERNS.md](CLIENT_PARTITIONING_PATTERNS.md) for Obelisk Sequencer details
 4. Check [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) for distributed coordinators pattern
 5. Read [TIKV_COMPARISON.md](TIKV_COMPARISON.md) and [COMPARISON.md](COMPARISON.md) for performance comparisons
 

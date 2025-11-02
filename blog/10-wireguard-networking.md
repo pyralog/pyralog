@@ -587,7 +587,7 @@ let result = client.query("SELECT * FROM users").await?;
 
 This concludes our 10-part blog series on DLog. We've covered:
 
-1. **Novel coordination primitives** (Sparse Append Counter)
+1. **Novel coordination primitives** (Obelisk Sequencer)
 2. **Distributed coordinators** (eliminating bottlenecks)
 3. **28+ billion operations per second** (architectural deep-dive)
 4. **Building in Rust** (lessons learned)

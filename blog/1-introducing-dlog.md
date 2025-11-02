@@ -74,7 +74,7 @@ Most distributed systems face fundamental bottlenecks:
 
 DLog eliminates these bottlenecks through three core innovations:
 
-### 1. The Sparse Append Counter
+### 1. The Obelisk Sequencer
 
 A novel primitive for crash-safe, persistent atomic counters that enables:
 - Monotonic ID generation without coordination
@@ -93,7 +93,7 @@ Traditional systems have centralized coordinators:
 
 These become bottlenecks at scale.
 
-DLog eliminates ALL centralized coordinators by distributing them using Snowflake-style IDs + Sparse Append Counters:
+DLog eliminates ALL centralized coordinators by distributing them using Snowflake-style IDs + Obelisk Sequencers:
 
 ```
 Traditional: 1 coordinator → 500K ops/sec (bottleneck!)
@@ -295,7 +295,7 @@ We're open-sourcing DLog under MIT-0 (code) and CC0-1.0 (documentation) licenses
 
 **Coming in the next blog posts:**
 1. ✅ Introducing DLog (this post)
-2. **The Sparse Append Counter** - How we built a crash-safe persistent atomic primitive
+2. **The Obelisk Sequencer** - How we built a crash-safe persistent atomic primitive
 3. **Distributed Coordinators Without Consensus** - Eliminating bottlenecks through Snowflake IDs
 4. **28 Billion Operations Per Second** - Architectural deep-dive
 5. **Building Modern Data Infrastructure in Rust** - Lessons learned
