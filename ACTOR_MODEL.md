@@ -4274,39 +4274,44 @@ let (tx, rx) = mpsc::channel(1000); // Bounded to 1000 messages
 
 6. **Roestenburg, R., Bakker, R., & Williams, R.** (2016). *Akka in Action*. Manning Publications.
 
+### Pyralog Ecosystem
+
+7. **shared-nothing** (2025). *Shared-Nothing Architecture Library for Rust*. https://github.com/pyralog/shared-nothing  
+   Actor model, worker pools, lock-free channels, high-performance message passing (~80ns SPSC latency, 12M msg/sec)
+
 ### Reactive Streams
 
-7. **Reactive Streams Specification** (2015). http://www.reactive-streams.org/
+8. **Reactive Streams Specification** (2015). http://www.reactive-streams.org/
 
-8. **Kuhn, R.** (2016). *Reactive Design Patterns*. Manning Publications.
+9. **Kuhn, R.** (2016). *Reactive Design Patterns*. Manning Publications.
 
 ### Session Types
 
-9. **Honda, K.** (1993). *Types for dyadic interaction*. CONCUR.
+10. **Honda, K.** (1993). *Types for dyadic interaction*. CONCUR.
 
-10. **Vasconcelos, V., et al.** (2006). *Session Types for Functional Multithreading*. CONCUR.
+11. **Vasconcelos, V., et al.** (2006). *Session Types for Functional Multithreading*. CONCUR.
 
 ### Stella: Actor-Reactor Model
 
-11. **Van den Vonder, S., Renaux, T., Oeyen, B., De Koster, J., & De Meuter, W.** (2020). *Tackling the Awkward Squad for Reactive Programming: The Actor-Reactor Model*. 34th European Conference on Object-Oriented Programming (ECOOP 2020). LIPIcs, Vol. 166, 19:1-19:29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2020.19 | arXiv: https://arxiv.org/abs/2306.12313
+12. **Van den Vonder, S., Renaux, T., Oeyen, B., De Koster, J., & De Meuter, W.** (2020). *Tackling the Awkward Squad for Reactive Programming: The Actor-Reactor Model*. 34th European Conference on Object-Oriented Programming (ECOOP 2020). LIPIcs, Vol. 166, 19:1-19:29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2020.19 | arXiv: https://arxiv.org/abs/2306.12313
 
-12. **Van den Vonder, S., Renaux, T., & De Meuter, W.** (2022). *Topology-Level Reactivity in Distributed Reactive Programs: Reactive Acquaintance Management using Flocks*. The Art, Science, and Engineering of Programming, Vol. 6, Issue 3, Article 14. DOI: https://doi.org/10.22152/programming-journal.org/2022/6/14 | arXiv: https://arxiv.org/abs/2202.09228
+13. **Van den Vonder, S., Renaux, T., & De Meuter, W.** (2022). *Topology-Level Reactivity in Distributed Reactive Programs: Reactive Acquaintance Management using Flocks*. The Art, Science, and Engineering of Programming, Vol. 6, Issue 3, Article 14. DOI: https://doi.org/10.22152/programming-journal.org/2022/6/14 | arXiv: https://arxiv.org/abs/2202.09228
 
 ### Capability-Based Security
 
-13. **Miller, M.** (2006). *Robust Composition: Towards a Unified Approach to Access Control and Concurrency Control*. PhD thesis, Johns Hopkins University.
+14. **Miller, M.** (2006). *Robust Composition: Towards a Unified Approach to Access Control and Concurrency Control*. PhD thesis, Johns Hopkins University.
 
-14. **Miller, M., Yee, K., & Shapiro, J.** (2003). *Capability Myths Demolished*. Technical Report SRL2003-02.
+15. **Miller, M., Yee, K., & Shapiro, J.** (2003). *Capability Myths Demolished*. Technical Report SRL2003-02.
 
-15. **E Language** (2000). *Capability-based security*. http://www.erights.org/
+16. **E Language** (2000). *Capability-based security*. http://www.erights.org/
 
 ### Actor Languages with Capabilities
 
-16. **Clebsch, S., et al.** (2015). *Deny Capabilities for Safe, Fast Actors*. AGERE! Workshop.
+17. **Clebsch, S., et al.** (2015). *Deny Capabilities for Safe, Fast Actors*. AGERE! Workshop.
 
-17. **Clebsch, S., & Drossopoulou, S.** (2016). *Fully concurrent garbage collection of actors on many-core machines*. OOPSLA.
+18. **Clebsch, S., & Drossopoulou, S.** (2016). *Fully concurrent garbage collection of actors on many-core machines*. OOPSLA.
 
-18. **Pony Language**: https://www.ponylang.io/ - Reference capabilities for data-race freedom.
+19. **Pony Language**: https://www.ponylang.io/ - Reference capabilities for data-race freedom.
 
 ---
 
@@ -4315,7 +4320,7 @@ let (tx, rx) = mpsc::channel(1000); // Bounded to 1000 messages
 - Words: ~28,000
 - Sections: 18 main
 - Code examples: 80+
-- References: 19
+- References: 20 (includes shared-nothing library)
 
 ---
 

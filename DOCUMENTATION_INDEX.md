@@ -1264,6 +1264,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 - [LogDevice Paper](https://engineering.fb.com/2017/08/31/core-infra/logdevice-a-distributed-data-store-for-logs/)
 
 ### Related Projects
+
+**Pyralog Ecosystem**:
+- [shared-nothing](https://github.com/pyralog/shared-nothing) - Shared-nothing architecture library for Rust: actor model, worker pools, lock-free channels, high-performance message passing (~80ns SPSC latency, 12M msg/sec throughput)
+
+**External Projects**:
 - [Redpanda](https://redpanda.com/)
 - [Apache Kafka](https://kafka.apache.org/)
 - [LogDevice](https://logdevice.io/)

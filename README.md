@@ -859,6 +859,9 @@ Pyralog builds upon groundbreaking work from many projects:
 - [Pony](https://www.ponylang.io/) - Deny capabilities, reference capabilities
 - [E Language](http://www.erights.org/) - Object-capability security model
 
+### Pyralog Libraries
+- [shared-nothing](https://github.com/pyralog/shared-nothing) - Shared-nothing architecture library for Rust with actor model, worker pools, and high-performance message passing
+
 ### Programming Languages
 - [Clojure](https://clojure.org/) - Lisp on JVM, persistent data structures, REPL-driven development
 - [Elixir](https://elixir-lang.org/) - Actor model, pattern matching, pipe operators, fault tolerance
