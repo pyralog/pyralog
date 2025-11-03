@@ -146,29 +146,28 @@ min_in_sync_replicas = 2
    - Timestamp service (distributed TSO)
    - Cluster-wide coordination primitives
 
-3. **Lightweight Consensus**
-   - Raft for counter allocation (small metadata only)
-   - Only stores coordination metadata
-   - No data segments or indexes
-   - Fast failover (<100ms)
+3. **No Consensus Required**
+   - Each node has unique node_id
+   - Counters are local to each node (sparse files)
+   - No coordination needed between Obelisk nodes
+   - Truly decentralized ID generation
 
 ### Architecture
 
 ```rust
 pub struct ObeliskNode {
     /// Node ID (unique in Pharaoh Network)
+    /// Used in Scarab IDs - no coordination needed!
     node_id: NodeId,
     
     /// Crash-safe atomic counters (sparse files)
+    /// Each counter is local to this node
     counters: HashMap<CounterId, AtomicCounter>,
-    
-    /// Raft consensus for counter allocation
-    raft: RaftNode,
     
     /// Counter cache (hot counters)
     cache: LruCache<CounterId, Counter>,
     
-    /// Sparse file storage
+    /// Sparse file storage directory
     storage_dir: PathBuf,
 }
 
@@ -191,7 +190,7 @@ pub struct AtomicCounter {
 
 ```toml
 [obelisk]
-node_id = "obelisk-1"
+node_id = "obelisk-1"  # Unique ID for this node (used in Scarab IDs)
 listen_addr = "0.0.0.0:7070"
 data_dir = "/var/lib/pharaoh/counters"
 
@@ -199,11 +198,8 @@ data_dir = "/var/lib/pharaoh/counters"
 counter_file_size = "1TB"  # Sparse, doesn't use actual space
 fsync_on_increment = false  # Trust OS page cache
 
-# Raft (small cluster)
-raft_election_timeout_ms = 100
-raft_heartbeat_interval_ms = 30
-
-# No data segments - only counters!
+# No Raft needed - coordination-free!
+# Each node independently increments its own counters
 ```
 
 ---
@@ -226,7 +222,12 @@ Provides **distributed coordination primitives** without being a bottleneck:
    - Instant recovery (memory-map existing file)
    - No replay needed
 
-3. **High Throughput**
+3. **Coordination-Free**
+   - No Raft or consensus between Obelisk nodes
+   - Each node has unique node_id
+   - Truly decentralized operation
+
+4. **High Throughput**
    - 4B+ operations/sec across network
    - ~1-2μs per counter increment
    - Minimal latency overhead
@@ -263,10 +264,10 @@ Key:
 | **Data Storage** | ✅ Sparse files (counters) | ✅ LSM trees (user data) |
 | **ID Generation** | ✅ Yes (Scarab IDs) | ❌ Request from Obelisk |
 | **Query Execution** | ❌ No | ✅ Yes (reads/writes) |
-| **Consensus** | ✅ Small Raft (metadata only) | ✅ Large Raft (per partition) |
+| **Consensus** | ❌ No (coordination-free) | ✅ Yes (Raft per partition) |
 | **Actor System** | ❌ No | ✅ Yes |
 | **Resource Usage** | Low (MB memory, sparse files) | High (GB memory, TB disk) |
-| **Scaling** | Horizontal (lightweight) | Horizontal (heavy) |
+| **Scaling** | Horizontal (add nodes freely) | Horizontal (add nodes freely) |
 
 ---
 
@@ -511,7 +512,7 @@ pub struct ObeliskNode {
 | **Size** | Small (MB memory) | Large (GB memory, TB disk) |
 | **Throughput** | 4B+ ops/sec | 500M writes/sec |
 | **State** | Atomic counters (sparse files) | Data segments (LSM trees) |
-| **Consensus** | Small Raft (metadata) | Large Raft (per partition) |
+| **Consensus** | ❌ None (coordination-free) | ✅ Raft (per partition) |
 | **Scaling** | Independent | Independent |
 
 **The key insight**: Separate coordination storage (Obelisk sparse files) from user data storage (Pyramid LSM trees) for optimal scalability, resource efficiency, and operational simplicity.
