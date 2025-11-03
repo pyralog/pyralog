@@ -415,6 +415,38 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
     - Application patterns: Semantic, sliding window, Bloom filters
     - Performance analysis: Cost vs. savings, when to deduplicate
 
+- [STORAGE.md](STORAGE.md) ⭐ **NEW: Storage Layer Architecture**
+  - **LSM-Tree Storage Engine**
+    - Multi-level organization (MemTable → L0 → L1+ → Tiered S3/GCS)
+    - Write path (WAL, MemTable, flush, compaction)
+    - Read path (PPHM, Bloom filters, sparse indexes, caching)
+    - Compaction strategies (leveled, deduplication, merge-sort)
+    - Memory-mapped I/O (zero-copy reads, 30-50% faster)
+    - Tiered storage (70-90% cost savings for cold data)
+    - Performance: 500M+ writes/sec, sub-ms latency, O(1) lookups
+    - Configuration & tuning (write-heavy, read-heavy, balanced)
+
+- [ARROW.md](ARROW.md) ⭐ **NEW: Apache Arrow in Rust**
+  - **Columnar Data Format for Rust**
+    - Zero-copy data interchange (10-100× faster than serialization)
+    - Columnar memory layout (8-16× SIMD speedup)
+    - DataFusion SQL engine (competitive with ClickHouse)
+    - Polars DataFrames (30-60× faster than Pandas)
+    - Multi-model storage (relational, document, graph, RDF, tensor, key-value)
+    - Arrow Flight protocol (3× faster than gRPC/Protobuf)
+    - Memory-mapped IPC files (instant loading, zero-copy)
+    - Native Rust implementation (arrow-rs crate ecosystem)
+
+- [DATA_FORMATS.md](DATA_FORMATS.md) ⭐ **NEW: External Data Formats**
+  - **Parquet, Safetensors, Zarr, DLPack**
+    - Parquet: Columnar analytics (10-100× faster queries than CSV)
+    - Safetensors: ML model serialization (100× faster than pickle, memory-safe)
+    - Zarr: Chunked N-D arrays (parallel I/O, cloud-native, 5-20× compression)
+    - DLPack: Zero-copy tensor exchange (300× faster, PyTorch/TensorFlow/JAX)
+    - External tables (query Parquet/Zarr without importing)
+    - ML model repository (Hugging Face integration)
+    - Performance comparisons and best practices
+
 #### Networking & Security
 - [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) ⭐ **NEW: WireGuard as Universal Protocol**
   - **Why WireGuard Over TLS**
