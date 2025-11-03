@@ -8,6 +8,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 
 ### Getting Started
 - **[README](README.md)** - Project overview, features, quick introduction
+- **[DOCUMENTATION_STATISTICS](DOCUMENTATION_STATISTICS.md)** 📊 - **Complete documentation statistics** (144 files, 94K lines, 328K words)
 - **[QUICK_START](QUICK_START.md)** - Get running in 5 minutes
 - **[FAQ](FAQ.md)** - Frequently asked questions
 

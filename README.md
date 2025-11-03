@@ -12,7 +12,7 @@ IMPORTANT: Project in research and design phase. Drafts only. It feels like I'm 
 [![Paper](https://img.shields.io/badge/research-paper-brightgreen.svg)](PAPER.md)
 [![Batuta](https://img.shields.io/badge/language-Batuta-purple.svg)](BATUTA.md)
 [![WASM](https://img.shields.io/badge/target-WebAssembly-blueviolet.svg)](BATUTA.md#2-webassembly-wasm)
-[![Docs](https://img.shields.io/badge/docs-74k%20lines-success.svg)](DOCUMENTATION_INDEX.md)
+[![Docs](https://img.shields.io/badge/docs-94k%20lines-success.svg)](DOCUMENTATION_STATISTICS.md)
 [![Quantum Ready](https://img.shields.io/badge/quantum-resistant-red.svg)](WIREGUARD_PROTOCOL.md#quantum-resistance)
 
 ## What is Pyralog?
