@@ -7,18 +7,19 @@
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [LSM-Tree Architecture](#lsm-tree-architecture)
-3. [Hybrid Storage: Native vs External](#hybrid-storage-native-vs-external)
-4. [Write Path](#write-path)
-5. [Read Path](#read-path)
-6. [Compaction](#compaction)
-7. [Indexes](#indexes)
-8. [Tiered Storage](#tiered-storage)
-9. [Memory-Mapped I/O](#memory-mapped-io)
-10. [Data Format](#data-format)
-11. [Performance Characteristics](#performance-characteristics)
-12. [Configuration & Tuning](#configuration--tuning)
-13. [Best Practices](#best-practices)
+2. [Storage Modes](#storage-modes)
+3. [LSM-Tree Architecture](#lsm-tree-architecture)
+4. [Hybrid Storage: Native vs External](#hybrid-storage-native-vs-external)
+5. [Write Path](#write-path)
+6. [Read Path](#read-path)
+7. [Compaction](#compaction)
+8. [Indexes](#indexes)
+9. [Tiered Storage](#tiered-storage)
+10. [Memory-Mapped I/O](#memory-mapped-io)
+11. [Data Format](#data-format)
+12. [Performance Characteristics](#performance-characteristics)
+13. [Configuration & Tuning](#configuration--tuning)
+14. [Best Practices](#best-practices)
 
 ---
 
@@ -82,6 +83,114 @@ Pyralog uses a **hybrid storage architecture** combining LSM-Tree for hot data w
 6. **Lazy Merging**: Background compaction merges and deduplicates
 7. **Index Diversity**: PPHM for L0, Bloom filters for L1+, sparse for cold data
 8. **External Files**: No compaction needed, mmap on access
+
+---
+
+## Storage Modes
+
+Pyralog supports three storage modes, each optimized for different workloads:
+
+### 1. Persistent Mode (Default)
+
+**Use case**: Production workloads requiring durability
+
+```rust
+StorageConfig {
+    mode: StorageMode::Persistent,
+    wal_enabled: true,
+    fsync_policy: SyncPolicy::Interval(Duration::from_millis(10)),
+    ..Default::default()
+}
+```
+
+**Characteristics**:
+- ✅ Full durability (survives crashes)
+- ✅ WAL + fsync for crash recovery
+- ✅ Disk-limited capacity (TBs)
+- ✅ Hybrid storage (LSM + external files)
+- ⚠️ Write latency: p99 < 1ms
+- ⚠️ Startup: 30s recovery time
+
+**Best for**: Financial transactions, user data, audit logs, regulatory compliance
+
+---
+
+### 2. Memory-Only Mode
+
+**Use case**: Ephemeral data, testing, caching, real-time analytics
+
+```rust
+StorageConfig {
+    mode: StorageMode::MemoryOnly,
+    max_memory_bytes: 32 * 1024 * 1024 * 1024, // 32GB
+    eviction_policy: EvictionPolicy::LRU,
+    ..Default::default()
+}
+```
+
+**Characteristics**:
+- ⚡ **10-100× faster** writes (no disk I/O)
+- ⚡ **Sub-microsecond** latency (pure RAM)
+- ⚡ **Instant startup** (<100ms, no recovery)
+- ❌ No durability (lost on crash)
+- ⚠️ RAM-limited capacity (GBs)
+- ✅ Optional snapshots for recovery
+
+**Best for**: Testing/CI, caching, temporary state, streaming pipelines, development
+
+📖 **See [MEMORY_ONLY_MODE.md](MEMORY_ONLY_MODE.md) for comprehensive guide**
+
+**Performance comparison**:
+
+| Operation | Persistent | Memory-Only | Speedup |
+|-----------|-----------|-------------|---------|
+| Write (single) | 500K/sec | 50M/sec | **100×** |
+| Write (batch) | 15M/sec | 500M/sec | **33×** |
+| Read (single) | 3M/sec | 100M/sec | **33×** |
+| Read (sequential) | 45M/sec | 2B/sec | **44×** |
+| Startup | 30s | <100ms | **300×** |
+
+---
+
+### 3. Hybrid Mode
+
+**Use case**: Hot/cold tiering, cost optimization
+
+```rust
+StorageConfig {
+    mode: StorageMode::Hybrid {
+        memory_ttl: Duration::from_secs(3600), // 1 hour in memory
+        disk_after: Duration::from_secs(3600), // then flush to disk
+    },
+    tiered_storage: TieredStorageConfig {
+        local_disk: true,
+        s3_archive: Some(S3Config { /* ... */ }),
+    },
+    ..Default::default()
+}
+```
+
+**Characteristics**:
+- ✅ Best of both worlds (speed + durability)
+- ✅ Hot data in memory (fast access)
+- ✅ Cold data on disk/S3 (cost-effective)
+- ✅ Automatic tiering based on age/access
+- ✅ Graceful degradation (memory → disk → S3)
+
+**Best for**: Mixed workloads, cost optimization, gradual data aging
+
+---
+
+### Mode Comparison
+
+| Feature | Persistent | Memory-Only | Hybrid |
+|---------|-----------|-------------|--------|
+| **Durability** | ✅ Full | ❌ None | ✅ Configurable |
+| **Write latency** | 1ms | 15μs | 15μs → 1ms |
+| **Capacity** | Disk (TBs) | RAM (GBs) | RAM + Disk |
+| **Startup** | 30s | <100ms | <100ms |
+| **Cost/GB/mo** | $0.02 (SSD) | $3 (RAM) | Mixed |
+| **Use case** | Production | Testing/Cache | Hot/Cold |
 
 ---
 
@@ -1322,8 +1431,11 @@ Pyralog's LSM-based storage engine delivers:
 
 ### Next Steps
 
+- 📖 [MEMORY_ONLY_MODE.md](MEMORY_ONLY_MODE.md) - Ultra-fast ephemeral storage (10-100× faster)
 - 📖 [DEDUPLICATION.md](DEDUPLICATION.md) - Multi-layer deduplication strategies
 - 📖 [PPHM.md](PPHM.md) - Perfect hash map indexes
+- 📖 [ARROW.md](ARROW.md) - Apache Arrow integration
+- 📖 [DATA_FORMATS.md](DATA_FORMATS.md) - External formats (Parquet, Safetensors, Zarr)
 - 📖 [PERFORMANCE.md](PERFORMANCE.md) - Performance tuning guide
 - 📖 [OPERATIONS.md](OPERATIONS.md) - Operational best practices
 - 📊 [diagrams/lsm-storage.mmd](diagrams/lsm-storage.mmd) - Visual architecture

@@ -2,6 +2,8 @@
 
 **Ultra-fast ephemeral storage for testing, caching, and real-time workloads**
 
+> **Note**: This document covers **Memory-Only Mode** for Pyralog, which eliminates all disk I/O for 10-100× performance gains. For persistent storage with durability, see [STORAGE.md](STORAGE.md). For hybrid approaches, see the **Hybrid Mode** section in [STORAGE.md](STORAGE.md#3-hybrid-mode).
+
 ---
 
 ## Table of Contents
@@ -511,6 +513,14 @@ let pending = pyralog.query_sql(r#"
 
 ### Memory Layout
 
+Memory-Only Mode uses the same LSM-Tree architecture as Persistent Mode (see [STORAGE.md](STORAGE.md)), but **completely eliminates disk I/O**:
+
+- ✅ No WAL (Write-Ahead Log)
+- ✅ No fsync operations
+- ✅ No segment flushing to disk
+- ✅ No compaction to disk
+- ✅ Optional periodic snapshots only
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                   Memory-Only Pyralog                       │
@@ -520,7 +530,7 @@ let pending = pyralog.query_sql(r#"
 │  │  Partition 0 (RAM)                                 │  │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌───────────┐ │  │
 │  │  │ Arrow Batch │  │ Arrow Batch │  │   Index   │ │  │
-│  │  │   (1MB)     │  │   (1MB)     │  │  (Sparse) │ │  │
+│  │  │   (1MB)     │  │   (1MB)     │  │  (PPHM)   │ │  │
 │  │  └─────────────┘  └─────────────┘  └───────────┘ │  │
 │  └───────────────────────────────────────────────────┘  │
 │                                                           │
@@ -536,10 +546,31 @@ let pending = pyralog.query_sql(r#"
 │  │  • Raft state (in-memory)                         │  │
 │  │  • Partition assignments                          │  │
 │  │  • Epoch metadata                                 │  │
+│  │  • PPHM indexes (O(1) lookups)                    │  │
 │  └───────────────────────────────────────────────────┘  │
+│                                                           │
+│  NO DISK I/O:                                             │
+│  ❌ No WAL                                                │
+│  ❌ No fsync                                              │
+│  ❌ No segment flushing                                   │
+│  ✅ Optional snapshots (for recovery)                    │
 │                                                           │
 └─────────────────────────────────────────────────────────┘
 ```
+
+**Key architectural differences** from Persistent Mode:
+
+| Component | Persistent Mode | Memory-Only Mode |
+|-----------|----------------|------------------|
+| **WAL** | ✅ Enabled (durability) | ❌ Disabled |
+| **MemTable** | Flushed to disk | Kept in RAM forever |
+| **L0 Segments** | On disk (SSD/NVMe) | In RAM (pure memory) |
+| **Compaction** | Disk → disk merge | RAM → RAM merge |
+| **Indexes** | PPHM (mmap'd) | PPHM (in-memory) |
+| **Recovery** | WAL replay (30s) | No recovery (<100ms) |
+| **Replication** | Disk + network | Network only |
+
+📖 See [STORAGE.md](STORAGE.md) for the full LSM-Tree architecture explanation.
 
 ### Write Path (Memory-Only)
 
@@ -774,6 +805,44 @@ client.create_log("metrics", LogConfig {
 | **Cost per GB** | $0.02/GB/month (SSD) | $3/GB/month (RAM) |
 | **Replication overhead** | Disk + network | Network only |
 | **Snapshot support** | Built-in | Optional |
+| **External files** | ✅ Supported (Parquet, Safetensors, Zarr) | ✅ Supported (file references only) |
+| **Hybrid storage** | ✅ LSM + external files | ⚠️ RAM only (can reference external) |
+
+### External File Support in Memory-Only Mode
+
+Memory-Only Mode can still reference external files (see [ARROW.md](ARROW.md) and [DATA_FORMATS.md](DATA_FORMATS.md)):
+
+```rust
+// Memory-only mode with external file references
+let config = PyralogConfig {
+    storage: StorageConfig {
+        mode: StorageMode::MemoryOnly,
+        max_memory_bytes: 16 * 1024 * 1024 * 1024, // 16GB RAM
+        
+        // Still supports external file references
+        external_files: ExternalFileConfig {
+            parquet: true,    // Analytics tables
+            safetensors: true, // ML models
+            zarr: true,        // Scientific arrays
+        },
+    },
+    ..Default::default()
+};
+
+// Metadata in RAM, file data memory-mapped on access
+pyralog.create_table("analytics", Schema {
+    storage: DataLocation::External {
+        file_path: "s3://bucket/data.parquet",
+        format: ExternalFormat::Parquet,
+    },
+}).await?;
+```
+
+**Benefits**:
+- ✅ Metadata in RAM (ultra-fast queries)
+- ✅ Data files memory-mapped on demand (zero-copy)
+- ✅ No duplication (files not loaded into RAM)
+- ✅ Best of both worlds (speed + capacity)
 
 ### When to Use Each Mode
 
@@ -808,10 +877,25 @@ Memory-Only Mode provides **10-100× performance improvement** for workloads tha
 
 ## See Also
 
+### Storage & Performance
+- [STORAGE.md](STORAGE.md) - **LSM-Tree architecture & storage modes** (Persistent/Memory-Only/Hybrid)
+- [ARROW.md](ARROW.md) - Apache Arrow columnar format (zero-copy data interchange)
+- [DATA_FORMATS.md](DATA_FORMATS.md) - External formats (Parquet, Safetensors, Zarr, DLPack)
+- [DEDUPLICATION.md](DEDUPLICATION.md) - Multi-layer deduplication strategies
+- [PPHM.md](PPHM.md) - Partitioned Perfect Hash Maps (O(1) lookups)
+
+### Operations & Best Practices
 - [PERFORMANCE.md](PERFORMANCE.md) - Performance tuning guide
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
 - [OPERATIONS.md](OPERATIONS.md) - Deployment best practices
-- [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Tiered storage and caching
+- [QUICK_START.md](QUICK_START.md) - Getting started with Pyralog
+
+### Architecture
+- [NODES.md](NODES.md) - Two-tier node architecture (Obelisk vs Pyramid)
+- [DECENTRALIZED.md](DECENTRALIZED.md) - Cluster vs Network, consensus mechanisms
+- [SHEN_RING.md](SHEN_RING.md) - Unified distributed patterns
+
+### Diagrams
+- [diagrams/](diagrams/) - Visual architecture diagrams (Mermaid)
 
 ---
 
