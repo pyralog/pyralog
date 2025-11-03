@@ -1,0 +1,121 @@
+graph TB
+    subgraph "Supervision Hierarchy - Let It Crash"
+        ROOT[Root Supervisor<br/>System Guardian]
+        
+        subgraph "Cluster Supervisor"
+            CLUSTER_SUP[Cluster Supervisor<br/>Monitors all nodes]
+            NODE1[Node 1 Supervisor]
+            NODE2[Node 2 Supervisor]
+            NODEN[Node N Supervisor]
+        end
+        
+        subgraph "Partition Supervisors (per node)"
+            PART_SUP[Partition Supervisor<br/>Monitors partitions]
+            PART1[Partition Actor 1<br/>Owns data range]
+            PART2[Partition Actor 2<br/>Owns data range]
+            PARTN[Partition Actor N<br/>Owns data range]
+        end
+        
+        subgraph "Worker Actors"
+            READER1[Reader Actor<br/>Consumer sessions]
+            READER2[Reader Actor<br/>Consumer sessions]
+            WRITER1[Writer Actor<br/>Producer sessions]
+            WRITER2[Writer Actor<br/>Producer sessions]
+            COMPACT1[Compaction Actor<br/>Background work]
+            COMPACT2[Compaction Actor<br/>Background work]
+        end
+        
+        subgraph "Service Actors"
+            REPL_MGR[Replication Manager<br/>ISR tracking]
+            GOSSIP_MGR[Gossip Manager<br/>Sundial protocol]
+            RAFT_MGR[Raft Manager<br/>Consensus]
+            METRIC_MGR[Metrics Manager<br/>Observability]
+        end
+    end
+    
+    subgraph "Location Transparency"
+        LOCAL[Local Actor<br/>Same process]
+        REMOTE[Remote Actor<br/>Different node]
+        MESSAGE[Message Send<br/>Transparent location]
+    end
+    
+    subgraph "Topology-Level Reactivity"
+        FLOCK[Flock<br/>Dynamic peer group]
+        DEPLOY[deploy-*<br/>Time-varying collections]
+        SCATTER[scatter<br/>Parallel distribution]
+        GATHER[gather<br/>Result collection]
+    end
+    
+    %% Supervision tree
+    ROOT --> CLUSTER_SUP
+    CLUSTER_SUP --> NODE1
+    CLUSTER_SUP --> NODE2
+    CLUSTER_SUP --> NODEN
+    
+    NODE1 --> PART_SUP
+    PART_SUP --> PART1
+    PART_SUP --> PART2
+    PART_SUP --> PARTN
+    
+    %% Workers under partitions
+    PART1 --> READER1
+    PART1 --> WRITER1
+    PART1 --> COMPACT1
+    
+    PART2 --> READER2
+    PART2 --> WRITER2
+    PART2 --> COMPACT2
+    
+    %% Service actors
+    NODE1 --> REPL_MGR
+    NODE1 --> GOSSIP_MGR
+    NODE1 --> RAFT_MGR
+    NODE1 --> METRIC_MGR
+    
+    %% Location transparency
+    LOCAL -.->|Same address space| MESSAGE
+    REMOTE -.->|Network RPC| MESSAGE
+    MESSAGE --> PART1
+    
+    %% Topology reactivity
+    FLOCK --> DEPLOY
+    DEPLOY --> SCATTER
+    SCATTER --> PART1
+    SCATTER --> PART2
+    SCATTER --> PARTN
+    PARTN --> GATHER
+    PART2 --> GATHER
+    PART1 --> GATHER
+    
+    %% Failure and restart
+    PART1 -.->|Crash| PART_SUP
+    PART_SUP -.->|Restart| PART1
+    
+    COMPACT1 -.->|Crash| PART1
+    PART1 -.->|Restart| COMPACT1
+    
+    %% Message flows
+    WRITER1 -->|Append| PART1
+    PART1 -->|Replicate| REPL_MGR
+    REPL_MGR -->|Remote| REMOTE
+    
+    READER1 -->|Read| PART1
+    PART1 -.->|Data| READER1
+    
+    %% Styling
+    classDef supervisor fill:#F57C00,stroke:#E65100,color:#fff
+    classDef partition fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef worker fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef service fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef location fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef topology fill:#E91E63,stroke:#C2185B,color:#fff
+    classDef root fill:#E53935,stroke:#C62828,color:#fff
+    
+    class ROOT root
+    class CLUSTER_SUP,NODE1,NODE2,NODEN,PART_SUP supervisor
+    class PART1,PART2,PARTN partition
+    class READER1,READER2,WRITER1,WRITER2,COMPACT1,COMPACT2 worker
+    class REPL_MGR,GOSSIP_MGR,RAFT_MGR,METRIC_MGR service
+    class LOCAL,REMOTE,MESSAGE location
+    class FLOCK,DEPLOY,SCATTER,GATHER topology
+

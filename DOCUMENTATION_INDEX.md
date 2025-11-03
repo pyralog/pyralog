@@ -11,6 +11,19 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 - **[QUICK_START](QUICK_START.md)** - Get running in 5 minutes
 - **[FAQ](FAQ.md)** - Frequently asked questions
 
+### 📊 Architecture Diagrams
+- **[diagrams/](diagrams/)** ⭐ **NEW: Visual Architecture Diagrams**
+  - [System Architecture](diagrams/system-architecture.mmd) - Complete platform overview
+  - [Shen Ring](diagrams/shen-ring.mmd) - The Five Rings architecture (Ankh, Sundial, Cartouche, Ouroboros, Shen)
+  - [Data Flow](diagrams/data-flow.mmd) - Write/read paths and background processes
+  - [Deduplication Layers](diagrams/deduplication-layers.mmd) - Multi-layer deduplication strategy
+  - [Exactly-Once Semantics](diagrams/exactly-once.mmd) - Session-based idempotent writes
+  - [LSM Storage](diagrams/lsm-storage.mmd) - Log-structured merge tree architecture
+  - [PPHM Build](diagrams/pphm-build.mmd) - Perfect hash map build pipeline
+  - [Component Relationships](diagrams/component-relationships.mmd) - How all pieces fit together
+  - [Actor Topology](diagrams/actor-topology.mmd) - Supervision trees and location transparency
+  - [Consensus](diagrams/consensus.mmd) - Raft protocol flow with leader election
+
 ### Learning Pyralog
 - **[CORE_CONCEPTS](CORE_CONCEPTS.md)** - Fundamental concepts (LogId, Partitions, Records, Offsets, Epochs)
 - **[ARCHITECTURE](ARCHITECTURE.md)** - Deep dive into system internals

@@ -1,0 +1,97 @@
+graph TB
+    subgraph "Write Path"
+        WRITE[Write Request]
+        MEMTABLE[MemTable<br/>In-Memory<br/>Skip List]
+        WAL[Write-Ahead Log<br/>fsync]
+        IMMUTABLE[Immutable<br/>MemTable]
+        FLUSH[Flush Trigger<br/>Size/Time]
+    end
+    
+    subgraph "Level 0 - Recent Data"
+        L0_S1[Segment 0-1<br/>1GB<br/>Unsorted]
+        L0_S2[Segment 0-2<br/>1GB<br/>Unsorted]
+        L0_S3[Segment 0-3<br/>1GB<br/>Unsorted]
+        L0_INDEX[PPHM Index<br/>Fast Lookup]
+    end
+    
+    subgraph "Level 1 - Sorted Runs"
+        L1_R1[Run 1-1<br/>10GB<br/>Sorted]
+        L1_R2[Run 1-2<br/>10GB<br/>Sorted]
+        L1_INDEX[Bloom Filters<br/>Per-Run]
+    end
+    
+    subgraph "Level 2 - Larger Runs"
+        L2_R1[Run 2-1<br/>100GB<br/>Sorted]
+        L2_R2[Run 2-2<br/>100GB<br/>Sorted]
+        L2_INDEX[Sparse Index<br/>Per-Run]
+    end
+    
+    subgraph "Level 3+ - Cold Storage"
+        L3[Run 3-1<br/>1TB<br/>Sorted]
+        TIERED[Tiered to S3<br/>Compressed]
+    end
+    
+    subgraph "Compaction"
+        COMPACT_TRIGGER[Trigger<br/>L0 has 4+ segments]
+        COMPACT_SELECT[Select Segments<br/>Overlapping keys]
+        COMPACT_MERGE[Merge & Dedupe<br/>LWW/MVCC]
+        COMPACT_OUTPUT[Output to L1]
+    end
+    
+    %% Write flow
+    WRITE --> MEMTABLE
+    MEMTABLE --> WAL
+    WAL -.->|Durable| MEMTABLE
+    MEMTABLE -->|Full| IMMUTABLE
+    IMMUTABLE --> FLUSH
+    FLUSH --> L0_S1
+    
+    %% L0 to L1 compaction
+    L0_S1 --> L0_INDEX
+    L0_S2 --> L0_INDEX
+    L0_S3 --> L0_INDEX
+    
+    L0_S1 --> COMPACT_TRIGGER
+    L0_S2 --> COMPACT_TRIGGER
+    L0_S3 --> COMPACT_TRIGGER
+    COMPACT_TRIGGER --> COMPACT_SELECT
+    COMPACT_SELECT --> COMPACT_MERGE
+    COMPACT_MERGE --> COMPACT_OUTPUT
+    COMPACT_OUTPUT --> L1_R1
+    
+    %% L1 to L2 compaction
+    L1_R1 --> L1_INDEX
+    L1_R2 --> L1_INDEX
+    L1_R1 -.->|Compact| L2_R1
+    L1_R2 -.->|Compact| L2_R2
+    
+    %% L2 to L3+ compaction
+    L2_R1 --> L2_INDEX
+    L2_R2 --> L2_INDEX
+    L2_R1 -.->|Compact| L3
+    L2_R2 -.->|Compact| L3
+    
+    %% Tiered storage
+    L3 -.->|Archive| TIERED
+    
+    %% Read path (dotted lines)
+    MEMTABLE -.->|Read: Check L0| L0_INDEX
+    L0_INDEX -.->|Not found| L1_INDEX
+    L1_INDEX -.->|Not found| L2_INDEX
+    L2_INDEX -.->|Not found| L3
+    
+    %% Styling
+    classDef write fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef l0 fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef l1 fill:#F57C00,stroke:#E65100,color:#fff
+    classDef l2 fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef l3 fill:#757575,stroke:#424242,color:#fff
+    classDef compact fill:#E53935,stroke:#C62828,color:#fff
+    
+    class WRITE,MEMTABLE,WAL,IMMUTABLE,FLUSH write
+    class L0_S1,L0_S2,L0_S3,L0_INDEX l0
+    class L1_R1,L1_R2,L1_INDEX l1
+    class L2_R1,L2_R2,L2_INDEX l2
+    class L3,TIERED l3
+    class COMPACT_TRIGGER,COMPACT_SELECT,COMPACT_MERGE,COMPACT_OUTPUT compact
+

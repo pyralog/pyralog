@@ -1,0 +1,94 @@
+sequenceDiagram
+    participant Client
+    participant Leader as Leader<br/>(Node 1)
+    participant Follower1 as Follower<br/>(Node 2)
+    participant Follower2 as Follower<br/>(Node 3)
+    
+    Note over Leader,Follower2: Normal Operation - Stable Leader
+    
+    Client->>Leader: Write Request<br/>(key=foo, value=bar)
+    Leader->>Leader: Append to local log<br/>term=5, index=100
+    
+    par Replicate to Followers
+        Leader->>Follower1: AppendEntries<br/>(term=5, entries=[100])
+        Leader->>Follower2: AppendEntries<br/>(term=5, entries=[100])
+    end
+    
+    Follower1->>Follower1: Append to local log
+    Follower2->>Follower2: Append to local log
+    
+    par Acknowledge
+        Follower1->>Leader: ACK (success)
+        Follower2->>Leader: ACK (success)
+    end
+    
+    Note over Leader: Quorum achieved<br/>(2 of 3 replicas)
+    Leader->>Leader: Mark entry committed<br/>commitIndex=100
+    Leader->>Client: Success
+    
+    Note over Leader,Follower2: Leader Failure Scenario
+    
+    Leader->>Leader: ❌ CRASH
+    Note over Leader: Leader is down
+    
+    Follower1->>Follower1: Election timeout<br/>(150-300ms)
+    Follower2->>Follower2: Election timeout<br/>(150-300ms)
+    
+    Note over Follower1: Timeout expires first<br/>Becomes candidate
+    
+    Follower1->>Follower1: Increment term=6<br/>Vote for self
+    
+    par Request Votes
+        Follower1->>Follower2: RequestVote<br/>(term=6, lastLog=100)
+        Follower1->>Leader: RequestVote<br/>(term=6, lastLog=100)
+    end
+    
+    Follower2->>Follower2: Compare log<br/>Candidate's log up-to-date
+    Follower2->>Follower1: Vote granted
+    
+    Note over Leader: Leader down,<br/>no response
+    
+    Note over Follower1: Majority votes<br/>(2 of 3)<br/>Becomes leader
+    
+    Follower1->>Follower1: Transition to Leader<br/>term=6
+    
+    par Heartbeat to Followers
+        Follower1->>Follower2: AppendEntries<br/>(heartbeat, term=6)
+        Follower1->>Leader: AppendEntries<br/>(heartbeat, term=6)
+    end
+    
+    Follower2->>Follower1: ACK
+    
+    Note over Follower1: Established as leader
+    
+    Client->>Follower1: Write Request<br/>(key=baz, value=qux)
+    Follower1->>Follower1: Append to local log<br/>term=6, index=101
+    
+    par Replicate
+        Follower1->>Follower2: AppendEntries<br/>(term=6, entries=[101])
+    end
+    
+    Follower2->>Follower1: ACK
+    
+    Note over Follower1: Quorum achieved<br/>(2 of 3 replicas)
+    Follower1->>Client: Success
+    
+    Note over Leader,Follower2: Old Leader Recovers
+    
+    Leader->>Leader: ✅ Restart<br/>term=5 (stale)
+    
+    Leader->>Follower1: AppendEntries<br/>(term=5, heartbeat)
+    
+    Follower1->>Follower1: Reject<br/>(term=5 < current=6)
+    Follower1->>Leader: Reject<br/>(term=6)
+    
+    Leader->>Leader: Discover higher term<br/>Step down to follower
+    Leader->>Leader: Update term=6
+    
+    Follower1->>Leader: AppendEntries<br/>(term=6, entries=[101])
+    
+    Leader->>Leader: Append missing entry<br/>Catch up with leader
+    Leader->>Follower1: ACK
+    
+    Note over Leader,Follower2: Cluster recovered<br/>3 nodes in sync
+

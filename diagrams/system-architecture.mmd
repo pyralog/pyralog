@@ -1,0 +1,96 @@
+graph TB
+    subgraph "Application Layer"
+        APP[Application]
+        BATUTA[🎼 Batuta Language]
+        QUERY[Query Engine]
+    end
+    
+    subgraph "Shen Ring Layer - The One Ring 𓍶"
+        SHEN[Shen Ring<br/>Unified Log Interface]
+        
+        subgraph "The Five Rings"
+            ANKH[☥ Ankh Ring<br/>Consistent Hashing]
+            SUNDIAL[⭕ Sundial Circle<br/>Gossip Membership]
+            CARTOUCHE[𓍹𓍺 Cartouche Ring<br/>Token Coordination]
+            OUROBOROS[🐍 Ouroboros Circle<br/>Chain Replication]
+        end
+    end
+    
+    subgraph "Coordination Primitives"
+        OBELISK[🗿 Obelisk Sequencer<br/>Crash-Safe Counters]
+        PHARAOH[☀️ Pharaoh Network<br/>Distributed Coordination]
+        SCARAB[🪲 Scarab IDs<br/>Unique Identifiers]
+    end
+    
+    subgraph "Storage Layer"
+        LSM[LSM Tree]
+        SEGMENTS[Segments]
+        INDEX[Indexes]
+        PPHM[PPHM Indexes]
+        TIERED[Tiered Storage<br/>S3/GCS/Azure]
+    end
+    
+    subgraph "Consensus & Replication"
+        RAFT[Raft Consensus]
+        QUORUM[Flexible Quorums]
+        COPYSET[CopySet Replication]
+    end
+    
+    subgraph "Actor System"
+        ACTORS[Location-Transparent Actors]
+        SUPERVISION[Supervision Trees]
+        TOPOLOGY[Topology-Level Reactivity]
+    end
+    
+    %% Application to Shen Ring
+    APP --> BATUTA
+    BATUTA --> QUERY
+    QUERY --> SHEN
+    
+    %% Shen Ring to Five Rings
+    SHEN --> ANKH
+    SHEN --> SUNDIAL
+    SHEN --> CARTOUCHE
+    SHEN --> OUROBOROS
+    
+    %% Five Rings to Coordination
+    ANKH --> SCARAB
+    SUNDIAL --> PHARAOH
+    CARTOUCHE --> PHARAOH
+    OUROBOROS --> OBELISK
+    
+    %% Coordination to Storage
+    OBELISK --> LSM
+    SCARAB --> LSM
+    PHARAOH --> RAFT
+    
+    %% Storage internals
+    LSM --> SEGMENTS
+    LSM --> INDEX
+    LSM --> PPHM
+    SEGMENTS --> TIERED
+    
+    %% Consensus
+    RAFT --> QUORUM
+    QUORUM --> COPYSET
+    COPYSET --> OUROBOROS
+    
+    %% Actor integration
+    QUERY --> ACTORS
+    ACTORS --> SUPERVISION
+    SUPERVISION --> TOPOLOGY
+    TOPOLOGY --> SHEN
+    
+    %% Styling
+    classDef primitive fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef storage fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef consensus fill:#F57C00,stroke:#E65100,color:#fff
+    classDef application fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef ring fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class OBELISK,PHARAOH,SCARAB primitive
+    class LSM,SEGMENTS,INDEX,PPHM,TIERED storage
+    class RAFT,QUORUM,COPYSET consensus
+    class APP,BATUTA,QUERY,ACTORS,SUPERVISION,TOPOLOGY application
+    class SHEN,ANKH,SUNDIAL,CARTOUCHE,OUROBOROS ring
+

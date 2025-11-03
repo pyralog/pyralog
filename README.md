@@ -19,6 +19,8 @@ IMPORTANT: Project in research and design phase. Drafts only. It feels like I'm 
 
 Pyralog has evolved from a distributed log into a **comprehensive computing platform** that unifies secure, parallel, distributed, and decentralized computation. Built in Rust with novel coordination primitives, category theory foundations, and BLAKE3 cryptographic verification, Pyralog achieves **28+ billion operations per second** while providing strong consistency, exactly-once semantics, and compile-time type safety.
 
+📊 **[View Architecture Diagrams](diagrams/)** - Visual representations of Pyralog's architecture and data flows
+
 ### Four Pillars of Pyralog
 
 | Pillar | Key Technologies | Benefits |

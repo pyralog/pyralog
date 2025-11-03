@@ -1,0 +1,134 @@
+graph TB
+    subgraph "🔺 Pyralog Platform"
+        direction TB
+        
+        subgraph "Application Interface"
+            BATUTA[🎼 Batuta Language<br/>Clojure + Elixir]
+            SULISE[🌲 Sulise<br/>Language Theory]
+            API[REST/gRPC API]
+        end
+        
+        subgraph "𓍶 Shen Ring - Coordination"
+            ANKH[☥ Ankh Ring<br/>Partitioning]
+            SUNDIAL[⭕ Sundial<br/>Membership]
+            CARTOUCHE[𓍹𓍺 Cartouche<br/>Coordination]
+            OUROBOROS[🐍 Ouroboros<br/>Replication]
+        end
+        
+        subgraph "Novel Primitives"
+            OBELISK[🗿 Obelisk<br/>Sequencer]
+            PHARAOH[☀️ Pharaoh<br/>Network]
+            SCARAB[🪲 Scarab<br/>IDs]
+        end
+        
+        subgraph "Actor System"
+            ACTORS[Actors<br/>Location Transparent]
+            SUPERVISION[Supervision Trees<br/>Let-it-crash]
+            TOPOLOGY[Topology Reactivity<br/>Flocks]
+        end
+        
+        subgraph "Storage Engine"
+            LSM[LSM Tree<br/>Write-optimized]
+            PPHM[PPHM Indexes<br/>O 1 lookup]
+            SEGMENTS[Segments<br/>1GB chunks]
+            TIERED[Tiered Storage<br/>S3/GCS]
+        end
+        
+        subgraph "Consensus & Replication"
+            RAFT[Raft Consensus<br/>Strong consistency]
+            QUORUM[Flexible Quorums<br/>R+W>N]
+            ISR[ISR Tracking<br/>In-sync replicas]
+        end
+        
+        subgraph "Data Models"
+            RELATIONAL[Relational<br/>SQL/DataFusion]
+            GRAPH[Property Graph<br/>Cypher]
+            DOCUMENT[Document<br/>JSON/XML]
+            KV[Key-Value<br/>Dictionary]
+            TENSOR[Tensor DB<br/>DLPack/Zarr]
+        end
+        
+        subgraph "Security & Networking"
+            WIREGUARD[WireGuard<br/>Quantum-resistant]
+            ROSENPASS[Rosenpass<br/>Post-quantum KEM]
+            BLAKE3[BLAKE3<br/>Cryptographic hash]
+            MERKLE[Merkle Trees<br/>Verification]
+        end
+    end
+    
+    %% Application to Coordination
+    BATUTA --> SULISE
+    BATUTA --> API
+    API --> ANKH
+    API --> ACTORS
+    
+    %% Shen Ring internal
+    ANKH --> SCARAB
+    SUNDIAL --> PHARAOH
+    CARTOUCHE --> PHARAOH
+    OUROBOROS --> OBELISK
+    
+    %% Coordination to Primitives
+    ANKH --> OBELISK
+    OUROBOROS --> SCARAB
+    
+    %% Primitives to Storage
+    OBELISK --> LSM
+    SCARAB --> LSM
+    
+    %% Storage internals
+    LSM --> SEGMENTS
+    LSM --> PPHM
+    SEGMENTS --> TIERED
+    
+    %% Consensus
+    PHARAOH --> RAFT
+    RAFT --> QUORUM
+    RAFT --> ISR
+    ISR --> OUROBOROS
+    
+    %% Actors to Shen Ring
+    ACTORS --> SUPERVISION
+    SUPERVISION --> TOPOLOGY
+    TOPOLOGY --> ANKH
+    ACTORS --> CARTOUCHE
+    
+    %% Data Models to Storage
+    RELATIONAL --> LSM
+    GRAPH --> LSM
+    DOCUMENT --> LSM
+    KV --> PPHM
+    TENSOR --> SEGMENTS
+    
+    %% Security
+    WIREGUARD --> ROSENPASS
+    API --> WIREGUARD
+    LSM --> BLAKE3
+    BLAKE3 --> MERKLE
+    SEGMENTS --> MERKLE
+    
+    %% Dependencies (key relationships)
+    BATUTA -.->|Compiles to| ACTORS
+    PPHM -.->|Used by| ANKH
+    OBELISK -.->|Provides IDs for| SCARAB
+    RAFT -.->|Manages| PHARAOH
+    
+    %% Styling
+    classDef interface fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef ring fill:#FFD700,stroke:#FFA000,color:#000
+    classDef primitive fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef actor fill:#E91E63,stroke:#C2185B,color:#fff
+    classDef storage fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef consensus fill:#F57C00,stroke:#E65100,color:#fff
+    classDef datamodel fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef security fill:#E53935,stroke:#C62828,color:#fff
+    
+    class BATUTA,SULISE,API interface
+    class ANKH,SUNDIAL,CARTOUCHE,OUROBOROS ring
+    class OBELISK,PHARAOH,SCARAB primitive
+    class ACTORS,SUPERVISION,TOPOLOGY actor
+    class LSM,PPHM,SEGMENTS,TIERED storage
+    class RAFT,QUORUM,ISR consensus
+    class RELATIONAL,GRAPH,DOCUMENT,KV,TENSOR datamodel
+    class WIREGUARD,ROSENPASS,BLAKE3,MERKLE security
+

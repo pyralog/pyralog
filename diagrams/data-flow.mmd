@@ -1,0 +1,107 @@
+graph LR
+    subgraph "Write Path"
+        direction TB
+        W_CLIENT[Producer]
+        W_SESSION[Session ID<br/>Obelisk]
+        W_DEDUP[Dedup Check<br/>Cache]
+        W_PARTITION[Partition<br/>Ankh Ring]
+        W_LEADER[Leader Check<br/>Raft]
+        W_CHAIN[Chain Head<br/>Ouroboros]
+        W_MIDDLE[Middle Nodes]
+        W_TAIL[Tail Node]
+        W_ACK[Acknowledgment]
+        W_LSM[LSM Append]
+        W_INDEX[Update Index]
+        W_RESPONSE[Response to<br/>Producer]
+        
+        W_CLIENT --> W_SESSION
+        W_SESSION --> W_DEDUP
+        W_DEDUP -->|Not duplicate| W_PARTITION
+        W_DEDUP -.->|Duplicate| W_RESPONSE
+        W_PARTITION --> W_LEADER
+        W_LEADER -->|Is leader| W_CHAIN
+        W_LEADER -.->|Not leader| W_RESPONSE
+        W_CHAIN --> W_MIDDLE
+        W_MIDDLE --> W_TAIL
+        W_TAIL --> W_LSM
+        W_LSM --> W_INDEX
+        W_INDEX --> W_ACK
+        W_ACK --> W_CHAIN
+        W_CHAIN --> W_RESPONSE
+    end
+    
+    subgraph "Read Path"
+        direction TB
+        R_CLIENT[Consumer]
+        R_OFFSET[Offset Request]
+        R_PARTITION[Partition<br/>Ankh Ring]
+        R_TAIL[Tail Node<br/>Ouroboros]
+        R_CACHE[Read Cache<br/>Memory]
+        R_INDEX[Index Lookup<br/>PPHM]
+        R_SEGMENT[Segment Read<br/>mmap]
+        R_DECOMPRESS[Decompress<br/>if needed]
+        R_VERIFY[Verify Checksum<br/>BLAKE3]
+        R_RESPONSE[Response to<br/>Consumer]
+        
+        R_CLIENT --> R_OFFSET
+        R_OFFSET --> R_PARTITION
+        R_PARTITION --> R_TAIL
+        R_TAIL --> R_CACHE
+        R_CACHE -->|Hit| R_RESPONSE
+        R_CACHE -->|Miss| R_INDEX
+        R_INDEX --> R_SEGMENT
+        R_SEGMENT --> R_DECOMPRESS
+        R_DECOMPRESS --> R_VERIFY
+        R_VERIFY --> R_CACHE
+        R_CACHE --> R_RESPONSE
+    end
+    
+    subgraph "Background: Compaction"
+        direction TB
+        C_TRIGGER[Trigger<br/>Size/Time]
+        C_SELECT[Select Segments]
+        C_MERGE[Merge & Dedupe<br/>LWW/MVCC]
+        C_BUILD[Build New<br/>Segment]
+        C_PPHM[Rebuild PPHM<br/>Index]
+        C_SWAP[Atomic Swap]
+        C_DELETE[Delete Old<br/>Segments]
+        
+        C_TRIGGER --> C_SELECT
+        C_SELECT --> C_MERGE
+        C_MERGE --> C_BUILD
+        C_BUILD --> C_PPHM
+        C_PPHM --> C_SWAP
+        C_SWAP --> C_DELETE
+        C_DELETE -.->|Continuous| C_TRIGGER
+    end
+    
+    subgraph "Background: Replication"
+        direction TB
+        REP_MONITOR[Monitor ISR<br/>In-Sync Replicas]
+        REP_LAG[Check Lag<br/>per replica]
+        REP_SYNC[Sync Missing<br/>Records]
+        REP_FAILOVER[Failover if<br/>needed]
+        
+        REP_MONITOR --> REP_LAG
+        REP_LAG -->|Lagging| REP_SYNC
+        REP_LAG -->|Leader failed| REP_FAILOVER
+        REP_SYNC --> REP_MONITOR
+        REP_FAILOVER --> REP_MONITOR
+    end
+    
+    %% Cross-process connections
+    W_LSM -.->|Trigger| C_TRIGGER
+    W_CHAIN -.->|Forward| REP_MONITOR
+    C_BUILD -.->|New data| R_SEGMENT
+    
+    %% Styling
+    classDef write fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef read fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef compact fill:#F57C00,stroke:#E65100,color:#fff
+    classDef replication fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    
+    class W_CLIENT,W_SESSION,W_DEDUP,W_PARTITION,W_LEADER,W_CHAIN,W_MIDDLE,W_TAIL,W_ACK,W_LSM,W_INDEX,W_RESPONSE write
+    class R_CLIENT,R_OFFSET,R_PARTITION,R_TAIL,R_CACHE,R_INDEX,R_SEGMENT,R_DECOMPRESS,R_VERIFY,R_RESPONSE read
+    class C_TRIGGER,C_SELECT,C_MERGE,C_BUILD,C_PPHM,C_SWAP,C_DELETE compact
+    class REP_MONITOR,REP_LAG,REP_SYNC,REP_FAILOVER replication
+

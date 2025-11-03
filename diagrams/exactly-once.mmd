@@ -1,0 +1,64 @@
+sequenceDiagram
+    participant Producer
+    participant Obelisk as 🗿 Obelisk<br/>Sequencer
+    participant Broker as Pyralog<br/>Broker
+    participant Cache as Dedup<br/>Cache
+    participant Log as Write-Ahead<br/>Log
+    participant Replica as Replica<br/>Nodes
+    
+    Note over Producer: Producer Initialization
+    Producer->>Obelisk: Request session_id
+    Obelisk->>Obelisk: Atomic increment<br/>(crash-safe)
+    Obelisk->>Producer: session_id = 12345<br/>epoch = 1
+    Note over Producer: sequence = 0
+    
+    Note over Producer,Log: First Write (Success)
+    Producer->>Broker: Write(session_id=12345,<br/>epoch=1, seq=0, data)
+    Broker->>Cache: Check duplicate?
+    Cache->>Broker: Not found
+    Broker->>Log: Append to partition<br/>offset=100
+    Log->>Replica: Replicate
+    Replica->>Log: ACK
+    Log->>Cache: Store (12345, epoch=1,<br/>seq=0, offset=100)
+    Cache->>Broker: Recorded
+    Broker->>Producer: Success offset=100
+    Note over Producer: sequence = 1
+    
+    Note over Producer,Log: Second Write (Network Timeout)
+    Producer->>Broker: Write(session_id=12345,<br/>epoch=1, seq=1, data)
+    Broker->>Cache: Check duplicate?
+    Cache->>Broker: Not found
+    Broker->>Log: Append to partition<br/>offset=101
+    Log->>Replica: Replicate
+    Replica->>Log: ACK
+    Log->>Cache: Store (12345, epoch=1,<br/>seq=1, offset=101)
+    Note over Broker,Producer: Network timeout!<br/>Producer doesn't<br/>receive ACK
+    
+    Note over Producer,Log: Retry (Deduplication)
+    Producer->>Broker: RETRY Write(session_id=12345,<br/>epoch=1, seq=1, data)
+    Broker->>Cache: Check duplicate?
+    Cache->>Broker: Found! (epoch=1, seq=1,<br/>offset=101)
+    Note over Cache: Exact match:<br/>same session, epoch, seq
+    Broker->>Producer: Success offset=101<br/>(cached, not re-written)
+    Note over Producer: Idempotent!<br/>No duplicate in log
+    
+    Note over Producer,Log: Producer Restart (New Epoch)
+    Producer->>Producer: Restart after crash
+    Producer->>Obelisk: Request session_id
+    Obelisk->>Producer: session_id = 12346<br/>epoch = 2
+    Note over Producer: sequence = 0
+    
+    Producer->>Broker: Write(session_id=12346,<br/>epoch=2, seq=0, data)
+    Broker->>Cache: Check duplicate?
+    Cache->>Broker: Not found<br/>(new session_id)
+    Broker->>Log: Append offset=102
+    Broker->>Producer: Success offset=102
+    
+    Note over Producer,Log: Out-of-Order Replay (Rejected)
+    Note over Producer: Malicious replay<br/>of old message
+    Producer->>Broker: OLD Write(session_id=12345,<br/>epoch=1, seq=0, data)
+    Broker->>Cache: Check duplicate?
+    Cache->>Broker: Old epoch!<br/>(current=2, received=1)
+    Broker->>Producer: Rejected<br/>(out-of-order)
+    Note over Log: Log remains<br/>consistent
+

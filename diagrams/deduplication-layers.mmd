@@ -1,0 +1,78 @@
+graph TB
+    subgraph "Layer 1: Application"
+        APP_DEDUP[Semantic Deduplication<br/>Business Logic]
+        APP_EXAMPLES["Examples:<br/>• Email normalization<br/>• User merge<br/>• Custom rules"]
+        APP_COST[Cost: Low<br/>Savings: Variable]
+    end
+    
+    subgraph "Layer 2: Exactly-Once"
+        EO_SESSION[Session-Based Dedup<br/>Producer ID + Sequence]
+        EO_CACHE[Deduplication Cache<br/>LRU per partition]
+        EO_COST[Cost: Medium<br/>Savings: 100% duplicates]
+    end
+    
+    subgraph "Layer 3: PPHM"
+        PPHM_MERGE[Index Merge<br/>6 strategies]
+        PPHM_REDUCE[Conflict Resolution<br/>LWW, Priority, Custom]
+        PPHM_COST[Cost: Medium<br/>Savings: 50-90%]
+    end
+    
+    subgraph "Layer 4: LSM Compaction"
+        LSM_COMPACT[Segment Merge<br/>Level compaction]
+        LSM_STRATEGY["Strategies:<br/>• LWW<br/>• Tombstones<br/>• MVCC<br/>• Delta encoding"]
+        LSM_COST[Cost: High<br/>Savings: 60-95%]
+    end
+    
+    subgraph "Layer 5: Content-Addressable"
+        CA_CHUNK[Chunk Deduplication<br/>BLAKE3 hashing]
+        CA_REFCOUNT[Reference Counting<br/>Garbage collection]
+        CA_COST[Cost: Very High<br/>Savings: 70-200x]
+    end
+    
+    subgraph "Storage"
+        DISK[Physical Storage<br/>Disk/S3/GCS]
+    end
+    
+    %% Flow from application to storage
+    APP_DEDUP --> APP_EXAMPLES
+    APP_EXAMPLES --> APP_COST
+    APP_COST --> EO_SESSION
+    
+    EO_SESSION --> EO_CACHE
+    EO_CACHE --> EO_COST
+    EO_COST --> PPHM_MERGE
+    
+    PPHM_MERGE --> PPHM_REDUCE
+    PPHM_REDUCE --> PPHM_COST
+    PPHM_COST --> LSM_COMPACT
+    
+    LSM_COMPACT --> LSM_STRATEGY
+    LSM_STRATEGY --> LSM_COST
+    LSM_COST --> CA_CHUNK
+    
+    CA_CHUNK --> CA_REFCOUNT
+    CA_REFCOUNT --> CA_COST
+    CA_COST --> DISK
+    
+    %% Decision points
+    APP_COST -.->|Skip if no<br/>business logic| EO_SESSION
+    EO_COST -.->|Skip if not<br/>needed| PPHM_MERGE
+    PPHM_COST -.->|Skip for<br/>simple workloads| LSM_COMPACT
+    LSM_COST -.->|Required| CA_CHUNK
+    CA_COST -.->|Optional for<br/>archival only| DISK
+    
+    %% Styling
+    classDef app fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef exactlyonce fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef pphm fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef lsm fill:#F57C00,stroke:#E65100,color:#fff
+    classDef ca fill:#E53935,stroke:#C62828,color:#fff
+    classDef storage fill:#757575,stroke:#424242,color:#fff
+    
+    class APP_DEDUP,APP_EXAMPLES,APP_COST app
+    class EO_SESSION,EO_CACHE,EO_COST exactlyonce
+    class PPHM_MERGE,PPHM_REDUCE,PPHM_COST pphm
+    class LSM_COMPACT,LSM_STRATEGY,LSM_COST lsm
+    class CA_CHUNK,CA_REFCOUNT,CA_COST ca
+    class DISK storage
+

@@ -1,0 +1,93 @@
+graph TB
+    subgraph "Application"
+        CLIENT[Client Application]
+    end
+    
+    subgraph "𓍶 Shen Ring - The One Ring"
+        SHEN_API[Unified Log API<br/>append/read/transaction]
+    end
+    
+    subgraph "☥ Ankh Ring - Consistent Hashing"
+        ANKH_HASH[XXH3 Hash Function]
+        ANKH_VNODES[Virtual Nodes<br/>160 per physical node]
+        ANKH_ROUTE[Partition Router<br/>O log V lookup]
+    end
+    
+    subgraph "⭕ Sundial Circle - Gossip Protocol"
+        SUNDIAL_GOSSIP[Push-Pull Gossip<br/>Fanout: 3-5]
+        SUNDIAL_STATE[Cluster Membership<br/>Heartbeat tracking]
+        SUNDIAL_DETECT[Failure Detection<br/>Phi-accrual]
+    end
+    
+    subgraph "𓍹𓍺 Cartouche Ring - Token Coordination"
+        CARTOUCHE_TOKEN[Token Passing<br/>FIFO fairness]
+        CARTOUCHE_QUEUE[Request Queue<br/>Priority-based]
+        CARTOUCHE_REGEN[Token Regeneration<br/>On loss]
+    end
+    
+    subgraph "🐍 Ouroboros Circle - Chain Replication"
+        OURO_HEAD[Chain Head<br/>Writes only]
+        OURO_MIDDLE[Middle Nodes<br/>Forward writes]
+        OURO_TAIL[Chain Tail<br/>Reads only]
+        OURO_ACK[Acknowledgment Path]
+    end
+    
+    subgraph "Storage Foundation"
+        OBELISK[🗿 Obelisk Sequencer<br/>Atomic Counters]
+        SCARAB[🪲 Scarab IDs<br/>Unique Identifiers]
+        STORAGE[Log Storage<br/>Segments & Indexes]
+    end
+    
+    %% Client to Shen
+    CLIENT -->|append/read| SHEN_API
+    
+    %% Shen to Ankh Ring
+    SHEN_API -->|1. Partition Selection| ANKH_HASH
+    ANKH_HASH --> ANKH_VNODES
+    ANKH_VNODES --> ANKH_ROUTE
+    
+    %% Shen to Sundial
+    SHEN_API -->|2. Membership Check| SUNDIAL_GOSSIP
+    SUNDIAL_GOSSIP --> SUNDIAL_STATE
+    SUNDIAL_STATE --> SUNDIAL_DETECT
+    
+    %% Shen to Cartouche
+    SHEN_API -->|3. Coordination<br/>if needed| CARTOUCHE_TOKEN
+    CARTOUCHE_TOKEN --> CARTOUCHE_QUEUE
+    CARTOUCHE_QUEUE -.->|timeout| CARTOUCHE_REGEN
+    
+    %% Shen to Ouroboros
+    SHEN_API -->|4. Replicate| OURO_HEAD
+    OURO_HEAD --> OURO_MIDDLE
+    OURO_MIDDLE --> OURO_TAIL
+    OURO_TAIL -->|ack| OURO_ACK
+    OURO_ACK --> OURO_HEAD
+    
+    %% Rings to Storage
+    ANKH_ROUTE --> SCARAB
+    OURO_HEAD --> OBELISK
+    OURO_TAIL --> STORAGE
+    SCARAB --> STORAGE
+    OBELISK --> STORAGE
+    
+    %% Return path
+    STORAGE -.->|data| SHEN_API
+    SHEN_API -.->|response| CLIENT
+    
+    %% Styling
+    classDef shen fill:#FFD700,stroke:#FFA000,color:#000,stroke-width:4px
+    classDef ankh fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef sundial fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef cartouche fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef ouroboros fill:#E53935,stroke:#C62828,color:#fff
+    classDef storage fill:#757575,stroke:#424242,color:#fff
+    classDef client fill:#FF9800,stroke:#F57C00,color:#fff
+    
+    class SHEN_API shen
+    class ANKH_HASH,ANKH_VNODES,ANKH_ROUTE ankh
+    class SUNDIAL_GOSSIP,SUNDIAL_STATE,SUNDIAL_DETECT sundial
+    class CARTOUCHE_TOKEN,CARTOUCHE_QUEUE,CARTOUCHE_REGEN cartouche
+    class OURO_HEAD,OURO_MIDDLE,OURO_TAIL,OURO_ACK ouroboros
+    class OBELISK,SCARAB,STORAGE storage
+    class CLIENT client
+

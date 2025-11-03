@@ -1,0 +1,124 @@
+graph TB
+    subgraph "Input Maps"
+        MAP1[PHMap 1<br/>100K keys]
+        MAP2[PHMap 2<br/>150K keys]
+        MAP3[PHMap 3<br/>200K keys]
+        MAPK[PHMap K<br/>...]
+    end
+    
+    subgraph "Stage 1: Sampling (Optional)"
+        SAMPLE[Sample 1% of keys<br/>from each map]
+        ESTIMATE[Estimate skew<br/>distribution]
+        CHOOSE_P[Choose P<br/>partitions]
+    end
+    
+    subgraph "Stage 2: Partition & Spill"
+        HASH[XXH3 Hash<br/>key mod P]
+        
+        subgraph "Spill Files (P partitions)"
+            SPILL0[Partition 0<br/>Spill files]
+            SPILL1[Partition 1<br/>Spill files]
+            SPILLP[Partition P-1<br/>Spill files]
+        end
+        
+        BUFFER[64KB-1MB<br/>buffers per partition]
+    end
+    
+    subgraph "Stage 3: Reduce (Per-Partition)"
+        REDUCE_STRATEGY{Reduce<br/>Strategy}
+        EXTERNAL_SORT[External Sort<br/>O N log N]
+        HASH_AGG[Hash Aggregate<br/>O N expected]
+        
+        MERGE[K-Way Merge<br/>Deduplicate]
+        REDUCER[Apply Reducer<br/>LWW/Priority/Custom]
+        KEYS_VALUES[Unique Keys<br/>+ Reduced Values]
+    end
+    
+    subgraph "Stage 4: Build PHF (Parallel)"
+        PHF_BUILDER{PHF Builder<br/>Choice}
+        BBHASH[BBHash<br/>Fast, 2.5 bits/key]
+        RECSPLIT[RecSplit<br/>Compact, 1.7 bits/key]
+        PTHASH[PTHash<br/>Fastest, 2.0 bits/key]
+        
+        MPHF[Build MPHF<br/>for partition keys]
+        ALIGN[Align values<br/>to PHF indices]
+        PERSIST[Persist:<br/>MPHF + values]
+    end
+    
+    subgraph "Output"
+        DIRECTORY[Write Directory<br/>Header + offsets]
+        PPHM_FILE[Single PPHM File<br/>Memory-mappable]
+        MMAP[mmap for<br/>zero-copy reads]
+    end
+    
+    %% Input to sampling
+    MAP1 --> SAMPLE
+    MAP2 --> SAMPLE
+    MAP3 --> SAMPLE
+    MAPK --> SAMPLE
+    
+    %% Sampling
+    SAMPLE --> ESTIMATE
+    ESTIMATE --> CHOOSE_P
+    
+    %% Partition & Spill
+    CHOOSE_P --> HASH
+    MAP1 --> HASH
+    MAP2 --> HASH
+    MAP3 --> HASH
+    MAPK --> HASH
+    
+    HASH --> BUFFER
+    BUFFER --> SPILL0
+    BUFFER --> SPILL1
+    BUFFER --> SPILLP
+    
+    %% Reduce (shown for one partition)
+    SPILL0 --> REDUCE_STRATEGY
+    REDUCE_STRATEGY -->|Robust| EXTERNAL_SORT
+    REDUCE_STRATEGY -->|Faster| HASH_AGG
+    
+    EXTERNAL_SORT --> MERGE
+    HASH_AGG --> MERGE
+    MERGE --> REDUCER
+    REDUCER --> KEYS_VALUES
+    
+    %% Build PHF
+    KEYS_VALUES --> PHF_BUILDER
+    PHF_BUILDER -->|Balanced| BBHASH
+    PHF_BUILDER -->|Space-critical| RECSPLIT
+    PHF_BUILDER -->|Speed-critical| PTHASH
+    
+    BBHASH --> MPHF
+    RECSPLIT --> MPHF
+    PTHASH --> MPHF
+    
+    MPHF --> ALIGN
+    ALIGN --> PERSIST
+    
+    %% Output
+    PERSIST --> DIRECTORY
+    DIRECTORY --> PPHM_FILE
+    PPHM_FILE --> MMAP
+    
+    %% Parallel notation
+    SPILL1 -.->|Parallel| REDUCE_STRATEGY
+    SPILLP -.->|Parallel| REDUCE_STRATEGY
+    
+    %% Styling
+    classDef input fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef sample fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef partition fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef reduce fill:#F57C00,stroke:#E65100,color:#fff
+    classDef build fill:#E53935,stroke:#C62828,color:#fff
+    classDef output fill:#757575,stroke:#424242,color:#fff
+    classDef decision fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class MAP1,MAP2,MAP3,MAPK input
+    class SAMPLE,ESTIMATE,CHOOSE_P sample
+    class HASH,SPILL0,SPILL1,SPILLP,BUFFER partition
+    class EXTERNAL_SORT,HASH_AGG,MERGE,REDUCER,KEYS_VALUES reduce
+    class BBHASH,RECSPLIT,PTHASH,MPHF,ALIGN,PERSIST build
+    class DIRECTORY,PPHM_FILE,MMAP output
+    class REDUCE_STRATEGY,PHF_BUILDER decision
+
