@@ -606,7 +606,7 @@ Pyralog includes **74,000+ lines** of documentation across **41 files**:
 ### 🔗 Advanced Data Structures & Algorithms
 - **[TENSOR_DATABASE.md](TENSOR_DATABASE.md)** - Tensor database (DLPack, distributed training, GPU, Zarr)
 - **[DADBS.md](DADBS.md)** - Decentralized Autonomous Database Systems (5 consensus mechanisms)
-- **[MPHF.md](MPHF.md)** - Partitioned Perfect Hash Maps (O(1) lookup, zero collisions)
+- **[PPHM.md](PPHM.md)** - Partitioned Perfect Hash Maps (O(1) lookup, zero collisions)
 - **[WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md)** - WireGuard universal protocol (quantum resistance, DPI evasion)
 
 ### 🎼 Programming Language

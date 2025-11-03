@@ -42,7 +42,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 - **[ACTOR_MODEL](ACTOR_MODEL.md)** ⭐ **NEW: Location-transparent actors, topology-level reactivity, supervision trees**
 - **[TENSOR_DATABASE](TENSOR_DATABASE.md)** ⭐ **NEW: Multi-dimensional arrays, ML/AI, vectors, embeddings**
 - **[DADBS](DADBS.md)** ⭐ **NEW: Decentralized Autonomous Database Systems**
-- **[MPHF](MPHF.md)** ⭐ **NEW: Partitioned Perfect Hash Maps (O(1) lookups, zero collisions)**
+- **[PPHM](PPHM.md)** ⭐ **NEW: Partitioned Perfect Hash Maps (O(1) lookups, zero collisions)**
 - **[WIREGUARD_PROTOCOL](WIREGUARD_PROTOCOL.md)** ⭐ **NEW: Quantum-resistant universal protocol (WireGuard + Rosenpass)**
 - **[BATUTA](BATUTA.md)** ⭐ **NEW: Pyralog's programming language (Clojure + Elixir fusion, actor-first queries)**
 
@@ -384,7 +384,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
     - Time-series tensors, image/video storage, probabilistic tensors, graph embeddings
 
 #### Data Structures & Algorithms
-- [MPHF.md](MPHF.md) ⭐ **NEW: Partitioned Perfect Hash Maps**
+- [PPHM.md](PPHM.md) ⭐ **NEW: Partitioned Perfect Hash Maps**
   - **Merging Multiple Perfect Hash Maps**
     - Deterministic, streaming, parallelizable algorithm
     - O(1) guaranteed lookup, zero collisions
@@ -854,7 +854,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 6. Learn about governance models and on-chain voting
 
 ### "I need perfect hash maps for read-heavy workloads"
-1. Read [MPHF.md](MPHF.md) ⭐ - complete algorithm specification
+1. Read [PPHM.md](PPHM.md) ⭐ - complete algorithm specification
 2. Study deterministic build pipeline (sample → partition → reduce → build)
 3. Review 6 deduplication strategies and conflict resolution
 4. Check PHF builders comparison (BBHash, RecSplit, PTHash, CHD, BDZ)
@@ -958,7 +958,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 | Actor Model | [ACTOR_MODEL.md](ACTOR_MODEL.md) | [ARCHITECTURE.md](ARCHITECTURE.md), [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | DADBS | [DADBS.md](DADBS.md) | [ARCHITECTURE.md](ARCHITECTURE.md), [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md) |
 | Tensor Database | [TENSOR_DATABASE.md](TENSOR_DATABASE.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
-| Perfect Hash Maps | [MPHF.md](MPHF.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
+| Perfect Hash Maps | [PPHM.md](PPHM.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | WireGuard Protocol | [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) | [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md), [OPERATIONS.md](OPERATIONS.md) |
 | Batuta Language | [BATUTA.md](BATUTA.md) | [ACTOR_MODEL.md](ACTOR_MODEL.md), [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 
