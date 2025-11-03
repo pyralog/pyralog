@@ -6,7 +6,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ## 📚 The Series
 
-### [1. Introducing Pyralog: Rethinking Distributed Logs](1-introducing-pyralog.md)
+### [1. Introducing Pyralog: Rethinking Distributed Logs](01-introducing-pyralog.md)
 *The problem with modern data infrastructure and how Pyralog solves it*
 
 **Key Topics**:
@@ -22,7 +22,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [2. The 🗿 Obelisk Sequencer: A Novel Persistent Atomic Primitive](2-obelisk-sequencer.md)
+### [2. The 🗿 Obelisk Sequencer: A Novel Persistent Atomic Primitive](02-obelisk-sequencer.md)
 *How a simple insight about sparse files enables crash-safe counters*
 
 **Key Topics**:
@@ -44,7 +44,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [3. ☀️ Pharaoh Network: Coordination Without Consensus](3-pharaoh-network.md)
+### [3. ☀️ Pharaoh Network: Coordination Without Consensus](03-pharaoh-network.md)
 *How we eliminated every centralized coordinator*
 
 **Key Topics**:
@@ -66,7 +66,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [4. 28 Billion Operations Per Second: Architectural Deep-Dive](4-28-billion-ops.md)
+### [4. 28 Billion Operations Per Second: Architectural Deep-Dive](04-28-billion-ops.md)
 *How Pyralog's architecture achieves unprecedented scale*
 
 **Key Topics**:
@@ -89,7 +89,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [5. Building Modern Data Infrastructure in Rust](5-rust-infrastructure.md)
+### [5. Building Modern Data Infrastructure in Rust](05-rust-infrastructure.md)
 *Lessons learned from building a distributed system in Rust*
 
 **Key Topics**:
@@ -113,7 +113,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [6. Cryptographic Verification with BLAKE3: Building Zero-Trust Data Systems](6-cryptographic-verification.md)
+### [6. Cryptographic Verification with BLAKE3: Building Zero-Trust Data Systems](06-cryptographic-verification.md)
 *How Pyralog ensures data integrity with cryptographic proofs*
 
 **Key Topics**:
@@ -136,7 +136,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [7. Multi-Model Database with Category Theory: One Query Language, Five Data Models](7-multi-model-database.md)
+### [7. Multi-Model Database with Category Theory: One Query Language, Five Data Models](07-multi-model-database.md)
 *How category theory enables seamless cross-model queries*
 
 **Key Topics**:
@@ -159,7 +159,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [8. Batuta: A New Language for Data Processing](8-batuta-language.md)
+### [8. Batuta: A New Language for Data Processing](08-batuta-language.md)
 *Introducing Pyralog's programming language—Lisp + Elixir + Zig + Pony + WASM*
 
 **Key Topics**:
@@ -183,7 +183,7 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 
 ---
 
-### [9. Actor-Based Concurrency: Distributed Query Execution at Scale](9-actor-concurrency.md)
+### [9. Actor-Based Concurrency: Distributed Query Execution at Scale](09-actor-concurrency.md)
 *How the actor model enables 28 billion operations per second*
 
 **Key Topics**:
@@ -455,21 +455,21 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 ## 🎯 Reading Paths
 
 ### For Decision Makers (CTOs, VPs)
-1. [Introducing Pyralog](1-introducing-pyralog.md) - Understand the value proposition
-2. [28 Billion Ops/Sec](4-28-billion-ops.md) - See the performance benefits
+1. [Introducing Pyralog](01-introducing-pyralog.md) - Understand the value proposition
+2. [28 Billion Ops/Sec](04-28-billion-ops.md) - See the performance benefits
 3. [Quantum-Resistant Networking](10-wireguard-networking.md) - Security features
-4. [Building in Rust](5-rust-infrastructure.md) - Understand technology choices
+4. [Building in Rust](05-rust-infrastructure.md) - Understand technology choices
 
 **Time**: ~1.5 hours
 
 ---
 
 ### For Architects
-1. [Introducing Pyralog](1-introducing-pyralog.md) - System overview
-2. [Pharaoh Network](3-pharaoh-network.md) - Scaling pattern
-3. [28 Billion Ops/Sec](4-28-billion-ops.md) - Complete architecture
-4. [Multi-Model Database](7-multi-model-database.md) - Category theory foundation
-5. [Actor-Based Concurrency](9-actor-concurrency.md) - Execution model
+1. [Introducing Pyralog](01-introducing-pyralog.md) - System overview
+2. [Pharaoh Network](03-pharaoh-network.md) - Scaling pattern
+3. [28 Billion Ops/Sec](04-28-billion-ops.md) - Complete architecture
+4. [Multi-Model Database](07-multi-model-database.md) - Category theory foundation
+5. [Actor-Based Concurrency](09-actor-concurrency.md) - Execution model
 6. [Research Paper](../PAPER.md) - Academic analysis
 
 **Time**: ~3 hours
@@ -477,20 +477,20 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 ---
 
 ### For Security Engineers
-1. [Cryptographic Verification](6-cryptographic-verification.md) - Zero-trust architecture
+1. [Cryptographic Verification](06-cryptographic-verification.md) - Zero-trust architecture
 2. [Quantum-Resistant Networking](10-wireguard-networking.md) - WireGuard + Rosenpass
-3. [Actor-Based Concurrency](9-actor-concurrency.md) - Fault isolation
-4. [Multi-Model Database](7-multi-model-database.md) - Data integrity
+3. [Actor-Based Concurrency](09-actor-concurrency.md) - Fault isolation
+4. [Multi-Model Database](07-multi-model-database.md) - Data integrity
 
 **Time**: ~2.5 hours
 
 ---
 
 ### For Distributed Systems Engineers
-1. [Obelisk Sequencer](2-obelisk-sequencer.md) - Novel primitive
-2. [Pharaoh Network](3-pharaoh-network.md) - Coordination pattern
-3. [28 Billion Ops/Sec](4-28-billion-ops.md) - Implementation details
-4. [Actor-Based Concurrency](9-actor-concurrency.md) - Supervision trees & topology reactivity
+1. [Obelisk Sequencer](02-obelisk-sequencer.md) - Novel primitive
+2. [Pharaoh Network](03-pharaoh-network.md) - Coordination pattern
+3. [28 Billion Ops/Sec](04-28-billion-ops.md) - Implementation details
+4. [Actor-Based Concurrency](09-actor-concurrency.md) - Supervision trees & topology reactivity
 5. [Research Paper](../PAPER.md) - Formal analysis
 
 **Time**: ~3 hours
@@ -498,9 +498,9 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 ---
 
 ### For Language Enthusiasts
-1. [Batuta Language](8-batuta-language.md) - Lisp + Elixir + Zig + Pony fusion
-2. [Actor-Based Concurrency](9-actor-concurrency.md) - Actor model in practice
-3. [Multi-Model Database](7-multi-model-database.md) - Category theory DSL
+1. [Batuta Language](08-batuta-language.md) - Lisp + Elixir + Zig + Pony fusion
+2. [Actor-Based Concurrency](09-actor-concurrency.md) - Actor model in practice
+3. [Multi-Model Database](07-multi-model-database.md) - Category theory DSL
 4. [Batuta Spec](../BATUTA.md) - Full language specification
 
 **Time**: ~2 hours
@@ -508,10 +508,10 @@ A comprehensive 30-part technical blog series explaining Pyralog's architecture,
 ---
 
 ### For Rust Developers
-1. [Introducing Pyralog](1-introducing-pyralog.md) - What we're building
-2. [Building in Rust](5-rust-infrastructure.md) - Rust-specific insights
-3. [Obelisk Sequencer](2-obelisk-sequencer.md) - Code example
-4. [Cryptographic Verification](6-cryptographic-verification.md) - BLAKE3 in Rust
+1. [Introducing Pyralog](01-introducing-pyralog.md) - What we're building
+2. [Building in Rust](05-rust-infrastructure.md) - Rust-specific insights
+3. [Obelisk Sequencer](02-obelisk-sequencer.md) - Code example
+4. [Cryptographic Verification](06-cryptographic-verification.md) - BLAKE3 in Rust
 5. [Implementation Plan](../IMPLEMENTATION_PLAN.md) - How to contribute
 
 **Time**: ~2.5 hours
@@ -619,5 +619,5 @@ You're free to:
 
 All 30 posts (150K words, 10+ hours reading) are now available. This comprehensive series covers everything from low-level primitives to high-level architecture, from performance optimization to production operations, and from theoretical foundations to practical migration guides.
 
-**Start reading**: [Post #1: Introducing Pyralog](1-introducing-pyralog.md) or jump to any topic that interests you!
+**Start reading**: [Post #1: Introducing Pyralog](01-introducing-pyralog.md) or jump to any topic that interests you!
 
