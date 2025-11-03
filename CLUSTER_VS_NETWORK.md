@@ -366,6 +366,93 @@ Public Pyralog Network:
 - Fully censorship-resistant
 ```
 
+**Alternative: PoW Without Miners**
+
+PoW can also be used without dedicated miners for other purposes:
+
+1. **Anti-Spam/DoS Protection**:
+   ```rust
+   pub struct RequestPoW {
+       difficulty: u32,  // Small, e.g., 20 bits
+   }
+   
+   impl RequestPoW {
+       pub fn verify_request(&self, req: &Request) -> bool {
+           // Client must solve small PoW per request
+           let hash = blake3::hash(&req.serialize());
+           hash_meets_difficulty(&hash, self.difficulty)
+       }
+   }
+   ```
+   - Clients solve small PoW puzzle per request
+   - Prevents request flooding without rate limits
+   - No dedicated miners needed
+
+2. **Rate Limiting**:
+   ```rust
+   pub struct ComputationalRateLimit {
+       cost_per_operation: Duration,  // e.g., 10ms of work
+   }
+   ```
+   - Small computational cost per operation
+   - Self-regulating system load
+   - Pay with computation, not tokens or quotas
+
+3. **Sybil Resistance**:
+   ```rust
+   pub struct ClusterIdentity {
+       cluster_id: ClusterId,
+       pow_proof: PoWProof,  // One-time cost to join network
+   }
+   ```
+   - PoW required to create cluster identity
+   - Prevents cheap identity attacks
+   - One-time cost per cluster join (not continuous mining)
+
+4. **Priority Queue**:
+   ```rust
+   pub struct PriorityRequest {
+       request: Request,
+       pow_work: u64,  // Higher work = higher priority
+   }
+   ```
+   - Higher PoW effort = higher priority in queue
+   - Pay with computation, not tokens
+   - Fair resource allocation without payment
+
+5. **Time-Lock Puzzles**:
+   ```rust
+   pub struct TimeLockPuzzle {
+       data: EncryptedData,
+       difficulty: u64,  // Sequential computation required
+   }
+   ```
+   - Data released after X computation time
+   - Verifiable Delay Functions (VDFs)
+   - No miners, just sequential work to unlock
+
+6. **Useful PoW**:
+   ```rust
+   pub enum UsefulWork {
+       MLTraining(ModelParams),
+       Simulation(SimulationParams),
+       Cryptanalysis(CryptoParams),
+   }
+   ```
+   - Compute actual useful work instead of arbitrary hashes
+   - ML training, scientific simulations, etc.
+   - Side benefit of computation
+   - Not wasteful like traditional mining
+
+**When to Use PoW Without Miners**:
+- ✅ Need spam/DoS protection
+- ✅ Want computational rate limiting
+- ✅ Require Sybil resistance
+- ✅ Fair queuing without payment
+- ✅ Don't want to run validator infrastructure
+- ❌ Need fast finality (use PoS instead)
+- ❌ Need economic incentives (use PoS instead)
+
 #### Proof of Stake (PoS)
 
 **What it is**: Validators stake tokens to participate in consensus; validators are selected based on stake.
