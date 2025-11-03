@@ -59,7 +59,10 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 - **[DADBS](DADBS.md)** ⭐ **NEW: Decentralized Autonomous Database Systems**
 - **[PPHM](PPHM.md)** ⭐ **NEW: Partitioned Perfect Hash Maps (O(1) lookups, zero collisions)**
 - **[WIREGUARD_PROTOCOL](WIREGUARD_PROTOCOL.md)** ⭐ **NEW: Quantum-resistant universal protocol (WireGuard + Rosenpass)**
-- **[BATUTA](BATUTA.md)** ⭐ **NEW: Pyralog's programming language (Clojure + Elixir fusion, actor-first queries)**
+
+### Query & Programming Languages
+- **[BATUTA](BATUTA.md)** ⭐ **NEW: Theoretically-founded programming language** (Category Theory, Functional Relational Algebra, Sulise foundations)
+- **[PRQL](PRQL.md)** ⭐ **NEW: Pragmatic query language** (Modern, readable SQL alternative - no theoretical foundations)
 
 ### Development
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to Pyralog
@@ -513,7 +516,9 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
   - **Complete implementation roadmap with Rust code examples**
   - **~2,780 lines of comprehensive documentation**
 
-#### Programming Language
+#### Programming & Query Languages
+
+##### Batuta Language
 - [BATUTA.md](BATUTA.md) ⭐ **NEW: Pyralog's Dynamic Programming Language**
   - **Clojure + Elixir Fusion**
     - Lisp S-expressions with full macro system
@@ -573,6 +578,72 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
     - 6 detailed examples
     - 13-18 month roadmap to production
   - **~1,000 lines of comprehensive specification**
+
+##### PRQL (Pipelined Relational Query Language)
+- [PRQL.md](PRQL.md) ⭐ **NEW: Pragmatic Query Language**
+  - **⚠️ Pragmatic Design** (no theoretical foundations)
+    - **Use Batuta for**: Category Theory, Functional Relational Algebra, formal semantics
+    - **Use PRQL for**: Readable queries (pragmatic SQL alternative)
+    - **Theoretical rigor**: SQL (none) < PRQL (pragmatic) < **Batuta (Category Theory)**
+  - **Functional Pipelines**
+    - Clean, composable query syntax (no nested subqueries)
+    - Pipeline operators (from → filter → select → group)
+    - 10× more readable than SQL
+  - **Type Safety**
+    - Compile-time error checking
+    - Catch mistakes before execution
+    - Column name validation
+  - **Composability**
+    - Reusable query fragments with `let` bindings
+    - Functions for query abstraction
+    - Variables and parameters
+  - **Multi-Model Queries**
+    - Query relational, document, graph, RDF, tensor data
+    - Seamless integration with Pyralog's multi-model storage
+    - Same syntax for all data models
+  - **Compiles to SQL**
+    - PRQL → SQL → DataFusion → Arrow
+    - Zero runtime overhead (optimized SQL)
+    - Leverages DataFusion's query optimizer (same as Batuta)
+  - **Rust-Native Integration**
+    - prql-compiler crate (zero-cost)
+    - Direct Arrow RecordBatch results
+    - Memory-efficient execution
+  - **Batuta Integration**
+    - Call PRQL from Batuta code (optional convenience)
+    - Batuta is more powerful (full language vs query-only)
+    - Batuta can do everything PRQL does + much more
+  - **Theoretical Limitations vs Batuta**
+    - ❌ No Category Theory foundations
+    - ❌ No Functional Relational Algebra
+    - ❌ No formal semantics (denotational/operational)
+    - ❌ No proven query optimization (heuristic only)
+    - ❌ No process calculi (π-calculus for actors)
+    - ❌ No type theory (session types, refinement types)
+    - ❌ Query-only (no business logic)
+    - ❌ Pragmatic design (not mathematically founded)
+  - **Advanced Features**
+    - Window functions (moving averages, cumulative sums)
+    - CTEs with clean syntax
+    - S-strings for SQL escape hatch
+    - Parameters and dynamic queries
+  - **Query Examples**
+    - E-commerce analytics (top customers, revenue)
+    - User behavior analysis (funnel analytics)
+    - Time-series anomaly detection
+    - Graph queries (friend recommendations)
+    - ML feature engineering
+    - Real-time dashboards
+  - **Performance**
+    - <1ms compilation overhead
+    - Same runtime performance as SQL
+    - 100M+ reads/sec, 500M+ writes/sec
+    - Leverages PPHM indexes, Bloom filters
+  - **Migration Guide**
+    - SQL to PRQL conversion patterns
+    - Complex query examples
+    - Best practices
+  - **~1,350 lines of comprehensive documentation**
 
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
@@ -938,21 +1009,55 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 7. Review NIST PQC compliance and CNSA 2.0 requirements
 
 ### "I want to query and process data with a modern language"
-1. Read [BATUTA.md](BATUTA.md) ⭐ - complete Batuta language specification
-2. Study Lisp S-expressions and macro system
-3. Review Elixir-style pattern matching and pipe operators
-4. Learn actor-first query execution (queries as distributed actors)
-5. Explore immutable data structures (persistent vectors, maps, sets)
-6. Check fault tolerance with supervision trees
-7. Try REPL-driven development with live data exploration
-8. Review Pyralog native integration (Scarab IDs, Merkle trees, multi-model queries)
+
+**Quick decision guide**:
+- **Just need pragmatic queries?** → Start with [PRQL.md](PRQL.md) (readable, no theory)
+- **Need theoretical foundations?** → Go straight to [BATUTA.md](BATUTA.md) (Category Theory, FRA)
+- **Theoretical rigor**: SQL (none) < PRQL (pragmatic) < **Batuta (Category Theory)**
+
+**Learning path for theoretical foundations**:
+1. Read [BATUTA.md](BATUTA.md) ⭐ - **RECOMMENDED: Theoretically-founded language**
+   - **Category Theory** foundations (functors, monads, natural transformations)
+   - **Functional Relational Algebra** (proven query optimizations)
+   - **Sulise** theoretical basis (complete language theory)
+   - **Formal semantics** (denotational & operational)
+   - Compiles to Rust for native performance
+2. Read [FUNCTIONAL_RELATIONAL_ALGEBRA.md](FUNCTIONAL_RELATIONAL_ALGEBRA.md) - Query theory
+   - Mathematical foundations of queries
+   - Algebraic query transformations
+   - Proven correctness of optimizations
+3. *Optional*: Read [PRQL.md](PRQL.md) - Pragmatic query language
+   - Readable queries (no theoretical foundations)
+   - Good for SQL migration
+   - Can be called from Batuta for convenience
+4. Study **Category Theory basics**:
+   - Functors (structure-preserving maps)
+   - Monads (computational context)
+   - Natural transformations (functor morphisms)
+5. Review **Functional Relational Algebra**:
+   - Query as algebraic expression
+   - Proven optimization equivalences
+   - Categorical query semantics
+6. Learn **Process Calculi** (π-calculus):
+   - Formal actor model semantics
+   - Communication correctness
+   - Distributed execution guarantees
+7. Explore **Type Theory**:
+   - Session types (communication safety)
+   - Refinement types (correctness by construction)
+   - Dependent types (value-level guarantees)
+8. Study **Formal Semantics**:
+   - Denotational semantics (meaning preservation)
+   - Operational semantics (execution guarantees)
+9. Review [SULISE](BATUTA.md#theoretical-foundation-sulise) foundations
+10. Review Pyralog integration with formal guarantees
 
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 41 markdown files
-  - 35 main documentation files
+- **Total Documents**: 42 markdown files
+  - 36 main documentation files
   - 6 blog posts
-- **Total Lines**: ~74,000+ lines of documentation
+- **Total Lines**: ~75,000+ lines of documentation
 - **Coverage**:
   - ✅ Architecture and design
   - ✅ Research contributions and academic paper
@@ -1011,6 +1116,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 | Perfect Hash Maps | [PPHM.md](PPHM.md) | [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | WireGuard Protocol | [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) | [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md), [OPERATIONS.md](OPERATIONS.md) |
 | Batuta Language | [BATUTA.md](BATUTA.md) | [ACTOR_MODEL.md](ACTOR_MODEL.md), [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
+| PRQL Query Language | [PRQL.md](PRQL.md) | [BATUTA.md](BATUTA.md), [FUNCTIONAL_RELATIONAL_ALGEBRA.md](FUNCTIONAL_RELATIONAL_ALGEBRA.md), [MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md) |
 
 ## 📝 Documentation Quality
 
@@ -1065,7 +1171,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 ---
 
-**Last Updated**: 2025-11-02 (includes BATUTA.md - Pyralog's programming language)
+**Last Updated**: 2025-11-03 (includes PRQL.md - modern query language, STORAGE.md & MEMORY_ONLY_MODE.md updates)
 
 **Maintainers**: Pyralog Team
 

@@ -829,6 +829,114 @@ Queries execute as **actors** for parallelism:
     (select [:id :name :email :valid-from :valid-to])))
 ```
 
+### Query Optimization with DataFusion
+
+Batuta queries leverage **DataFusion's LogicalPlan optimizer** for intelligent query execution:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              BATUTA QUERY OPTIMIZATION                   │
+└─────────────────────────────────────────────────────────┘
+
+Batuta Query (defquery syntax)
+      ↓
+Batuta Compiler (macro expansion)
+      ↓
+SQL or LogicalPlan (generated)
+      ↓
+DataFusion LogicalPlan Optimizer
+  • Predicate pushdown
+  • Projection pruning
+  • Constant folding
+  • Common subexpression elimination
+  • Join reordering
+      ↓
+PhysicalPlan (optimized execution)
+      ↓
+Arrow RecordBatches (results)
+```
+
+**Example optimization**:
+
+```clojure
+;; Batuta query
+(defquery user-orders []
+  (from :users
+    (join :orders (= :users.id :orders.user_id))
+    (where (and (> :users.age 18)
+                (> :orders.amount 100)))
+    (select [:users.name :orders.amount])))
+
+;; DataFusion optimizations applied:
+;; 1. Predicate pushdown: Push filters before join
+;; 2. Projection pruning: Only read needed columns
+;; 3. Join optimization: Choose optimal join strategy
+;; 4. Parallel execution: Multi-threaded scan
+
+;; Equivalent optimized flow:
+;; - Scan users (only id, name, age columns)
+;; - Filter age > 18 BEFORE join
+;; - Scan orders (only user_id, amount columns)
+;; - Filter amount > 100 BEFORE join
+;; - Hash join on user_id
+;; - Project name, amount
+```
+
+**Performance benefits**:
+- ✅ **10-100× faster** queries (vs naive execution)
+- ✅ **Automatic** optimization (no manual tuning)
+- ✅ **SIMD** vectorization (Arrow native)
+- ✅ **Parallel** execution (multi-threaded)
+- ✅ **Memory-efficient** (streaming, spilling to disk)
+
+**Same optimizer as PRQL**:
+
+Both Batuta and [PRQL](PRQL.md) use DataFusion's optimizer, providing consistent performance:
+
+```clojure
+;; Batuta query
+(defquery active-users []
+  (from :users
+    (where (= :status "active"))
+    (select [:id :name])))
+```
+
+```prql
+# PRQL query
+from users
+filter status == "active"
+select {id, name}
+```
+
+Both compile to the same optimized LogicalPlan and execute with identical performance.
+
+**Integration**:
+
+```rust
+// Batuta query compilation
+pub fn compile_batuta_query(query: &BatutaQuery) -> Result<LogicalPlan> {
+    // 1. Expand macros
+    let expanded = expand_macros(query)?;
+    
+    // 2. Generate SQL or build LogicalPlan directly
+    let plan = match expanded {
+        // Option 1: Generate SQL, then parse
+        QueryForm::Sql(sql) => {
+            ctx.sql(&sql).await?.logical_plan()
+        }
+        
+        // Option 2: Build LogicalPlan directly (faster)
+        QueryForm::Relational(ops) => {
+            build_logical_plan_from_batuta(ops)?
+        }
+    };
+    
+    // 3. DataFusion optimizes automatically
+    // (predicate pushdown, projection pruning, etc.)
+    Ok(plan)
+}
+```
+
 ---
 
 ## Pipeline Operations
