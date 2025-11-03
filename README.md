@@ -225,14 +225,14 @@ Five ring patterns that work together as **The One Ring**:
 
 ### 🔗 Decentralized Autonomous Systems
 
-#### 🌐 Pyralog Network: Multi-Cluster Architecture
-
-**🌐 Pyralog Network** = Multiple Pyralog Clusters forming a Decentralized Autonomous Database:
-
+- **Multi-Cluster Architecture**: Multiple Pyralog Clusters forming a Decentralized Autonomous Database
 - **Global Distribution**: Multi-datacenter, multi-organization deployment
 - **Eventual Consistency**: Strong consistency within clusters, eventual across network
-- **Autonomous Operation**: No single point of control, self-governing
-- **Byzantine Fault Tolerance**: Tolerate malicious nodes and clusters
+- **Autonomous Operation**: No single point of control, self-governing clusters
+- **Byzantine Fault Tolerance**: Tolerate malicious nodes and entire compromised clusters
+- **Consensus Options**: Raft (private networks), PoW/PoS (permissionless), PBFT/Tendermint (consortium)
+- **Privacy & Scalability**: zk-SNARKs (small proofs, fast verify) and zk-STARKs (no trusted setup, post-quantum)
+- **Cross-Cluster Coordination**: Global transaction coordination, multi-cluster queries, autonomous governance
 
 📖 See [DECENTRALIZED.md](DECENTRALIZED.md) and [DADBS.md](DADBS.md) for complete architecture
 
