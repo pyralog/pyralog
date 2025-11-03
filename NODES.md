@@ -175,14 +175,13 @@ pub struct AtomicCounter {
     /// Counter ID
     id: CounterId,
     
-    /// Current value (memory-mapped from sparse file)
+    /// Current value (cached in memory)
+    /// The true value is the file size!
     value: AtomicU64,
     
     /// Sparse file handle
+    /// File size = counter value (genius!)
     file: File,
-    
-    /// Memory mapping
-    mmap: MmapMut,
 }
 ```
 
