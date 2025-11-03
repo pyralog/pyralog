@@ -488,8 +488,7 @@ pub struct PyramidNode {
 }
 
 pub struct ObeliskNode {
-    counters: Counters,  // Focused role
-    raft: SmallRaft,
+    counters: Counters,  // Focused role - coordination-free!
 }
 ```
 
