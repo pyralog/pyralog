@@ -62,7 +62,8 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 
 ### Query & Programming Languages
 - **[BATUTA](BATUTA.md)** ⭐ **NEW: Theoretically-founded programming language** (Category Theory, Functional Relational Algebra, Sulise foundations)
-- **[PRQL](PRQL.md)** ⭐ **NEW: Pragmatic query language** (Modern, readable SQL alternative - no theoretical foundations)
+- **[PRQL](PRQL.md)** ⭐ **NEW: Pragmatic relational query language** (Modern, readable SQL alternative)
+- **[GRAPHQL](GRAPHQL.md)** ⭐ **NEW: Flexible API query language** (Client-driven, type-safe, real-time subscriptions)
 
 ### Development
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to Pyralog
@@ -645,6 +646,55 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
     - Best practices
   - **~1,350 lines of comprehensive documentation**
 
+##### GraphQL
+- [GRAPHQL.md](GRAPHQL.md) ⭐ **NEW: Flexible API Query Language**
+  - **⚠️ Pragmatic Design** (API-focused, no theoretical foundations)
+    - **Use Batuta for**: Category Theory, formal semantics, business logic
+    - **Use GraphQL for**: Flexible API layer, client-driven queries
+    - **Positioning**: API queries (not a programming language)
+  - **Client-Driven Queries**
+    - Clients specify exact fields needed
+    - Eliminates over-fetching and under-fetching
+    - Single endpoint for all queries
+  - **Strong Type System**
+    - Schema-defined types
+    - Compile-time validation
+    - Auto-generated documentation
+  - **Nested Queries**
+    - Fetch related data in single request
+    - Eliminates multiple round-trips
+    - Natural data relationships
+  - **Real-Time Subscriptions**
+    - WebSocket-based live updates
+    - Event-driven notifications
+    - Integrates with Pyralog event streams
+  - **Multi-Model Support**
+    - Query relational, document, graph, tensor, RDF data
+    - Unified GraphQL interface across all models
+    - Seamless multi-model queries
+  - **DataLoader Pattern**
+    - Batch queries (solves N+1 problem)
+    - Query caching
+    - Efficient data fetching
+  - **Integration with Batuta**
+    - GraphQL for API layer (flexible queries)
+    - Batuta for business logic (theoretical guarantees)
+    - Best of both worlds
+  - **Performance**
+    - 50K simple queries/sec
+    - 20K nested queries/sec
+    - 100K concurrent subscriptions
+    - DataFusion optimization
+  - **Examples**
+    - E-commerce API (product catalog, cart)
+    - Social network (feed, notifications)
+    - Multi-model analytics dashboard
+  - **Comparison with PRQL and Batuta**
+    - GraphQL = API layer (client-driven)
+    - PRQL = Relational queries (readable)
+    - Batuta = Full applications (Category Theory)
+  - **~1,100 lines of comprehensive documentation**
+
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
   - **Pyralog's Architectural Advantages** (new section)
@@ -1054,10 +1104,10 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 42 markdown files
-  - 36 main documentation files
+- **Total Documents**: 43 markdown files
+  - 37 main documentation files
   - 6 blog posts
-- **Total Lines**: ~75,000+ lines of documentation
+- **Total Lines**: ~76,000+ lines of documentation
 - **Coverage**:
   - ✅ Architecture and design
   - ✅ Research contributions and academic paper
@@ -1117,6 +1167,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 | WireGuard Protocol | [WIREGUARD_PROTOCOL.md](WIREGUARD_PROTOCOL.md) | [CRYPTOGRAPHIC_VERIFICATION.md](CRYPTOGRAPHIC_VERIFICATION.md), [OPERATIONS.md](OPERATIONS.md) |
 | Batuta Language | [BATUTA.md](BATUTA.md) | [ACTOR_MODEL.md](ACTOR_MODEL.md), [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | PRQL Query Language | [PRQL.md](PRQL.md) | [BATUTA.md](BATUTA.md), [FUNCTIONAL_RELATIONAL_ALGEBRA.md](FUNCTIONAL_RELATIONAL_ALGEBRA.md), [MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md) |
+| GraphQL | [GRAPHQL.md](GRAPHQL.md) | [BATUTA.md](BATUTA.md), [PRQL.md](PRQL.md), [MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md) |
 
 ## 📝 Documentation Quality
 
@@ -1171,7 +1222,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 ---
 
-**Last Updated**: 2025-11-03 (includes PRQL.md - modern query language, STORAGE.md & MEMORY_ONLY_MODE.md updates)
+**Last Updated**: 2025-11-03 (includes GRAPHQL.md, PRQL.md, Batuta theoretical foundations emphasis)
 
 **Maintainers**: Pyralog Team
 
