@@ -19,6 +19,17 @@ IMPORTANT: Project in research and design phase. Drafts only. It feels like I'm 
 
 Pyralog has evolved from a distributed log into a **comprehensive computing platform** that unifies secure, parallel, distributed, and decentralized computation. Built in Rust with novel coordination primitives, category theory foundations, and BLAKE3 cryptographic verification, Pyralog achieves **28+ billion operations per second** while providing strong consistency, exactly-once semantics, and compile-time type safety.
 
+### Two Levels of Architecture
+
+- **🔺 Pyralog Cluster**: A single distributed computing cluster (one datacenter/region)
+  - Strong consistency (Raft), low latency (<1ms), high throughput (500M writes/sec)
+  - Traditional distributed database for regional deployment
+  
+- **🌐 Pyralog Network**: Multiple Pyralog Clusters forming a Decentralized Autonomous Database
+  - Global distribution, eventual consistency, Byzantine fault tolerance
+  - Multi-datacenter, multi-organization, censorship-resistant
+  - See [DADBS.md](DADBS.md) and [CLUSTER_VS_NETWORK.md](CLUSTER_VS_NETWORK.md)
+
 📊 **[View Architecture Diagrams](diagrams/)** - Visual representations of Pyralog's architecture and data flows
 
 ### Four Pillars of Pyralog
@@ -51,12 +62,13 @@ Pyralog has evolved from a distributed log into a **comprehensive computing plat
 
 ### 🎯 Novel Coordination Primitives
 
-- **Two-Tier Architecture**:
+- **Two-Tier Architecture** (within a single Pyralog Cluster):
   - **🗿 Obelisk Nodes** form the **☀️ Pharaoh Network** (coordination layer, lightweight)
-  - **🔺 Pyramid Nodes** form the **Pyralog Cluster** (storage, consensus & compute layer, heavy)
-  - Both scale horizontally and independently
+  - **🔺 Pyramid Nodes** form the **compute/storage tier** (storage, consensus & compute layer, heavy)
+  - Both scale horizontally and independently within the cluster
   - Separation enables optimal resource efficiency
-  - See [NODES.md](NODES.md) for complete architecture
+  - See [NODES.md](NODES.md) for node architecture
+  - See [CLUSTER_VS_NETWORK.md](CLUSTER_VS_NETWORK.md) for cluster vs network hierarchy
 - **🗿 Obelisk Nodes**: Pharaoh Network nodes with crash-safe atomic counters (~1-2μs per increment)
 - **☀️ Pharaoh Network**: Eliminate all centralized bottlenecks via 🪲 Scarab IDs
   - 4B+ operations/sec across network (transactions, timestamps, IDs, epochs)

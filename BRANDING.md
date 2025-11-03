@@ -82,9 +82,23 @@ Pyralog's branding draws from **ancient Egyptian civilization**—a culture that
 
 ---
 
-## 🏛️ The Two-Tier Architecture
+## 🏛️ System Hierarchy
 
-Pyralog uses a **two-tier node architecture** with distinct layers:
+Pyralog has two levels of architectural organization:
+
+### 🌐 Level 1: Cluster vs Network
+
+- **🔺 Pyralog Cluster**: A single distributed computing cluster (one datacenter/region)
+  - Strong consistency (Raft), low latency, high throughput
+  - Traditional distributed database use case
+  
+- **🌐 Pyralog Network**: Multiple Pyralog Clusters forming a Decentralized Autonomous Database
+  - Global distribution, eventual consistency, Byzantine fault tolerance
+  - See [DADBS.md](DADBS.md) and [CLUSTER_VS_NETWORK.md](CLUSTER_VS_NETWORK.md)
+
+### 🏛️ Level 2: Two-Tier Node Architecture (within a cluster)
+
+Within each **Pyralog Cluster**, there is a **two-tier node architecture**:
 
 ### Coordination Layer (☀️ Pharaoh Network)
 | Component | Symbol | What It Is | Key Features |
@@ -103,12 +117,15 @@ Pyralog uses a **two-tier node architecture** with distinct layers:
 **Plus the grammar foundation**: 🌲 [Sulise Evergreen](#-sulise-evergreen) (modular grammar toolkit)
 
 **Architecture Summary**:
-- **Obelisk nodes** (🗿) form the **Pharaoh Network** (☀️) - coordination layer
-- **Pyramid nodes** (🔺) form the **Pyralog cluster** - storage, consensus & compute layer
-- Pyramids run Raft per partition for consensus
-- Pyramids request Scarab IDs (🪲) from Obelisks for ID generation
-- Applications use **Batuta** (🎼) to interact with Pyramids
-- **Shen Ring** (𓍶) binds all patterns together
+- **Within a Pyralog Cluster** (single datacenter):
+  - **Obelisk nodes** (🗿) form the **Pharaoh Network** (☀️) - coordination layer
+  - **Pyramid nodes** (🔺) provide storage, consensus (Raft per partition) & compute
+  - Pyramids request Scarab IDs (🪲) from Obelisks for ID generation
+  - **Shen Ring** (𓍶) binds all patterns together
+- **Across Pyralog Network** (multiple datacenters):
+  - Multiple **Pyralog Clusters** communicate peer-to-peer
+  - Decentralized Autonomous Database (see [DADBS.md](DADBS.md))
+- **Applications** use **Batuta** (🎼) to interact with the system
 
 ---
 

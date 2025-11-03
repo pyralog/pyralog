@@ -1,12 +1,15 @@
 # Pyralog Node Architecture
 
-**Understanding the two-tier node hierarchy: Obelisk nodes and Pyramid nodes**
+**Understanding the two-tier node hierarchy within a Pyralog Cluster**
+
+> **Note**: This document describes the node architecture **within a single Pyralog Cluster** (one datacenter/region).  
+> For information about multiple Pyralog Clusters forming a Pyralog Network, see [CLUSTER_VS_NETWORK.md](CLUSTER_VS_NETWORK.md).
 
 ---
 
 ## Overview
 
-Pyralog uses a **two-tier architecture** with distinct node types serving different roles:
+Within a **Pyralog Cluster**, there is a **two-tier architecture** with distinct node types serving different roles:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
