@@ -7,45 +7,46 @@ Batuta (Spanish/Portuguese/Italian for "baton" - the conductor's tool) is a dyna
 ## Table of Contents
 
 1. [Philosophy](#philosophy)
-2. [Theoretical Foundation: Sulise](#theoretical-foundation-sulise)
-3. [Language Overview](#language-overview)
-4. [Syntax](#syntax)
-5. [Data Types](#data-types)
-6. [Pattern Matching](#pattern-matching)
-7. [Functions](#functions)
-8. [Actors & Concurrency](#actors--concurrency)
-9. [Queries](#queries)
-10. [Pipeline Operations](#pipeline-operations)
-11. [Macro System](#macro-system)
-12. [Fault Tolerance](#fault-tolerance)
+2. [Execution Modes](#execution-modes)
+3. [Theoretical Foundation: Sulise](#theoretical-foundation-sulise)
+4. [Language Overview](#language-overview)
+5. [Syntax](#syntax)
+6. [Data Types](#data-types)
+7. [Pattern Matching](#pattern-matching)
+8. [Functions](#functions)
+9. [Actors & Concurrency](#actors--concurrency)
+10. [Queries](#queries)
+11. [Pipeline Operations](#pipeline-operations)
+12. [Macro System](#macro-system)
+13. [Fault Tolerance](#fault-tolerance)
     - [Supervision Trees](#supervision-trees)
     - [Restart Strategies](#restart-strategies)
     - [Error Handling (Zig-Style)](#error-handling-zig-style)
     - [Links and Monitors](#links-and-monitors)
-13. [Distributed Execution](#distributed-execution)
-14. [Type System](#type-system)
+14. [Distributed Execution](#distributed-execution)
+15. [Type System](#type-system)
     - [Gradual Typing](#gradual-typing)
     - [Type Inference](#type-inference)
     - [Error Union Types (Zig-Inspired)](#error-union-types-zig-inspired)
     - [Spec-Based Validation](#spec-based-validation)
     - [Actor Protocols](#actor-protocols)
     - [Reference Capabilities (Pony-Inspired)](#reference-capabilities-pony-inspired)
-15. [REPL & Interactive Development](#repl--interactive-development)
-16. [Standard Library](#standard-library)
-17. [Pyralog Integration](#pyralog-integration)
-18. [Performance](#performance)
+16. [REPL & Interactive Development](#repl--interactive-development)
+17. [Standard Library](#standard-library)
+18. [Pyralog Integration](#pyralog-integration)
+19. [Performance](#performance)
     - [Compilation Strategy](#compilation-strategy)
     - [Native Compilation](#1-native-via-rust)
     - [WebAssembly (WASM)](#2-webassembly-wasm)
     - [Optimization Techniques](#optimization-techniques)
     - [Benchmarks](#benchmarks)
-19. [Comparison](#comparison)
-20. [Implementation](#implementation)
-21. [Examples](#examples)
-22. [Getting Started](#getting-started)
-23. [Roadmap](#roadmap)
-24. [Contributing](#contributing)
-25. [Conclusion](#conclusion)
+20. [Comparison](#comparison)
+21. [Implementation](#implementation)
+22. [Examples](#examples)
+23. [Getting Started](#getting-started)
+24. [Roadmap](#roadmap)
+25. [Contributing](#contributing)
+26. [Conclusion](#conclusion)
 
 ---
 
@@ -69,6 +70,158 @@ Batuta is built on seven core principles:
 - **Distributed**: First-class support for multi-node execution
 - **Universal**: Compile to native or WASM - run anywhere (server, browser, edge, embedded)
 - **Inspectable**: Live introspection of running systems via REPL
+
+---
+
+## Execution Modes
+
+Batuta supports **two execution modes**, allowing flexible deployment based on your use case:
+
+### 1. Client-Side Execution Mode (Application-Embedded)
+
+**What it is**: Batuta code runs embedded in your application process.
+
+**Use Cases**:
+- Application logic and business rules
+- Client-side data processing
+- Edge computing and IoT devices
+- Browser applications (via WASM)
+- Mobile apps
+
+**How it works**:
+```
+Your Application
+  ├── Batuta Runtime (embedded)
+  ├── Compiles to Rust/WASM
+  └── Sends requests to Pyramid nodes
+```
+
+**Example**:
+```clojure
+;; Batuta code in your application
+(defn process-order [order]
+  (-> order
+      (validate-schema)
+      (enrich-with-customer-data)
+      (send-to-pyralog "/orders")))
+```
+
+**Benefits**:
+- ✅ Low latency (no network round-trip for logic)
+- ✅ Runs anywhere (native, WASM, embedded)
+- ✅ Full application control
+- ✅ Can work offline
+
+### 2. Server-Side Execution Mode (Database-Embedded)
+
+**What it is**: Batuta code runs inside Pyramid nodes as stored procedures, triggers, or user-defined functions.
+
+**Use Cases**:
+- Stored procedures and triggers
+- Complex queries with server-side computation
+- Data validation and transformation at storage layer
+- Multi-step transactions
+- Server-side business logic
+
+**How it works**:
+```
+Pyramid Node
+  ├── Batuta Runtime (embedded)
+  ├── Stored procedures
+  ├── Triggers
+  └── User-defined functions (UDFs)
+```
+
+**Example**:
+```clojure
+;; Stored procedure in Pyramid node
+(defproc calculate-inventory-reorder [warehouse-id]
+  "Server-side logic for inventory management"
+  (let [current-stock (query [:select :* 
+                               :from :inventory 
+                               :where [:= :warehouse_id warehouse-id]])
+        low-stock-items (filter #(< (:quantity %) (:min_threshold %)) 
+                                current-stock)]
+    (doseq [item low-stock-items]
+      (insert! :reorder_queue 
+               {:item_id (:id item)
+                :quantity (- (:max_threshold item) (:quantity item))
+                :priority (if (zero? (:quantity item)) :urgent :normal)}))))
+```
+
+**Benefits**:
+- ✅ Data locality (computation near storage)
+- ✅ Reduced network traffic (results, not raw data)
+- ✅ Atomic operations (transactions within database)
+- ✅ Shared logic across clients
+
+### Comparison
+
+| Aspect | Client-Side | Server-Side |
+|--------|-------------|-------------|
+| **Runs in** | Your application process | Pyramid nodes |
+| **Network** | Sends requests to database | Runs inside database |
+| **Use Case** | App logic, UI, edge computing | Stored procs, triggers, UDFs |
+| **Latency** | Low (local execution) | Variable (depends on data size) |
+| **Deployment** | With your app | Deployed to Pyramid nodes |
+| **Offline** | Can work offline | Requires database connection |
+| **Data Access** | Remote (via network) | Local (same node) |
+
+### Compilation in Both Modes
+
+In **both execution modes**, Batuta compiles to Rust for maximum performance:
+
+```
+Batuta Source Code
+      ↓
+  🌲 Sulise Parser (grammar, AST)
+      ↓
+  Type Checking & Inference
+      ↓
+  Rust Code Generation
+      ↓
+  ┌─────────────┴──────────────┐
+  ↓                            ↓
+Native Binary              WASM Module
+(for servers, edge)        (for browsers, embedded)
+```
+
+This is why the component relationships diagram shows **"Compiles to"** - Batuta becomes Rust code regardless of where it runs.
+
+### Choosing an Execution Mode
+
+**Use Client-Side When**:
+- Application-specific logic
+- Need to work offline
+- Edge computing or IoT
+- Browser/mobile applications
+- Low-latency local processing
+
+**Use Server-Side When**:
+- Shared business logic across clients
+- Need data locality (reduce network traffic)
+- Complex multi-step transactions
+- Triggers on data changes
+- Data validation at storage layer
+
+**Use Both**:
+- Client-side: UI logic, validation, offline support
+- Server-side: Shared procedures, triggers, heavy queries
+- Same language, different execution contexts!
+
+### Interactive Development (REPL)
+
+In addition to compiled execution, Batuta provides a **REPL** (Read-Eval-Print Loop) for interactive development and debugging:
+
+```clojure
+batuta> (query [:select :* :from :users :limit 5])
+;; Execute query interactively
+;; Great for exploration and debugging
+```
+
+The REPL works in both execution modes:
+- **Client-side REPL**: Connects to Pyramid nodes, runs queries interactively
+- **Server-side REPL**: Connect directly to Pyramid node for debugging stored procedures
 
 ---
 
