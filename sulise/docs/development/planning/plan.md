@@ -1090,7 +1090,7 @@ Moved to `DIAGRAMS.md`.
     - Explanation: Readable timestamp literals; keep as data constructors.
     - Surface: `dt"2025-10-31T12:00:00Z"`
     - Desugar: `(datetime "2025-10-31T12:00:00Z")`
-    - Examples: `dt"2024-01-01"` ⇒ `(datetime "2024-01-01")`
+    - Examples: `dt"2025-01-01"` ⇒ `(datetime "2025-01-01")`
 
 #### 71. BigInt/Rational numerics
     - Explanation: Exact arithmetic literals for large integers and rationals.

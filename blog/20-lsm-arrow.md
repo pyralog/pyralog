@@ -176,8 +176,8 @@ LOCATION '/data/climate/temperature.zarr'
 4. **Backups/archives**
 ```rust
 // Historical snapshots
-REGISTER EXTERNAL SNAPSHOT db_snapshot_2024_01
-LOCATION 's3://backups/2024-01-01.tar.zst'
+REGISTER EXTERNAL SNAPSHOT db_snapshot_2025_01
+LOCATION 's3://backups/2025-01-01.tar.zst'
 ```
 
 ---
@@ -532,8 +532,8 @@ PARTITIONED BY (year INT, month INT, day INT);
 
 // Query only relevant partitions
 SELECT * FROM events_archive
-WHERE year = 2024 AND month = 1;
-// Only reads 2024/01/* files!
+WHERE year = 2025 AND month = 1;
+// Only reads 2025/01/* files!
 ```
 
 ### 3. Use Compression

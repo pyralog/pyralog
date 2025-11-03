@@ -138,7 +138,7 @@ Simple key → value mappings.
 ```rust
 PUT "user:1:name" → "Alice"
 PUT "user:1:email" → "alice@example.com"
-PUT "session:abc123" → "user_id=1;expires=2024-12-31"
+PUT "session:abc123" → "user_id=1;expires=2025-12-31"
 
 GET "user:1:name"
 // Result: "Alice"
@@ -158,7 +158,7 @@ CREATE (post:Post {id: 101, title: 'Hello World'})
 
 // Create relationships
 CREATE (alice)-[:FOLLOWS]->(bob)
-CREATE (alice)-[:AUTHORED {date: '2024-01-15'}]->(post)
+CREATE (alice)-[:AUTHORED {date: '2025-01-15'}]->(post)
 
 // Query
 MATCH (u:User)-[:AUTHORED]->(p:Post)
@@ -1364,7 +1364,7 @@ Edges Table:
 │  (Int)  │  (Str)    │  (Int)  │  (Int)  │      (Struct)        │
 ├─────────┼───────────┼─────────┼─────────┼──────────────────────┤
 │   101   │ FOLLOWS   │    1    │    2    │ {since: "2024-01"}   │
-│   102   │ AUTHORED  │    1    │    3    │ {date: "2024-01-15"} │
+│   102   │ AUTHORED  │    1    │    3    │ {date: "2025-01-15"} │
 └─────────┴───────────┴─────────┴─────────┴──────────────────────┘
 ```
 
@@ -2459,7 +2459,7 @@ CREATE TABLE users (
     {
       "user_id": 789,
       "text": "Great post!",
-      "timestamp": "2024-01-15T10:30:00Z"
+      "timestamp": "2025-01-15T10:30:00Z"
     }
   ]
 }

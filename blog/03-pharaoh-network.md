@@ -117,7 +117,7 @@ Twitter solved this problem in 2010 with **Snowflake IDs**:
 
 Example ID: 1234567890123456789
 │
-├─ Timestamp:  2024-11-01 12:34:56.789 (41 bits)
+├─ Timestamp:  2025-11-01 12:34:56.789 (41 bits)
 ├─ Machine ID: 42                      (10 bits)
 └─ Sequence:   1337                    (13 bits)
 ```

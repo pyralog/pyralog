@@ -279,7 +279,7 @@ let pyralog = PyralogServer::memory_only().await?;
 
 // Replay from S3 archive
 pyralog.replay_from_archive(
-    "s3://backups/logs/2024-01-01",
+    "s3://backups/logs/2025-01-01",
     timestamp_from, // Start point
     timestamp_to,   // End point
 ).await?;

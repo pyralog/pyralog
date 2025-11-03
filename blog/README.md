@@ -532,7 +532,7 @@ Read all 10 posts in order for the complete Pyralog story—from primitives to q
 - **Posts**: 10
 - **Words**: ~47,000
 - **Reading time**: ~2.8 hours
-- **Published**: October 2024
+- **Published**: October 2025
 
 ### Expansion Series (Posts 11-30)
 - **Posts**: 20

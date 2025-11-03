@@ -572,7 +572,7 @@ async fn main() -> Result<()> {
         SELECT *
         FROM pyralog_traces
         WHERE timestamp BETWEEN 
-            '2024-01-15 14:30:00' AND '2024-01-15 14:35:00'
+            '2025-01-15 14:30:00' AND '2025-01-15 14:35:00'
         AND span_name LIKE '%partition_rebalance%'
         ORDER BY timestamp
     "#).await?;

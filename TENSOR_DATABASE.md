@@ -980,7 +980,7 @@ let results = pyralog.ann_search(AnnQuery {
     query_vector: query_embedding,
     k: 10,                          // Top 10 results
     distance: Distance::Cosine,
-    filter: Some("timestamp > '2024-01-01'"), // Pre-filter
+    filter: Some("timestamp > '2025-01-01'"), // Pre-filter
 }).await?;
 
 for result in results {
@@ -1182,7 +1182,7 @@ pyralog.create_feature_table("user_features", FeatureSchema {
 let features = pyralog.get_features_at_time(
     entity_ids: vec![1, 2, 3],
     feature_table: "user_features",
-    timestamp: "2024-01-01T00:00:00Z",
+    timestamp: "2025-01-01T00:00:00Z",
 ).await?;
 ```
 
@@ -1329,7 +1329,7 @@ pyralog.log_training_run(TrainingRun {
     version: "v1.0",
     
     // Training data
-    training_data_snapshot: "users_2024_01_01",
+    training_data_snapshot: "users_2025_01_01",
     feature_view: "user_features_v2",
     
     // Hyperparameters
@@ -3176,7 +3176,7 @@ zarr_array.set_attributes(json!({
     "contact": "climate@example.com",
     "processing": {
         "method": "regridding",
-        "date": "2024-01-15",
+        "date": "2025-01-15",
         "version": "1.0"
     },
     "dimensions": {
@@ -3304,7 +3304,7 @@ pub enum ZarrCodec {
 // Write climate model output directly to Zarr on S3
 pyralog.export_zarr_incremental(
     "climate_model_output",
-    "s3://climate-data/model-run-2024/output.zarr",
+    "s3://climate-data/model-run-2025/output.zarr",
     ZarrIncrementalConfig {
         append_dimension: 0,  // Time dimension
         chunk_on_write: true,
@@ -3382,7 +3382,7 @@ GROUP BY s.station_id, s.name;
 pyralog.store_timeseries(TimeSeriesTensor {
     name: "sensor_data",
     shape: [1_000_000, 50],  // 1M time steps, 50 sensors
-    timestamp_start: "2024-01-01T00:00:00Z",
+    timestamp_start: "2025-01-01T00:00:00Z",
     frequency: Duration::from_secs(1),
     dtype: DType::F32,
     data: tensor,

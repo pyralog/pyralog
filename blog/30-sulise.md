@@ -360,7 +360,7 @@ LogicalPlan::Projection
 SELECT u.name, COUNT(o.id) AS order_count
 FROM users u
 JOIN orders o ON u.id = o.user_id
-WHERE u.created_at > '2024-01-01'
+WHERE u.created_at > '2025-01-01'
 GROUP BY u.name
 HAVING COUNT(o.id) > 10
 ORDER BY order_count DESC
@@ -371,7 +371,7 @@ LIMIT 100;
 ```clojure
 (from users
   (as u)
-  (where (> created_at "2024-01-01"))
+  (where (> created_at "2025-01-01"))
   (join orders (as o) (= u.id o.user_id))
   (group-by u.name)
   (aggregate {:name u.name

@@ -67,7 +67,7 @@ SELECT
     COUNT(*) AS order_count,
     SUM(amount) AS total_spent
 FROM orders
-WHERE created_at > '2024-01-01'
+WHERE created_at > '2025-01-01'
 GROUP BY user_id
 HAVING total_spent > 1000
 ORDER BY total_spent DESC
@@ -425,7 +425,7 @@ sort {year desc, month desc}
 # Define reusable filter
 let active_users = (
   from users
-  filter last_login > @2024-01-01
+  filter last_login > @2025-01-01
   filter status == "active"
 )
 

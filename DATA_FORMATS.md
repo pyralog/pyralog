@@ -116,7 +116,7 @@ pyralog.register_external_table("sales", ParquetTable {
 }).await?;
 
 let results = pyralog.query(
-    "SELECT product, SUM(revenue) FROM sales WHERE year = 2024 GROUP BY product"
+    "SELECT product, SUM(revenue) FROM sales WHERE year = 2025 GROUP BY product"
 ).await?;
 
 // 2. Export to Parquet
@@ -565,13 +565,13 @@ pub async fn analytics_pipeline(
 ) -> Result<()> {
     // 1. Query internal data
     let data = pyralog.query(
-        "SELECT * FROM events WHERE date >= '2024-01-01'"
+        "SELECT * FROM events WHERE date >= '2025-01-01'"
     ).await?;
     
     // 2. Export to Parquet on S3 (cold storage)
     pyralog.export_table("events", ExportConfig {
         format: DataFormat::Parquet,
-        path: "s3://lake/events/date=2024-01-01/part.parquet",
+        path: "s3://lake/events/date=2025-01-01/part.parquet",
         compression: Compression::Zstd(3),
     }).await?;
     
@@ -585,7 +585,7 @@ pub async fn analytics_pipeline(
     let results = pyralog.query(r#"
         SELECT product, SUM(revenue)
         FROM events_archive
-        WHERE date >= '2024-01-01'
+        WHERE date >= '2025-01-01'
         GROUP BY product
     "#).await?;
     
@@ -644,7 +644,7 @@ pub async fn scientific_pipeline(
     
     // 2. Export to Zarr on S3 (incremental)
     pyralog.export_zarr(tensor_id, ExportConfig {
-        path: "s3://climate/2024/temperature.zarr",
+        path: "s3://climate/2025/temperature.zarr",
         chunk_shape: vec![1, 180, 360], // 1 day per chunk
         compressor: ZarrCodec::Blosc {
             cname: CompressionName::Zstd,
@@ -656,7 +656,7 @@ pub async fn scientific_pipeline(
     
     // 3. Analysts query directly from S3
     pyralog.register_external_table("climate", ZarrTable {
-        location: "s3://climate/2024/temperature.zarr",
+        location: "s3://climate/2025/temperature.zarr",
         dimensions: vec!["time", "lat", "lon"],
     }).await?;
     
@@ -664,7 +664,7 @@ pub async fn scientific_pipeline(
         SELECT time, AVG(temperature) as avg_temp
         FROM climate
         WHERE lat BETWEEN 30 AND 50  -- Europe
-          AND time >= '2024-01-01'
+          AND time >= '2025-01-01'
         GROUP BY time
         ORDER BY time
     "#).await?;

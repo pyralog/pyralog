@@ -12,16 +12,16 @@
 
 | # | Title | Published | Words | Read Time |
 |---|-------|-----------|-------|-----------|
-| 1 | Introducing DLog | Oct 2024 | 4,000 | 15 min |
-| 2 | Scarab IDs | Oct 2024 | 3,500 | 12 min |
-| 3 | Pharaoh Network | Oct 2024 | 4,200 | 15 min |
-| 4 | Obelisk Sequencer | Oct 2024 | 3,800 | 13 min |
-| 5 | Exactly-Once Semantics | Oct 2024 | 4,500 | 16 min |
-| 6 | Cryptographic Verification | Oct 2024 | 5,200 | 18 min |
-| 7 | Multi-Model Database | Oct 2024 | 5,800 | 20 min |
-| 8 | Batuta Language | Oct 2024 | 6,500 | 23 min |
-| 9 | Actor-Based Concurrency | Oct 2024 | 5,000 | 18 min |
-| 10 | WireGuard Networking | Oct 2024 | 4,800 | 17 min |
+| 1 | Introducing DLog | Oct 2025 | 4,000 | 15 min |
+| 2 | Scarab IDs | Oct 2025 | 3,500 | 12 min |
+| 3 | Pharaoh Network | Oct 2025 | 4,200 | 15 min |
+| 4 | Obelisk Sequencer | Oct 2025 | 3,800 | 13 min |
+| 5 | Exactly-Once Semantics | Oct 2025 | 4,500 | 16 min |
+| 6 | Cryptographic Verification | Oct 2025 | 5,200 | 18 min |
+| 7 | Multi-Model Database | Oct 2025 | 5,800 | 20 min |
+| 8 | Batuta Language | Oct 2025 | 6,500 | 23 min |
+| 9 | Actor-Based Concurrency | Oct 2025 | 5,000 | 18 min |
+| 10 | WireGuard Networking | Oct 2025 | 4,800 | 17 min |
 
 **Total**: 47,300 words, ~167 min read time
 
@@ -359,7 +359,7 @@ All blog posts align with:
 ## Version History
 
 - **v2.0** (Nov 3, 2025) - Expansion series begun (posts 11-19)
-- **v1.0** (Oct 2024) - Initial series complete (posts 1-10)
+- **v1.0** (Oct 2025) - Initial series complete (posts 1-10)
 
 ---
 
@@ -382,7 +382,7 @@ All blog posts align with:
 - **All commits pushed** ✅
 
 **Timeline**:
-- Original series: October 2024
+- Original series: October 2025
 - Expansion series: November 3, 2025 (single day!)
 - Total expansion time: ~30 hours of work
 

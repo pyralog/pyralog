@@ -751,7 +751,7 @@ async fn execute_query_zero_copy(
 ### Benchmark: Complete Pipeline
 
 ```
-Query: SELECT user_id, SUM(amount) FROM transactions WHERE date > '2024-01-01' GROUP BY user_id
+Query: SELECT user_id, SUM(amount) FROM transactions WHERE date > '2025-01-01' GROUP BY user_id
 Dataset: 1 billion rows, 100GB on disk
 
 Traditional Stack (JSON + Vec<Struct>):
@@ -939,7 +939,7 @@ async fn data_lake_query(pyralog: &PyralogClient, sql: &str) -> Result<()> {
             product,
             SUM(revenue) AS total_revenue
         FROM sales
-        WHERE year = 2024 AND month = 10
+        WHERE year = 2025 AND month = 10
         GROUP BY product
         ORDER BY total_revenue DESC
         LIMIT 10

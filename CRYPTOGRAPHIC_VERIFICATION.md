@@ -897,7 +897,7 @@ let receipt = client.notarize_file(
     Path::new("my-photo.jpg"),
     HashMap::from([
         ("author".into(), "Alice Smith".into()),
-        ("copyright".into(), "2024 Alice Smith".into()),
+        ("copyright".into(), "2025 Alice Smith".into()),
     ]),
 ).await?;
 

@@ -3759,7 +3759,7 @@ ctx.register_table("orders", Arc::new(pyralog_table))?;
 // SQL time-travel query
 let df = ctx.sql("
     SELECT * FROM orders
-    FOR SYSTEM_TIME AS OF TIMESTAMP '2024-01-15 14:30:00'
+    FOR SYSTEM_TIME AS OF TIMESTAMP '2025-01-15 14:30:00'
     WHERE user_id = 'user-123'
 ").await?;
 
@@ -5661,7 +5661,7 @@ async fn main() -> Result<()> {
     let external = ExternalTableManager::new("logs-archive", "us-west-2").await?;
     external.register_external_table(
         "archived_logs",
-        "s3://logs-archive/year=2024/month=*/day=*/*.parquet"
+        "s3://logs-archive/year=2025/month=*/day=*/*.parquet"
     ).await?;
     
     // 4. Full-text search with inverted index
@@ -5705,7 +5705,7 @@ async fn main() -> Result<()> {
             UNION ALL
             
             SELECT level FROM archived_logs
-            WHERE year = 2024 AND month >= 1
+            WHERE year = 2025 AND month >= 1
         )
         GROUP BY level
     ").await?;
@@ -6076,7 +6076,7 @@ impl BulkLoader {
 let result = client.copy_into(CopyIntoCommand {
     source: DataSource::S3 {
         bucket: "my-logs-archive".into(),
-        prefix: "application-logs/2024/".into(),
+        prefix: "application-logs/2025/".into(),
     },
     target_log: "application-logs",
     format: FileFormat::Json { array: false },
@@ -6329,7 +6329,7 @@ stage_mgr.create_stage(
     "logs-2024-q1".into(),
     DataSource::S3 {
         bucket: "archive".into(),
-        prefix: "logs/2024/q1/".into(),
+        prefix: "logs/2025/q1/".into(),
     },
     FileFormat::Parquet,
 ).await?;
@@ -6457,13 +6457,13 @@ let inferencer = SchemaInferencer {
 
 let json_data = vec![
     json!({
-        "timestamp": "2024-01-01T00:00:00Z",
+        "timestamp": "2025-01-01T00:00:00Z",
         "level": "INFO",
         "message": "Server started",
         "user_id": 12345,
     }),
     json!({
-        "timestamp": "2024-01-01T00:01:00Z",
+        "timestamp": "2025-01-01T00:01:00Z",
         "level": "ERROR",
         "message": "Connection failed",
         "user_id": 67890,

@@ -1061,7 +1061,7 @@ filter region == @region
 
 # ❌ Bad: Hardcoded values
 from orders
-filter created_at > '2024-01-01'
+filter created_at > '2025-01-01'
 filter region == "US"
 ```
 

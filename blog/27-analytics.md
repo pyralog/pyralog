@@ -152,7 +152,7 @@ Size: 100GB uncompressed, 20GB compressed
 ### Query 1: Simple Aggregation
 
 ```sql
-SELECT COUNT(*) FROM events WHERE timestamp > '2024-01-01';
+SELECT COUNT(*) FROM events WHERE timestamp > '2025-01-01';
 ```
 
 **Results**:
@@ -173,7 +173,7 @@ SELECT
     COUNT(*) as count,
     AVG(value) as avg_value
 FROM events
-WHERE timestamp > '2024-01-01'
+WHERE timestamp > '2025-01-01'
 GROUP BY event_type;
 ```
 
@@ -195,7 +195,7 @@ SELECT
     COUNT(e.event_id) as event_count
 FROM events e
 JOIN users u ON e.user_id = u.id
-WHERE e.timestamp > '2024-01-01'
+WHERE e.timestamp > '2025-01-01'
 GROUP BY u.name;
 ```
 
@@ -412,8 +412,8 @@ SELECT COUNT(*) FROM events;
 
 -- Good: Only scans relevant partition
 SELECT COUNT(*) FROM events
-WHERE timestamp >= '2024-01-01'
-  AND timestamp < '2024-02-01';
+WHERE timestamp >= '2025-01-01'
+  AND timestamp < '2025-02-01';
 ```
 
 **Speedup**: 10-100× faster

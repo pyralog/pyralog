@@ -47,7 +47,7 @@ Old value lost forever! ✗
 Immutable knowledge databases:
 ```
 Transaction {
-  Assert: [user:123 :email "new@email.com" timestamp:2024-11-01]
+  Assert: [user:123 :email "new@email.com" timestamp:2025-11-01]
   (Previous fact [user:123 :email "old@email.com"] still exists)
 }
                 ↓
@@ -982,8 +982,8 @@ WHERE tx IN (
     SELECT tx FROM facts
     WHERE attribute = 'tx/author'
       AND value = 'user:alice'
-      AND tx >= '2024-01-01'
-      AND tx <= '2024-12-31'
+      AND tx >= '2025-01-01'
+      AND tx <= '2025-12-31'
 );
 ```
 

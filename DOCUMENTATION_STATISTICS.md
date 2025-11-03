@@ -166,7 +166,7 @@ Words:  41,980
 ### Documentation Timeline
 
 ```
-Phase 1 (Oct 2024): Initial documentation
+Phase 1 (Oct 2025): Initial documentation
   • 10 blog posts (~47K words)
   • Core architecture docs
   • Total: ~25 files, ~30K lines
@@ -185,7 +185,7 @@ Growth: ~3× increase in 1 month!
 ### Word Count Progression
 
 ```
-October 2024:     ~110,000 words
+October 2025:     ~110,000 words
 November 2025:    ~328,000 words
 Growth:           +198% (3× larger)
 ```
