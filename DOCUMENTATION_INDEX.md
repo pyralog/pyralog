@@ -64,6 +64,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 - **[BATUTA](BATUTA.md)** ⭐ **NEW: Theoretically-founded programming language** (Category Theory, Functional Relational Algebra, Sulise foundations)
 - **[PRQL](PRQL.md)** ⭐ **NEW: Pragmatic relational query language** (Modern, readable SQL alternative)
 - **[GRAPHQL](GRAPHQL.md)** ⭐ **NEW: Flexible API query language** (Client-driven, type-safe, real-time subscriptions)
+- **[JSON-RPC/WebSocket](JSONRPC_WEBSOCKET.md)** ⭐ **NEW: Lightweight real-time RPC** (Low-latency, bidirectional, binary support)
 
 ### Development
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute to Pyralog
@@ -695,6 +696,54 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
     - Batuta = Full applications (Category Theory)
   - **~1,100 lines of comprehensive documentation**
 
+##### JSON-RPC over WebSocket
+- [JSONRPC_WEBSOCKET.md](JSONRPC_WEBSOCKET.md) ⭐ **NEW: Lightweight Real-Time RPC**
+  - **⚠️ Pragmatic Protocol** (simple, no theoretical foundations)
+    - **Use Batuta for**: Category Theory, formal semantics, business logic
+    - **Use JSON-RPC/WS for**: Low-latency RPC, real-time communication
+    - **Positioning**: RPC protocol (not a query language)
+  - **Simple Protocol**
+    - JSON-RPC 2.0 spec compliance
+    - Minimal overhead
+    - Easy to implement
+  - **Low Latency**
+    - <5ms request latency
+    - Persistent connections
+    - Binary frame support
+  - **Bidirectional Communication**
+    - Server push notifications
+    - Real-time event streams
+    - Client and server can initiate
+  - **Binary Support**
+    - Arrow IPC for zero-copy
+    - Efficient large datasets
+    - Mixed JSON/binary
+  - **Streaming Results**
+    - Large result set streaming
+    - Batch notifications
+    - 1M rows/sec throughput
+  - **Integration**
+    - SQL queries
+    - PRQL execution
+    - Batuta execution
+    - GraphQL optional
+  - **Performance**
+    - 100K simple queries/sec
+    - 200K binary queries/sec
+    - 500K notifications/sec
+    - Connection pooling
+  - **Use Cases**
+    - Real-time dashboards
+    - Chat applications
+    - IoT data ingestion
+    - Low-latency trading
+  - **Comparison**
+    - JSON-RPC/WS = Real-time RPC (<5ms)
+    - GraphQL = API queries (10-20ms)
+    - REST = Simple APIs (50-100ms)
+    - gRPC = Microservices (5-10ms)
+  - **~1,100 lines of comprehensive documentation**
+
 #### Advanced Features
 - [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) ⭐ **Updated with Percolator protocol**
   - **Pyralog's Architectural Advantages** (new section)
@@ -1104,10 +1153,10 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 43 markdown files
-  - 37 main documentation files
+- **Total Documents**: 44 markdown files
+  - 38 main documentation files
   - 6 blog posts
-- **Total Lines**: ~76,000+ lines of documentation
+- **Total Lines**: ~77,000+ lines of documentation
 - **Coverage**:
   - ✅ Architecture and design
   - ✅ Research contributions and academic paper
@@ -1168,6 +1217,7 @@ Pyralog unifies cryptographic verification, actor-based concurrency, functional 
 | Batuta Language | [BATUTA.md](BATUTA.md) | [ACTOR_MODEL.md](ACTOR_MODEL.md), [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) |
 | PRQL Query Language | [PRQL.md](PRQL.md) | [BATUTA.md](BATUTA.md), [FUNCTIONAL_RELATIONAL_ALGEBRA.md](FUNCTIONAL_RELATIONAL_ALGEBRA.md), [MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md) |
 | GraphQL | [GRAPHQL.md](GRAPHQL.md) | [BATUTA.md](BATUTA.md), [PRQL.md](PRQL.md), [MULTI_MODEL_DATABASE.md](MULTI_MODEL_DATABASE.md) |
+| JSON-RPC/WebSocket | [JSONRPC_WEBSOCKET.md](JSONRPC_WEBSOCKET.md) | [BATUTA.md](BATUTA.md), [ARROW.md](ARROW.md) |
 
 ## 📝 Documentation Quality
 
@@ -1222,7 +1272,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help improve documentation.
 
 ---
 
-**Last Updated**: 2025-11-03 (includes GRAPHQL.md, PRQL.md, Batuta theoretical foundations emphasis)
+**Last Updated**: 2025-11-03 (includes JSONRPC_WEBSOCKET.md, GRAPHQL.md, PRQL.md, Batuta theoretical foundations)
 
 **Maintainers**: Pyralog Team
 

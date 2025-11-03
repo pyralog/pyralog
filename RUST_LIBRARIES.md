@@ -15,8 +15,8 @@ Battle-tested libraries for building high-performance, distributed log systems.
 
 ### By Category
 - [Async Runtime](#-async-runtime) - Tokio, async-std
-- [Serialization](#-serialization) - bincode, protobuf, JSON
-- [Networking](#-networking) - gRPC, HTTP, QUIC
+- [Serialization](#-serialization) - bincode, JSON
+- [Networking](#-networking) - JSON-RPC/WebSocket, Arrow Flight, HTTP
 - [Storage & I/O](#️-storage--io) - mmap, io_uring, RocksDB
 - [Concurrency](#-concurrency--data-structures) - DashMap, parking_lot, crossbeam
 - [Observability](#-observability) - tracing, prometheus, OpenTelemetry
@@ -37,7 +37,7 @@ Battle-tested libraries for building high-performance, distributed log systems.
 |---------|---------|---------|-----|
 | **Async** | `tokio` | 1.40 | Industry standard, best ecosystem |
 | **Serialization** | `bincode` | 1.3 | Fastest binary format |
-| **Networking** | `tonic` | 0.12 | High-performance gRPC |
+| **Networking** | `tokio-tungstenite` | 0.21 | JSON-RPC/WebSocket (<5ms latency) |
 | **Storage** | `memmap2` | 0.9 | Zero-copy file I/O |
 | **Errors** | `thiserror` | 1.0 | Structured errors for libraries |
 | **Logging** | `tracing` | 0.1 | Async-aware structured logging |
@@ -59,11 +59,13 @@ tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "sync", "fs
 
 # Serialization  
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 bincode = "1.3"
 
 # Networking
-tonic = "0.12"
-prost = "0.13"
+tokio-tungstenite = "0.21"  # JSON-RPC/WebSocket (primary)
+arrow-flight = "53.0"       # Zero-copy data transport
+hyper = "1.5"               # HTTP/REST
 
 # Storage
 memmap2 = "0.9"
@@ -195,32 +197,69 @@ let json = serde_json::to_string_pretty(&config)?;
 
 | Protocol | Crate | Version | Best For |
 |----------|-------|---------|----------|
-| **gRPC** | `tonic` | 0.12 | Service-to-service (recommended) |
+| **JSON-RPC/WS** | `tokio-tungstenite` | 0.21 | **Primary RPC** (real-time, <5ms) |
+| **Arrow Flight** | `arrow-flight` | 53.0 | Zero-copy data transport |
 | **HTTP** | `hyper` | 1.5 | REST APIs, admin interfaces |
 | **QUIC** | `quinn` | 0.11 | Low-latency replication |
+| ~~**gRPC**~~ | ~~`tonic`~~ | ~~0.12~~ | ❌ **Not needed** (JSON-RPC/WS is simpler) |
 
-### Tonic (gRPC - Recommended)
+### tokio-tungstenite (JSON-RPC over WebSocket - Primary)
 
 ```toml
-tonic = "0.12"
-prost = "0.13"
-
-[build-dependencies]
-tonic-build = "0.12"
+tokio-tungstenite = "0.21"
+serde_json = "1.0"
 ```
 
 ```rust
-#[tonic::async_trait]
-impl PyralogService for PyralogServer {
-    async fn produce(&self, req: Request<ProduceRequest>) 
-        -> Result<Response<ProduceResponse>, Status> {
-        let offset = self.append(req.into_inner().record).await?;
-        Ok(Response::new(ProduceResponse { offset }))
+use tokio_tungstenite::{accept_async, tungstenite::Message};
+
+async fn handle_client(ws_stream: WebSocketStream<TcpStream>) {
+    while let Some(msg) = ws_stream.next().await {
+        let msg = msg?;
+        if msg.is_text() {
+            let request: JsonRpcRequest = serde_json::from_str(msg.to_text()?)?;
+            
+            // Execute query
+            let result = match request.method.as_str() {
+                "query.execute" => execute_query(&request.params).await?,
+                "query.stream" => stream_results(&request.params).await?,
+                _ => return Err("Unknown method"),
+            };
+            
+            // Send response
+            let response = JsonRpcResponse {
+                jsonrpc: "2.0",
+                result: Some(result),
+                id: request.id,
+            };
+            ws_stream.send(Message::Text(serde_json::to_string(&response)?)).await?;
+        }
     }
 }
 ```
 
-**Why**: High performance, streaming, built on Tokio
+**Why**: Simpler than gRPC, lower latency (<5ms vs 5-10ms), native browser support, Arrow IPC for binary
+
+### arrow-flight (Zero-Copy Data Transport)
+
+```toml
+arrow-flight = "53.0"
+tonic = "0.12"  # Required by arrow-flight
+```
+
+```rust
+use arrow_flight::{FlightService, FlightDescriptor};
+
+#[tonic::async_trait]
+impl FlightService for PyralogFlightService {
+    async fn do_get(&self, request: Request<Ticket>) -> Result<Response<Self::DoGetStream>, Status> {
+        let batches = self.query(request.into_inner()).await?;
+        Ok(Response::new(batches))
+    }
+}
+```
+
+**Why**: 3× faster than gRPC/Protobuf for large datasets, zero-copy Arrow IPC format
 
 ### Hyper (HTTP)
 
@@ -228,7 +267,23 @@ impl PyralogService for PyralogServer {
 hyper = { version = "1.5", features = ["full"] }
 ```
 
-**Use for**: REST APIs, metrics endpoints, admin consoles
+**Use for**: REST APIs, metrics endpoints, admin consoles, health checks
+
+### ~~Tonic (gRPC - Not Recommended)~~
+
+> ⚠️ **Pyralog does not need gRPC**. Use JSON-RPC/WS instead:
+> - **Simpler**: No Protobuf schemas or code generation
+> - **Faster**: <5ms vs 5-10ms latency
+> - **Better binary**: Arrow IPC (zero-copy) > Protobuf (serialize/deserialize)
+> - **Browser native**: WebSocket everywhere (gRPC needs grpc-web proxy)
+>
+> See [JSONRPC_WEBSOCKET.md](JSONRPC_WEBSOCKET.md) for details.
+
+```toml
+# Only needed for Arrow Flight (which wraps gRPC)
+tonic = "0.12"      # Dependency of arrow-flight
+prost = "0.13"      # Dependency of arrow-flight
+```
 
 ---
 
@@ -594,11 +649,13 @@ edition = "2021"
 # Core
 tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "sync", "fs", "net"] }
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 bincode = "1.3"
 
 # Networking
-tonic = "0.12"
-prost = "0.13"
+tokio-tungstenite = "0.21"  # JSON-RPC/WebSocket (primary)
+arrow-flight = "53.0"       # Zero-copy data transport (includes tonic)
+hyper = "1.5"               # HTTP/REST
 
 # Storage
 memmap2 = "0.9"
@@ -629,7 +686,7 @@ proptest = "1.5"
 criterion = { version = "0.5", features = ["async_tokio"] }
 
 [build-dependencies]
-tonic-build = "0.12"
+# (none needed - JSON-RPC/WS has no code generation)
 
 [[bench]]
 name = "benchmarks"
