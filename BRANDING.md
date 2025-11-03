@@ -214,9 +214,9 @@ let id = counter.increment()?;  // Crash-safe!
 **What It Does**:
 - Scarab ID generation (unique, time-ordered IDs)
 - Session ID allocation (exactly-once semantics)
-- Epoch management (partition leadership)
 - Transaction ID generation
 - Distributed timestamp service (TSO)
+- Cluster-wide coordination primitives
 - 4B+ operations/sec across network
 - No data storage (pure coordination)
 

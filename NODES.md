@@ -142,9 +142,9 @@ min_in_sync_replicas = 2
 
 2. **Distributed Coordination**
    - Session ID allocation for exactly-once semantics
-   - Epoch management for partition leadership
    - Transaction ID generation
    - Timestamp service (distributed TSO)
+   - Cluster-wide coordination primitives
 
 3. **Lightweight Consensus**
    - Raft for counter allocation (small metadata only)
@@ -300,23 +300,25 @@ Key:
 1. Pyramid Leader Fails
    (detected via Raft heartbeat timeout)
 
-2. Pyramid Follower Promoted
+2. Raft Election
+   "Followers start election for new term"
+   "Candidate requests votes"
+
+3. Pyramid Follower Promoted
    "I'm the new leader for partition X"
+   "Term/Epoch = 42 (from Raft)"
 
-3. New Leader → Obelisk (Pharaoh Network)
-   "Allocate new epoch for partition X"
+4. New Leader → Raft Consensus
+   "Propose: I am leader for term 42"
    
-4. Obelisk → New Leader
-   "epoch = 42 (from counter #3)"
+5. Raft → New Leader
+   "Committed: term 42, leader confirmed"
 
-5. New Leader → Raft Consensus
-   "Propose: Activate epoch 42"
+6. New Leader
+   "Ready to accept writes with term 42"
    
-6. Raft → New Leader
-   "Committed: epoch 42 active"
-
-7. New Leader
-   "Ready to accept writes with epoch 42"
+Note: Epochs are managed by Raft internally, not by Obelisk nodes.
+Raft terms serve as partition leadership epochs.
 ```
 
 ### Pattern 3: Scarab ID Generation

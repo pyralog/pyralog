@@ -71,7 +71,7 @@ Pyralog has evolved from a distributed log into a **comprehensive computing plat
   - See [CLUSTER_VS_NETWORK.md](CLUSTER_VS_NETWORK.md) for cluster vs network hierarchy
 - **🗿 Obelisk Nodes**: Pharaoh Network nodes with crash-safe atomic counters (~1-2μs per increment)
 - **☀️ Pharaoh Network**: Eliminate all centralized bottlenecks via 🪲 Scarab IDs
-  - 4B+ operations/sec across network (transactions, timestamps, IDs, epochs)
+  - 4B+ operations/sec across network (IDs, sessions, transactions, timestamps)
   - Lightweight coordination layer (scales horizontally)
   - No data storage (pure coordination)
 - **🔺 Pyramid Nodes**: Pyralog cluster nodes for storage, consensus, and compute
