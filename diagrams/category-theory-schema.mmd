@@ -1,0 +1,208 @@
+graph TB
+    subgraph "Category Theory Foundation"
+        CT_DEF[Category Theory:<br/>Mathematical framework<br/>for schema correctness]
+        
+        OBJECTS[Objects:<br/>Types, tables, collections]
+        MORPHISMS[Morphisms:<br/>Functions, queries, transforms]
+        COMPOSITION[Composition:<br/>f ∘ g associative]
+        IDENTITY[Identity:<br/>id : A → A]
+        
+        CT_DEF --> OBJECTS
+        CT_DEF --> MORPHISMS
+        CT_DEF --> COMPOSITION
+        CT_DEF --> IDENTITY
+    end
+    
+    subgraph "Schema as Category"
+        direction TB
+        
+        SCHEMA_CAT[Schema = Category]
+        
+        subgraph "Objects (Types)"
+            TYPE_USER[User type:<br/>id: Int64<br/>name: Utf8<br/>age: Int32]
+            TYPE_ORDER[Order type:<br/>id: Int64<br/>user_id: Int64<br/>total: Float64]
+            TYPE_PRODUCT[Product type:<br/>id: Int64<br/>name: Utf8<br/>price: Float64]
+        end
+        
+        subgraph "Morphisms (Relations)"
+            MORPH_USER_ORDER[user → order:<br/>Foreign key<br/>user.id = order.user_id]
+            MORPH_ORDER_PRODUCT[order → product:<br/>Foreign key<br/>order.product_id = product.id]
+        end
+        
+        SCHEMA_CAT --> TYPE_USER
+        SCHEMA_CAT --> TYPE_ORDER
+        SCHEMA_CAT --> TYPE_PRODUCT
+        
+        TYPE_USER -->|morphism| MORPH_USER_ORDER
+        MORPH_USER_ORDER --> TYPE_ORDER
+        TYPE_ORDER -->|morphism| MORPH_ORDER_PRODUCT
+        MORPH_ORDER_PRODUCT --> TYPE_PRODUCT
+    end
+    
+    subgraph "Instance as Functor"
+        direction TB
+        
+        FUNCTOR[Instance = Functor<br/>From schema to Sets]
+        
+        subgraph "Mapping Objects"
+            MAP_USER[User → Set of users<br/>{Alice, Bob, Carol}]
+            MAP_ORDER[Order → Set of orders<br/>{Order1, Order2}]
+        end
+        
+        subgraph "Mapping Morphisms"
+            MAP_RELATION[user → order<br/>→<br/>Function: user_id → orders]
+            MAP_PRESERVE[Preserves composition:<br/>F g ∘ f = F g ∘ F f]
+        end
+        
+        FUNCTOR --> MAP_USER
+        FUNCTOR --> MAP_ORDER
+        FUNCTOR --> MAP_RELATION
+        MAP_RELATION --> MAP_PRESERVE
+    end
+    
+    subgraph "Query as Natural Transformation"
+        direction TB
+        
+        NAT_TRANS[Query = Natural Transformation<br/>Between functors]
+        
+        INSTANCE_A[Instance A<br/>Before query]
+        INSTANCE_B[Instance B<br/>After query]
+        
+        QUERY_TRANSFORM[Query:<br/>SELECT, JOIN, WHERE<br/>Natural transformation η]
+        
+        COMMUTE[Commutative diagram:<br/>η preserves structure]
+        
+        NAT_TRANS --> INSTANCE_A
+        NAT_TRANS --> INSTANCE_B
+        INSTANCE_A -->|η| QUERY_TRANSFORM
+        QUERY_TRANSFORM --> INSTANCE_B
+        QUERY_TRANSFORM --> COMMUTE
+    end
+    
+    subgraph "Schema Evolution as Functor"
+        direction TB
+        
+        SCHEMA_V1[Schema v1:<br/>users id, name]
+        
+        MIGRATION[Migration:<br/>Add column email<br/>= Functor F]
+        
+        SCHEMA_V2[Schema v2:<br/>users id, name, email]
+        
+        DATA_MIGRATION[Data migration:<br/>F instance<br/>= New instance]
+        
+        PROVEN_CORRECT[Proven correct:<br/>Functor laws<br/>guarantee consistency]
+        
+        SCHEMA_V1 --> MIGRATION
+        MIGRATION --> SCHEMA_V2
+        SCHEMA_V2 --> DATA_MIGRATION
+        DATA_MIGRATION --> PROVEN_CORRECT
+    end
+    
+    subgraph "Pullback: Universal Join"
+        direction TB
+        
+        PULLBACK_DEF[Pullback:<br/>Universal property<br/>for joins]
+        
+        subgraph "Commutative Square"
+            A[Table A: users]
+            B[Table B: orders]
+            C[Common: user_id]
+            P[Pullback P:<br/>A ×_C B<br/>JOIN result]
+            
+            A -->|π1| C
+            B -->|π2| C
+            P -->|p1| A
+            P -->|p2| B
+        end
+        
+        UNIQUE[Unique morphism:<br/>Deterministic result]
+        TYPE_SAFE[Type-safe:<br/>Compile-time check]
+        
+        PULLBACK_DEF --> P
+        P --> UNIQUE
+        P --> TYPE_SAFE
+    end
+    
+    subgraph "Algebraic Rewrite Rules"
+        direction TB
+        
+        RULE_FILTER[Filter pushdown:<br/>σ_p A ⊗ B<br/>≡<br/>σ_p A ⊗ B]
+        
+        RULE_PROJECT[Projection pruning:<br/>π_x π_y,z A<br/>≡<br/>π_x A]
+        
+        RULE_JOIN[Join commutativity:<br/>A ⊗ B<br/>≡<br/>B ⊗ A]
+        
+        RULE_COMPOSE[Composition:<br/> f ∘ g ∘ h]
+        
+        RULE_PROVEN[All proven correct!<br/>Category theory<br/>guarantees]
+        
+        RULE_FILTER --> RULE_PROVEN
+        RULE_PROJECT --> RULE_PROVEN
+        RULE_JOIN --> RULE_PROVEN
+        RULE_COMPOSE --> RULE_PROVEN
+    end
+    
+    subgraph "Monad for Query Composition"
+        direction TB
+        
+        MONAD[Query Monad:<br/>Composable operations]
+        
+        UNIT[Unit return:<br/>Wrap value]
+        BIND[Bind >>=:<br/>Chain operations]
+        LAWS[Monad laws:<br/>Left/right identity<br/>Associativity]
+        
+        MONAD --> UNIT
+        MONAD --> BIND
+        MONAD --> LAWS
+        
+        EXAMPLE[```batuta<br/>from users<br/>|> filter .age > 18<br/>|> map .name<br/>|> take 10<br/>```<br/><br/>Each step = monad bind!]
+    end
+    
+    subgraph "Benefits in Practice"
+        direction LR
+        
+        BENEFIT_CORRECT[Correctness:<br/>Proven joins<br/>No runtime errors]
+        
+        BENEFIT_OPTIMIZE[Optimization:<br/>Algebraic rewrite<br/>14× speedup]
+        
+        BENEFIT_TYPE[Type Safety:<br/>Compile-time<br/>schema checks]
+        
+        BENEFIT_MIGRATE[Safe Migration:<br/>Functor laws<br/>guarantee consistency]
+        
+        PROVEN_CORRECT -.->|Enable| BENEFIT_CORRECT
+        RULE_PROVEN -.->|Enable| BENEFIT_OPTIMIZE
+        TYPE_SAFE -.->|Enable| BENEFIT_TYPE
+        DATA_MIGRATION -.->|Enable| BENEFIT_MIGRATE
+    end
+    
+    subgraph "Comparison with Traditional"
+        direction TB
+        
+        TRADITIONAL[Traditional SQL:<br/>• Ad-hoc semantics<br/>• Runtime errors<br/>• No formal proofs<br/>• Schema changes risky]
+        
+        CATEGORY_THEORY[Category Theory:<br/>✅ Mathematical foundation<br/>✅ Compile-time checks<br/>✅ Proven correct<br/>✅ Safe migrations]
+        
+        EXAMPLE_ERROR[Traditional:<br/>SELECT * FROM users<br/>JOIN orders<br/><br/>If schema changes:<br/>💥 Runtime error!]
+        
+        EXAMPLE_SAFE[Category Theory:<br/>users.join orders<br/>on .id = .user_id<br/><br/>If schema changes:<br/>✅ Compile error<br/>Fix before deploy!]
+    end
+    
+    %% Styling
+    classDef foundation fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef schema fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef instance fill:#F57C00,stroke:#E65100,color:#fff
+    classDef query fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef evolution fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef pullback fill:#E91E63,stroke:#C2185B,color:#fff
+    classDef rules fill:#FFD700,stroke:#FFA000,color:#000
+    classDef benefit fill:#7CB342,stroke:#558B2F,color:#fff
+    
+    class CT_DEF,OBJECTS,MORPHISMS,COMPOSITION,IDENTITY foundation
+    class SCHEMA_CAT,TYPE_USER,TYPE_ORDER,TYPE_PRODUCT,MORPH_USER_ORDER,MORPH_ORDER_PRODUCT schema
+    class FUNCTOR,MAP_USER,MAP_ORDER,MAP_RELATION,MAP_PRESERVE instance
+    class NAT_TRANS,INSTANCE_A,INSTANCE_B,QUERY_TRANSFORM,COMMUTE,MONAD,UNIT,BIND,LAWS,EXAMPLE query
+    class SCHEMA_V1,MIGRATION,SCHEMA_V2,DATA_MIGRATION,PROVEN_CORRECT evolution
+    class PULLBACK_DEF,A,B,C,P,UNIQUE,TYPE_SAFE pullback
+    class RULE_FILTER,RULE_PROJECT,RULE_JOIN,RULE_COMPOSE,RULE_PROVEN rules
+    class BENEFIT_CORRECT,BENEFIT_OPTIMIZE,BENEFIT_TYPE,BENEFIT_MIGRATE,TRADITIONAL,CATEGORY_THEORY,EXAMPLE_ERROR,EXAMPLE_SAFE benefit
+

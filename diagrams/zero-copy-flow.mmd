@@ -1,0 +1,161 @@
+graph LR
+    subgraph "Layer 1: Network Transport (Arrow Flight)"
+        direction TB
+        
+        CLIENT[Client Application]
+        FLIGHT_CLIENT[Arrow Flight Client]
+        NETWORK[Network<br/>QUIC/TCP]
+        FLIGHT_SERVER[Arrow Flight Server]
+        SERVER[Pyralog Server]
+        
+        CLIENT --> FLIGHT_CLIENT
+        FLIGHT_CLIENT --> NETWORK
+        NETWORK --> FLIGHT_SERVER
+        FLIGHT_SERVER --> SERVER
+        
+        FLIGHT_DESC[Zero-copy IPC:<br/>• No serialize/deserialize<br/>• Memory-mapped buffers<br/>• Direct pointer sharing]
+    end
+    
+    subgraph "Layer 2: Storage (Memory-Mapped Files)"
+        direction TB
+        
+        LSM[LSM Memtable<br/>Arrow RecordBatch]
+        PARQUET[Parquet Segments<br/>Columnar on disk]
+        MMAP[Memory-mapped I/O<br/>mmap Parquet files]
+        ARROW_CACHE[Arrow Cache<br/>Shared memory]
+        
+        LSM --> ARROW_CACHE
+        PARQUET --> MMAP
+        MMAP --> ARROW_CACHE
+        
+        MMAP_DESC[Zero-copy disk:<br/>• OS page cache<br/>• No read syscalls<br/>• Direct memory access]
+    end
+    
+    subgraph "Layer 3: File References (External Data)"
+        direction TB
+        
+        EXTERNAL_REF[File Reference<br/>path: /data/model.safetensors]
+        SAFETENSORS[Safetensors File<br/>ML model<br/>10 GB]
+        ZARR[Zarr Array<br/>Scientific data<br/>100 GB]
+        PARQUET_EXT[Parquet File<br/>Analytics data<br/>1 TB]
+        
+        EXTERNAL_REF --> SAFETENSORS
+        EXTERNAL_REF --> ZARR
+        EXTERNAL_REF --> PARQUET_EXT
+        
+        MMAP_EXTERNAL[All memory-mapped!<br/>No copies to database]
+        
+        SAFETENSORS -.->|mmap| MMAP_EXTERNAL
+        ZARR -.->|mmap| MMAP_EXTERNAL
+        PARQUET_EXT -.->|mmap| MMAP_EXTERNAL
+        
+        REF_DESC[Zero-copy external:<br/>• Store path, not data<br/>• Direct mmap access<br/>• No data duplication]
+    end
+    
+    subgraph "Layer 4: DMA Transfers (GPU)"
+        direction TB
+        
+        CPU_MEM[CPU Memory<br/>Arrow buffer]
+        GPU_MEM[GPU Memory<br/>CUDA buffer]
+        DMA[DMA Transfer<br/>No CPU involvement]
+        GPU_COMPUTE[GPU Compute<br/>Vector ops, ML]
+        
+        CPU_MEM --> DMA
+        DMA --> GPU_MEM
+        GPU_MEM --> GPU_COMPUTE
+        
+        DMA_DESC[Zero-copy GPU:<br/>• Direct memory access<br/>• No CPU bottleneck<br/>• Parallel transfers]
+    end
+    
+    subgraph "End-to-End Example: ML Query"
+        direction TB
+        
+        E2E_CLIENT[Client:<br/>query embeddings]
+        E2E_FLIGHT[Arrow Flight:<br/>Send query<br/>zero-copy IPC]
+        E2E_SERVER[Server:<br/>Execute query]
+        E2E_MMAP[Mmap:<br/>Load /data/embeddings.safetensors<br/>zero-copy disk]
+        E2E_ARROW[Arrow RecordBatch:<br/>Embeddings in memory<br/>zero-copy format]
+        E2E_DLPACK[DLPack export:<br/>Share with PyTorch<br/>zero-copy tensor]
+        E2E_RESULT[Return to client:<br/>Arrow Flight<br/>zero-copy IPC]
+        
+        E2E_CLIENT --> E2E_FLIGHT
+        E2E_FLIGHT --> E2E_SERVER
+        E2E_SERVER --> E2E_MMAP
+        E2E_MMAP --> E2E_ARROW
+        E2E_ARROW --> E2E_DLPACK
+        E2E_DLPACK --> E2E_RESULT
+        E2E_RESULT --> E2E_CLIENT
+        
+        E2E_SUMMARY[Total copies: ZERO!<br/>All layers use<br/>shared memory/mmap]
+    end
+    
+    subgraph "Traditional vs Zero-Copy"
+        direction TB
+        
+        subgraph "Traditional Pipeline"
+            T1[Client: Serialize JSON<br/>10 GB → 15 GB]
+            T2[Network: Copy to buffer<br/>15 GB]
+            T3[Server: Deserialize<br/>15 GB → 10 GB objects]
+            T4[Storage: Read from disk<br/>10 GB → 20 GB memory]
+            T5[Process: Transform<br/>20 GB → 25 GB]
+            T6[Serialize result<br/>25 GB → 30 GB JSON]
+            T7[Network: Send<br/>30 GB]
+            T8[Client: Deserialize<br/>30 GB → 25 GB]
+            
+            T1 --> T2 --> T3 --> T4 --> T5 --> T6 --> T7 --> T8
+            
+            T_TOTAL[Total data movement:<br/>145 GB for 10 GB dataset!<br/>14.5× overhead]
+        end
+        
+        subgraph "Zero-Copy Pipeline"
+            Z1[Client: Arrow batch<br/>10 GB shared memory]
+            Z2[Network: Flight IPC<br/>Share pointers<br/>0 bytes copied!]
+            Z3[Server: Arrow batch<br/>Same 10 GB buffer]
+            Z4[Storage: mmap file<br/>0 bytes copied!]
+            Z5[Process: Arrow compute<br/>SIMD on same 10 GB]
+            Z6[Network: Flight IPC<br/>Share pointers]
+            Z7[Client: Arrow batch<br/>Same buffer]
+            
+            Z1 --> Z2 --> Z3 --> Z4 --> Z5 --> Z6 --> Z7
+            
+            Z_TOTAL[Total data movement:<br/>10 GB for 10 GB dataset<br/>1× (optimal!)]
+        end
+    end
+    
+    subgraph "Performance Benefits"
+        direction LR
+        
+        BENEFIT_LATENCY[Latency:<br/>10-100× lower<br/>No copy overhead]
+        BENEFIT_THROUGHPUT[Throughput:<br/>10× higher<br/>Network/disk bandwidth]
+        BENEFIT_MEMORY[Memory:<br/>50-90% less<br/>Single copy]
+        BENEFIT_CPU[CPU:<br/>80% less<br/>No serialization]
+        
+        Z_TOTAL -.->|Enable| BENEFIT_LATENCY
+        Z_TOTAL -.->|Enable| BENEFIT_THROUGHPUT
+        Z_TOTAL -.->|Enable| BENEFIT_MEMORY
+        Z_TOTAL -.->|Enable| BENEFIT_CPU
+    end
+    
+    %% Cross-layer connections
+    ARROW_CACHE -.->|Feed| E2E_ARROW
+    MMAP_EXTERNAL -.->|Used by| E2E_MMAP
+    FLIGHT_SERVER -.->|Provide| E2E_FLIGHT
+    DMA -.->|Used in| GPU_COMPUTE
+    
+    %% Styling
+    classDef network fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef storage fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef external fill:#F57C00,stroke:#E65100,color:#fff
+    classDef gpu fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef example fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef traditional fill:#E53935,stroke:#C62828,color:#fff
+    classDef zerocopy fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class CLIENT,FLIGHT_CLIENT,NETWORK,FLIGHT_SERVER,SERVER,FLIGHT_DESC network
+    class LSM,PARQUET,MMAP,ARROW_CACHE,MMAP_DESC storage
+    class EXTERNAL_REF,SAFETENSORS,ZARR,PARQUET_EXT,MMAP_EXTERNAL,REF_DESC external
+    class CPU_MEM,GPU_MEM,DMA,GPU_COMPUTE,DMA_DESC gpu
+    class E2E_CLIENT,E2E_FLIGHT,E2E_SERVER,E2E_MMAP,E2E_ARROW,E2E_DLPACK,E2E_RESULT,E2E_SUMMARY example
+    class T1,T2,T3,T4,T5,T6,T7,T8,T_TOTAL traditional
+    class Z1,Z2,Z3,Z4,Z5,Z6,Z7,Z_TOTAL,BENEFIT_LATENCY,BENEFIT_THROUGHPUT,BENEFIT_MEMORY,BENEFIT_CPU zerocopy
+

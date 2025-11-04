@@ -1,0 +1,101 @@
+graph TB
+    subgraph "Single Cluster (Pyralog Cluster)"
+        direction TB
+        
+        SC_DESC[One Datacenter/Region<br/>Strong Consistency<br/>Raft Consensus]
+        
+        subgraph "Obelisk Nodes (3-5)"
+            O1[Obelisk 1]
+            O2[Obelisk 2]
+            O3[Obelisk 3]
+        end
+        
+        subgraph "Pyramid Nodes (10+)"
+            P1[Pyramid 1<br/>Partitions 0-2]
+            P2[Pyramid 2<br/>Partitions 3-5]
+            P3[Pyramid 3<br/>Partitions 6-8]
+            P4[Pyramid 4<br/>Replicas]
+            P5[Pyramid 5<br/>Replicas]
+        end
+        
+        subgraph "Characteristics"
+            SC_CONSISTENCY[Consistency:<br/>Strong linearizable]
+            SC_LATENCY[Latency:<br/><1ms intra-region]
+            SC_THROUGHPUT[Throughput:<br/>10M+ writes/sec]
+            SC_USE_CASE[Use case:<br/>Single-region apps]
+        end
+    end
+    
+    subgraph "Multi-Cluster (Pyralog Network)"
+        direction TB
+        
+        MC_DESC[Multiple Datacenters<br/>Eventual Consistency<br/>Byzantine Fault Tolerance]
+        
+        subgraph "Cluster 1: US-East"
+            C1_O[Obelisk nodes]
+            C1_P[Pyramid nodes]
+        end
+        
+        subgraph "Cluster 2: EU-West"
+            C2_O[Obelisk nodes]
+            C2_P[Pyramid nodes]
+        end
+        
+        subgraph "Cluster 3: Asia-Pacific"
+            C3_O[Obelisk nodes]
+            C3_P[Pyramid nodes]
+        end
+        
+        subgraph "Inter-Cluster Sync"
+            SYNC_POW[Proof of Work<br/>Anti-spam/rate limit]
+            SYNC_POS[Proof of Stake<br/>Fast finality]
+            SYNC_ZK[zk-SNARKs/STARKs<br/>Privacy-preserving]
+            SYNC_GOSSIP[Gossip protocol<br/>Membership]
+        end
+        
+        subgraph "Characteristics"
+            MC_CONSISTENCY[Consistency:<br/>Eventual<br/>Conflict-free replicated]
+            MC_LATENCY[Latency:<br/>10-100ms cross-region]
+            MC_THROUGHPUT[Throughput:<br/>Linear with clusters]
+            MC_USE_CASE[Use case:<br/>Global distributed apps<br/>Decentralized systems]
+        end
+        
+        C1_P <-.->|Replicate| SYNC_GOSSIP
+        C2_P <-.->|Replicate| SYNC_GOSSIP
+        C3_P <-.->|Replicate| SYNC_GOSSIP
+    end
+    
+    subgraph "Hybrid Deployment"
+        direction TB
+        
+        HYBRID_DESC[Primary + Disaster Recovery<br/>Strong + Eventual]
+        
+        PRIMARY[Primary Cluster<br/>US-East<br/>Strong consistency<br/>Active writes]
+        
+        DR1[DR Cluster 1<br/>US-West<br/>Async replication<br/>Read-only]
+        
+        DR2[DR Cluster 2<br/>EU-West<br/>Async replication<br/>Read-only]
+        
+        PRIMARY -.->|Async repl| DR1
+        PRIMARY -.->|Async repl| DR2
+        
+        FAILOVER[On primary failure:<br/>Promote DR1 to primary<br/>~10-30s switchover]
+    end
+    
+    subgraph "Comparison Matrix"
+        direction LR
+        
+        COMPARE[```<br/>                  Single    Multi     Hybrid<br/>Consistency:      Strong    Eventual  Mixed<br/>Latency:          <1ms      10-100ms  <1ms local<br/>Geo-distribution: No        Yes       Limited<br/>Byzantine FT:     No        Yes       No<br/>Complexity:       Low       High      Medium<br/>Cost:             Low       High      Medium<br/>Use case:         Regional  Global    Enterprise<br/>```]
+    end
+    
+    %% Styling
+    classDef single fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef multi fill:#F57C00,stroke:#E65100,color:#fff
+    classDef hybrid fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef comparison fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    
+    class SC_DESC,O1,O2,O3,P1,P2,P3,P4,P5,SC_CONSISTENCY,SC_LATENCY,SC_THROUGHPUT,SC_USE_CASE single
+    class MC_DESC,C1_O,C1_P,C2_O,C2_P,C3_O,C3_P,SYNC_POW,SYNC_POS,SYNC_ZK,SYNC_GOSSIP,MC_CONSISTENCY,MC_LATENCY,MC_THROUGHPUT,MC_USE_CASE multi
+    class HYBRID_DESC,PRIMARY,DR1,DR2,FAILOVER hybrid
+    class COMPARE comparison
+

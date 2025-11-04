@@ -1,0 +1,106 @@
+graph TB
+    subgraph "VLSN Concept"
+        VLSN_DEF[Virtual LSN VLSN:<br/>Client-managed sequence number<br/>Used for routing AND ordering]
+        
+        COUNTER[Client: AtomicU64<br/>Starts at 0]
+        INCREMENT[On write: fetch_add 1]
+        VLSN_VALUE[VLSN = 1000]
+        
+        VLSN_DEF --> COUNTER
+        COUNTER --> INCREMENT
+        INCREMENT --> VLSN_VALUE
+    end
+    
+    subgraph "Write Flow"
+        WRITE_REQ[Client writes record]
+        GEN_VLSN[Generate VLSN<br/>vlsn = counter.fetch_add 1]
+        CALC_PARTITION[Calculate partition<br/>p = vlsn % 10<br/>e.g., 1000 % 10 = 0]
+        CREATE_RECORD[Create record:<br/>key = vlsn.to_be_bytes<br/>value = data]
+        SEND[Send to partition 0]
+        
+        WRITE_REQ --> GEN_VLSN
+        GEN_VLSN --> CALC_PARTITION
+        CALC_PARTITION --> CREATE_RECORD
+        CREATE_RECORD --> SEND
+    end
+    
+    subgraph "Distribution Pattern"
+        DIST[10 partitions example:<br/><br/>VLSN 1000 → P0<br/>VLSN 1001 → P1<br/>VLSN 1002 → P2<br/>...<br/>VLSN 1009 → P9<br/>VLSN 1010 → P0]
+        
+        EVEN[Even distribution!<br/>Round-robin effect]
+    end
+    
+    subgraph "Read by VLSN"
+        READ_REQ[Client reads VLSN 1005]
+        CALC_READ_PART[Calculate partition<br/>p = 1005 % 10 = 5]
+        QUERY_P5[Query partition 5<br/>WHERE key = 1005]
+        FIND[Find record<br/>O 1 lookup!]
+        RETURN[Return record]
+        
+        READ_REQ --> CALC_READ_PART
+        CALC_READ_PART --> QUERY_P5
+        QUERY_P5 --> FIND
+        FIND --> RETURN
+    end
+    
+    subgraph "Read Range"
+        RANGE_REQ[Client reads<br/>VLSNs 1000-1010]
+        LOOP[For vlsn in range:<br/>p = vlsn % 10<br/>read from partition p]
+        COLLECT[Collect all records]
+        SORTED[Already in VLSN order!]
+        
+        RANGE_REQ --> LOOP
+        LOOP --> COLLECT
+        COLLECT --> SORTED
+    end
+    
+    subgraph "Persistence: Obelisk Sequencer"
+        PERSIST_DEF[Problem:<br/>VLSN counter lost on crash<br/>May generate duplicates!]
+        
+        OBELISK_SOLUTION[Solution:<br/>Obelisk Sequencer<br/>File size = counter value]
+        
+        PERSIST_WRITE[On increment:<br/>Append 1 byte to file<br/>~1-2 µs]
+        
+        PERSIST_RECOVER[On recovery:<br/>vlsn = file_size<br/>~2 µs]
+        
+        PERSIST_DEF --> OBELISK_SOLUTION
+        OBELISK_SOLUTION --> PERSIST_WRITE
+        OBELISK_SOLUTION --> PERSIST_RECOVER
+    end
+    
+    subgraph "Benefits vs Hash-Based"
+        HASH_BASED[Hash-Based:<br/>hash key % N<br/>Same key → same partition<br/>Random distribution]
+        
+        VLSN_BASED[VLSN-Based:<br/>vlsn % N<br/>Per-client ordering<br/>Deterministic routing]
+        
+        BENEFIT_1[✅ Efficient reads by VLSN<br/>Know partition instantly]
+        BENEFIT_2[✅ Range queries<br/>Sequential VLSNs]
+        BENEFIT_3[✅ Per-client ordering<br/>VLSN 0, 1, 2...]
+        BENEFIT_4[✅ Even distribution<br/>Round-robin effect]
+        
+        VLSN_BASED --> BENEFIT_1
+        VLSN_BASED --> BENEFIT_2
+        VLSN_BASED --> BENEFIT_3
+        VLSN_BASED --> BENEFIT_4
+    end
+    
+    subgraph "Performance"
+        PERF_WRITE[Write:<br/>Same as hash-based<br/>Just different key]
+        PERF_READ[Read by VLSN:<br/>O 1 partition lookup<br/>vs scan all partitions]
+        PERF_RANGE[Range read:<br/>Efficient<br/>Know which partitions]
+        PERF_MEMORY[Memory:<br/>8 bytes per client<br/>AtomicU64 counter]
+    end
+    
+    %% Styling
+    classDef concept fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef write fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef read fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef persist fill:#F57C00,stroke:#E65100,color:#fff
+    classDef benefit fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class VLSN_DEF,COUNTER,INCREMENT,VLSN_VALUE concept
+    class WRITE_REQ,GEN_VLSN,CALC_PARTITION,CREATE_RECORD,SEND,DIST,EVEN write
+    class READ_REQ,CALC_READ_PART,QUERY_P5,FIND,RETURN,RANGE_REQ,LOOP,COLLECT,SORTED read
+    class PERSIST_DEF,OBELISK_SOLUTION,PERSIST_WRITE,PERSIST_RECOVER persist
+    class HASH_BASED,VLSN_BASED,BENEFIT_1,BENEFIT_2,BENEFIT_3,BENEFIT_4,PERF_WRITE,PERF_READ,PERF_RANGE,PERF_MEMORY benefit
+

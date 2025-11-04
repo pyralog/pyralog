@@ -1,0 +1,185 @@
+graph TB
+    subgraph "Batuta: The Programming Language"
+        BATUTA_DESC[Batuta 🎼:<br/>Functional, dynamic language<br/>Clojure + Elixir inspired<br/>Category Theory foundation]
+    end
+    
+    subgraph "Source Code"
+        SOURCE[```batuta<br/> def users-with-orders =<br/>   from users<br/>   | join orders on .id = .user_id<br/>   | where .total > 100<br/>   | select .name, .total<br/>```]
+    end
+    
+    subgraph "Parsing"
+        LEXER[Lexer<br/>Tokenize source]
+        PARSER[Parser<br/>Build AST]
+        AST[Abstract Syntax Tree<br/>S-expressions]
+        
+        SOURCE --> LEXER
+        LEXER --> PARSER
+        PARSER --> AST
+    end
+    
+    subgraph "Type Checking"
+        TYPE_INFERENCE[Type Inference<br/>Hindley-Milner]
+        SCHEMA_CHECK[Schema Validation<br/>Against Arrow schemas]
+        CATEGORY_CHECK[Category Theory<br/>Check functors, morphisms]
+        TYPE_ERROR[Type Errors<br/>Compile-time!]
+        
+        AST --> TYPE_INFERENCE
+        TYPE_INFERENCE --> SCHEMA_CHECK
+        SCHEMA_CHECK --> CATEGORY_CHECK
+        CATEGORY_CHECK -.->|Errors| TYPE_ERROR
+    end
+    
+    subgraph "Optimization"
+        LOGICAL_PLAN[DataFusion LogicalPlan<br/>Relational algebra]
+        
+        OPTIMIZER[Optimizer:<br/>• Filter pushdown<br/>• Join reordering<br/>• Projection pruning<br/>• Predicate simplification]
+        
+        OPTIMIZED_PLAN[Optimized Plan<br/>14× faster!]
+        
+        CATEGORY_CHECK --> LOGICAL_PLAN
+        LOGICAL_PLAN --> OPTIMIZER
+        OPTIMIZER --> OPTIMIZED_PLAN
+    end
+    
+    subgraph "Execution Mode Choice"
+        MODE_CHOICE{Execution Mode?}
+        
+        CLIENT_MODE[Client-Side:<br/>Embedded in app]
+        SERVER_MODE[Server-Side:<br/>Database-embedded]
+        
+        OPTIMIZED_PLAN --> MODE_CHOICE
+        MODE_CHOICE --> CLIENT_MODE
+        MODE_CHOICE --> SERVER_MODE
+    end
+    
+    subgraph "Client-Side Compilation"
+        direction TB
+        
+        subgraph "Target: Rust"
+            RUST_CODEGEN[Rust Codegen<br/>Generate safe Rust]
+            RUST_COMPILE[rustc<br/>Compile to binary]
+            RUST_BINARY[Native Binary<br/>Embed in application]
+        end
+        
+        subgraph "Target: WASM"
+            WASM_CODEGEN[WASM Codegen<br/>Generate WASM]
+            WASM_COMPILE[wasm-pack<br/>Compile to .wasm]
+            WASM_MODULE[WASM Module<br/>Run in browser]
+        end
+        
+        CLIENT_MODE --> RUST_CODEGEN
+        CLIENT_MODE --> WASM_CODEGEN
+        
+        RUST_CODEGEN --> RUST_COMPILE
+        RUST_COMPILE --> RUST_BINARY
+        
+        WASM_CODEGEN --> WASM_COMPILE
+        WASM_COMPILE --> WASM_MODULE
+    end
+    
+    subgraph "Server-Side Execution"
+        direction TB
+        
+        ACTOR_SPAWN[Spawn Actor<br/>For query]
+        DISTRIBUTE[Distribute to<br/>partition actors]
+        EXECUTE_ARROW[Execute:<br/>Arrow compute kernels<br/>SIMD vectorized]
+        COLLECT_RESULTS[Collect results<br/>From partitions]
+        
+        SERVER_MODE --> ACTOR_SPAWN
+        ACTOR_SPAWN --> DISTRIBUTE
+        DISTRIBUTE --> EXECUTE_ARROW
+        EXECUTE_ARROW --> COLLECT_RESULTS
+    end
+    
+    subgraph "DataFusion Integration"
+        direction TB
+        
+        DF_LOGICAL[Batuta AST<br/>↓<br/>DataFusion LogicalPlan]
+        
+        DF_OPTIMIZER[DataFusion Optimizer<br/>Cost-based optimization<br/>Rewrite rules]
+        
+        DF_PHYSICAL[PhysicalPlan<br/>Executable operators]
+        
+        DF_EXECUTE[Execute<br/>Arrow RecordBatch]
+        
+        LOGICAL_PLAN -.->|Convert| DF_LOGICAL
+        DF_LOGICAL --> DF_OPTIMIZER
+        DF_OPTIMIZER --> DF_PHYSICAL
+        DF_PHYSICAL --> DF_EXECUTE
+    end
+    
+    subgraph "Macro System"
+        direction TB
+        
+        MACRO_DEF[Define Macro:<br/>```batuta<br/> defmacro when [test & body]<br/>   if ,test<br/>     do @body<br/>```]
+        
+        MACRO_EXPAND[Macro Expansion<br/>Hygienic macros]
+        
+        MACRO_USE[Use Macro:<br/>```batuta<br/> when .age > 18<br/>   println "Adult"<br/>```]
+        
+        MACRO_DEF -.->|Expand| MACRO_EXPAND
+        MACRO_USE --> MACRO_EXPAND
+        MACRO_EXPAND --> AST
+    end
+    
+    subgraph "REPL Development"
+        direction TB
+        
+        REPL[Batuta REPL<br/>Interactive development]
+        
+        EVAL[Evaluate expression<br/>Immediate feedback]
+        
+        REPL_RESULT[Print result<br/>Arrow table display]
+        
+        SOURCE -.->|Interactive| REPL
+        REPL --> EVAL
+        EVAL --> REPL_RESULT
+    end
+    
+    subgraph "Performance Comparison"
+        direction LR
+        
+        PERF_PYTHON[Python:<br/>Slow interpreter<br/>~100× slower]
+        
+        PERF_BATUTA_RUST[Batuta → Rust:<br/>Native performance<br/>Zero overhead]
+        
+        PERF_BATUTA_SERVER[Batuta → Server:<br/>Arrow SIMD<br/>10-100× faster]
+        
+        RUST_BINARY -.->|Measure| PERF_BATUTA_RUST
+        EXECUTE_ARROW -.->|Measure| PERF_BATUTA_SERVER
+    end
+    
+    subgraph "Benefits Summary"
+        direction LR
+        
+        BENEFIT_TYPE[Type Safety:<br/>Compile-time checks<br/>No runtime errors]
+        
+        BENEFIT_PERF[Performance:<br/>Native or SIMD<br/>vs interpreted]
+        
+        BENEFIT_THEORY[Correctness:<br/>Category Theory<br/>proven transformations]
+        
+        BENEFIT_MODES[Flexibility:<br/>Client OR server<br/>Same code!]
+        
+        TYPE_ERROR -.->|Prevent| BENEFIT_TYPE
+        RUST_BINARY -.->|Enable| BENEFIT_PERF
+        CATEGORY_CHECK -.->|Provide| BENEFIT_THEORY
+        MODE_CHOICE -.->|Enable| BENEFIT_MODES
+    end
+    
+    %% Styling
+    classDef source fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef parse fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef typecheck fill:#F57C00,stroke:#E65100,color:#fff
+    classDef optimize fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef client fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef server fill:#E91E63,stroke:#C2185B,color:#fff
+    classDef benefit fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class BATUTA_DESC,SOURCE,MACRO_DEF,MACRO_USE source
+    class LEXER,PARSER,AST,MACRO_EXPAND parse
+    class TYPE_INFERENCE,SCHEMA_CHECK,CATEGORY_CHECK,TYPE_ERROR typecheck
+    class LOGICAL_PLAN,OPTIMIZER,OPTIMIZED_PLAN,DF_LOGICAL,DF_OPTIMIZER,DF_PHYSICAL,DF_EXECUTE optimize
+    class MODE_CHOICE,CLIENT_MODE,RUST_CODEGEN,RUST_COMPILE,RUST_BINARY,WASM_CODEGEN,WASM_COMPILE,WASM_MODULE,REPL,EVAL,REPL_RESULT client
+    class SERVER_MODE,ACTOR_SPAWN,DISTRIBUTE,EXECUTE_ARROW,COLLECT_RESULTS server
+    class PERF_PYTHON,PERF_BATUTA_RUST,PERF_BATUTA_SERVER,BENEFIT_TYPE,BENEFIT_PERF,BENEFIT_THEORY,BENEFIT_MODES benefit
+

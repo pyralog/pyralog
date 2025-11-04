@@ -1,0 +1,176 @@
+graph TB
+    subgraph "Query Input Layer"
+        direction LR
+        SQL[SQL Query<br/>DataFusion parser]
+        PRQL[PRQL Query<br/>Compiles to SQL]
+        BATUTA[Batuta Program<br/>Category Theory]
+        GRAPHQL[GraphQL<br/>Nested queries]
+        
+        SQL --> PARSE
+        PRQL --> COMPILE_PRQL
+        BATUTA --> COMPILE_BATUTA
+        GRAPHQL --> COMPILE_GQL
+    end
+    
+    subgraph "Parsing & Compilation"
+        direction TB
+        PARSE[SQL Parser<br/>DataFusion AST]
+        COMPILE_PRQL[PRQL Compiler<br/>→ SQL AST]
+        COMPILE_BATUTA[Batuta Compiler<br/>→ LogicalPlan<br/>Type-checked]
+        COMPILE_GQL[GraphQL Compiler<br/>→ SQL/Batuta]
+        
+        COMPILE_PRQL --> PARSE
+        COMPILE_BATUTA --> LOGICAL
+        COMPILE_GQL --> PARSE
+    end
+    
+    subgraph "Logical Planning"
+        direction TB
+        LOGICAL[DataFusion LogicalPlan<br/>Relational algebra]
+        
+        subgraph "Optimization Rules"
+            OPT_FILTER[Filter Pushdown<br/>14× speedup]
+            OPT_PROJECTION[Projection Pruning<br/>Read only needed columns]
+            OPT_JOIN[Join Reordering<br/>Cost-based]
+            OPT_PREDICATE[Predicate Simplification<br/>Constant folding]
+        end
+        
+        PARSE --> LOGICAL
+        LOGICAL --> OPT_FILTER
+        OPT_FILTER --> OPT_PROJECTION
+        OPT_PROJECTION --> OPT_JOIN
+        OPT_JOIN --> OPT_PREDICATE
+    end
+    
+    subgraph "Physical Planning"
+        direction TB
+        PHYSICAL[DataFusion PhysicalPlan<br/>Executable operators]
+        
+        subgraph "Physical Operators"
+            SCAN[Scan Operator<br/>Arrow RecordBatch]
+            FILTER_PHYS[Filter<br/>SIMD vectorized]
+            PROJECT[Projection<br/>Column selection]
+            AGG[Aggregation<br/>Hash-based]
+            JOIN_PHYS[Hash Join<br/>Parallel]
+            SORT[Sort<br/>External if needed]
+        end
+        
+        OPT_PREDICATE --> PHYSICAL
+        PHYSICAL --> SCAN
+        SCAN --> FILTER_PHYS
+        FILTER_PHYS --> PROJECT
+        PROJECT --> AGG
+        AGG --> JOIN_PHYS
+        JOIN_PHYS --> SORT
+    end
+    
+    subgraph "Distributed Execution"
+        direction TB
+        
+        subgraph "Actor System"
+            COORDINATOR[Query Coordinator<br/>Actor]
+            WORKERS[Worker Actors<br/>Per partition]
+            SUPERVISOR[Supervisor<br/>Fault tolerance]
+            
+            COORDINATOR --> WORKERS
+            SUPERVISOR --> COORDINATOR
+            SUPERVISOR --> WORKERS
+        end
+        
+        subgraph "Partition Strategy"
+            ROUTE[Route to partitions<br/>Ankh Ring hash]
+            PARALLEL[Parallel execution<br/>Per partition]
+            COLLECT[Collect results<br/>Merge sorted]
+            
+            ROUTE --> PARALLEL
+            PARALLEL --> COLLECT
+        end
+        
+        SORT --> COORDINATOR
+        COORDINATOR --> ROUTE
+        WORKERS --> PARALLEL
+    end
+    
+    subgraph "Storage Layer Access"
+        direction TB
+        
+        subgraph "Arrow Zero-Copy"
+            ARROW_CACHE[Arrow Cache<br/>Memory]
+            ARROW_LSM[LSM RecordBatch<br/>Columnar]
+            ARROW_PARQUET[Parquet Segments<br/>Memory-mapped]
+            ARROW_EXTERNAL[External Files<br/>Safetensors/Zarr]
+        end
+        
+        subgraph "Read Path"
+            CHECK_CACHE[Check cache]
+            READ_LSM[Read LSM<br/>Memtable + SSTables]
+            READ_SEGMENT[Read Parquet<br/>mmap + decompress]
+            READ_EXTERNAL[Read external<br/>Zero-copy mmap]
+        end
+        
+        SCAN --> CHECK_CACHE
+        CHECK_CACHE -->|Hit| ARROW_CACHE
+        CHECK_CACHE -->|Miss| READ_LSM
+        READ_LSM --> ARROW_LSM
+        ARROW_LSM --> READ_SEGMENT
+        READ_SEGMENT --> ARROW_PARQUET
+        ARROW_PARQUET --> READ_EXTERNAL
+        READ_EXTERNAL --> ARROW_EXTERNAL
+    end
+    
+    subgraph "SIMD Vectorization"
+        direction LR
+        
+        VECTOR[Arrow Compute Kernels<br/>Process 8-16 values at once]
+        VECTOR_FILTER[Vectorized Filter<br/>10-100× faster]
+        VECTOR_AGG[Vectorized Aggregation<br/>SIMD sum/min/max]
+        VECTOR_JOIN[Vectorized Join<br/>Hash table SIMD]
+        
+        FILTER_PHYS -.->|Use| VECTOR_FILTER
+        AGG -.->|Use| VECTOR_AGG
+        JOIN_PHYS -.->|Use| VECTOR_JOIN
+        
+        VECTOR --> VECTOR_FILTER
+        VECTOR --> VECTOR_AGG
+        VECTOR --> VECTOR_JOIN
+    end
+    
+    subgraph "Result Assembly"
+        direction TB
+        
+        MERGE[Merge partial results<br/>From all partitions]
+        FORMAT[Format output<br/>Arrow → JSON/CSV/Parquet]
+        STREAM[Stream to client<br/>Arrow Flight IPC]
+        
+        COLLECT --> MERGE
+        MERGE --> FORMAT
+        FORMAT --> STREAM
+    end
+    
+    subgraph "Performance Metrics"
+        direction LR
+        
+        PERF_LATENCY[Latency: <1ms<br/>Simple queries]
+        PERF_THROUGHPUT[Throughput:<br/>45M+ reads/sec]
+        PERF_ZEROCOPY[Zero-copy:<br/>No serialize/deserialize]
+        PERF_SIMD[SIMD: 10-100×<br/>vs scalar]
+        
+        STREAM -.->|Measure| PERF_LATENCY
+        ARROW_CACHE -.->|Measure| PERF_THROUGHPUT
+        ARROW_LSM -.->|Enable| PERF_ZEROCOPY
+        VECTOR -.->|Enable| PERF_SIMD
+    end
+    
+    %% Styling
+    classDef input fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef planning fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef execution fill:#F57C00,stroke:#E65100,color:#fff
+    classDef storage fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef perf fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class SQL,PRQL,BATUTA,GRAPHQL,PARSE,COMPILE_PRQL,COMPILE_BATUTA,COMPILE_GQL input
+    class LOGICAL,OPT_FILTER,OPT_PROJECTION,OPT_JOIN,OPT_PREDICATE,PHYSICAL,SCAN,FILTER_PHYS,PROJECT,AGG,JOIN_PHYS,SORT planning
+    class COORDINATOR,WORKERS,SUPERVISOR,ROUTE,PARALLEL,COLLECT,MERGE,FORMAT,STREAM execution
+    class ARROW_CACHE,ARROW_LSM,ARROW_PARQUET,ARROW_EXTERNAL,CHECK_CACHE,READ_LSM,READ_SEGMENT,READ_EXTERNAL storage
+    class VECTOR,VECTOR_FILTER,VECTOR_AGG,VECTOR_JOIN,PERF_LATENCY,PERF_THROUGHPUT,PERF_ZEROCOPY,PERF_SIMD perf
+

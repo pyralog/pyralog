@@ -1,0 +1,245 @@
+graph TB
+    subgraph "Obelisk Node Failover (Pharaoh Network)"
+        direction TB
+        
+        subgraph "Failure Detection"
+            O_HEALTHY[Obelisk Node: Healthy<br/>Serving requests]
+            O_FAILURE[Node Crash/Network Partition]
+            O_DETECT[Client detects failure<br/>Timeout or connection error]
+        end
+        
+        subgraph "Client-Side Recovery"
+            O_HASH_RETRY[Hash TX ID % 1023<br/>Different node!]
+            O_CONNECT[Connect to<br/>different Obelisk node]
+            O_RESUME[Resume operation<br/>New node serves request]
+        end
+        
+        subgraph "Recovery Time"
+            O_INSTANT[Recovery: Instant<br/>~1-10ms client retry]
+            O_NO_RAFT[No consensus needed<br/>Stateless nodes]
+            O_NO_DATA_LOSS[No data loss<br/>State stored by Pyramid nodes]
+        end
+        
+        O_HEALTHY --> O_FAILURE
+        O_FAILURE --> O_DETECT
+        O_DETECT --> O_HASH_RETRY
+        O_HASH_RETRY --> O_CONNECT
+        O_CONNECT --> O_RESUME
+        O_RESUME -.->|Timing| O_INSTANT
+    end
+    
+    subgraph "Pyramid Node Failover (Storage/Consensus)"
+        direction TB
+        
+        subgraph "Failure Scenarios"
+            P_LEADER_FAIL[Leader Failure<br/>Partition unavailable]
+            P_FOLLOWER_FAIL[Follower Failure<br/>Replica lost]
+            P_NETWORK_PARTITION[Network Partition<br/>Split brain risk]
+        end
+        
+        subgraph "Leader Failure Recovery"
+            DETECT_FAILURE[Followers detect<br/>Leader timeout<br/>~150ms heartbeat]
+            START_ELECTION[Start election<br/>Raft protocol]
+            VOTE_PHASE[Followers vote<br/>Most up-to-date wins]
+            NEW_LEADER[New leader elected<br/>Receives majority votes]
+            CATCHUP[New leader catches up<br/>Replicate missing records]
+            RESUME_WRITES[Resume writes<br/>Clients redirected]
+        end
+        
+        P_LEADER_FAIL --> DETECT_FAILURE
+        DETECT_FAILURE --> START_ELECTION
+        START_ELECTION --> VOTE_PHASE
+        VOTE_PHASE --> NEW_LEADER
+        NEW_LEADER --> CATCHUP
+        CATCHUP --> RESUME_WRITES
+    end
+    
+    subgraph "Follower Failure Recovery"
+        direction TB
+        
+        F_DETECT[Leader detects<br/>Follower timeout]
+        F_REMOVE_ISR[Remove from ISR<br/>In-Sync Replicas]
+        F_CONTINUE[Continue writes<br/>With remaining replicas]
+        F_RECOVER[Follower recovers]
+        F_CATCHUP[Follower catches up<br/>Read from leader]
+        F_ADD_ISR[Add back to ISR<br/>Fully synchronized]
+        
+        P_FOLLOWER_FAIL --> F_DETECT
+        F_DETECT --> F_REMOVE_ISR
+        F_REMOVE_ISR --> F_CONTINUE
+        F_CONTINUE -.->|Later| F_RECOVER
+        F_RECOVER --> F_CATCHUP
+        F_CATCHUP --> F_ADD_ISR
+    end
+    
+    subgraph "Data Recovery: Obelisk Counter"
+        direction TB
+        
+        subgraph "Counter State"
+            O_FILE[Counter File<br/>sparse file<br/>file_size = counter]
+            O_CRASH[Process Crash]
+            O_RESTART[Process Restart]
+        end
+        
+        subgraph "Recovery Process"
+            O_STAT[stat counter.dat]
+            O_READ_SIZE[Read file size<br/>size = 1,234,567]
+            O_INIT_COUNTER[Initialize counter<br/>AtomicU64::new 1,234,567]
+            O_READY[Ready to serve<br/>~2 µs total!]
+        end
+        
+        O_FILE --> O_CRASH
+        O_CRASH --> O_RESTART
+        O_RESTART --> O_STAT
+        O_STAT --> O_READ_SIZE
+        O_READ_SIZE --> O_INIT_COUNTER
+        O_INIT_COUNTER --> O_READY
+    end
+    
+    subgraph "Data Recovery: Pyramid Storage"
+        direction TB
+        
+        subgraph "Storage State"
+            P_LSM[LSM Tree<br/>Memtable + SSTables]
+            P_WAL[Write-Ahead Log<br/>Raft log]
+            P_CRASH[Process Crash]
+            P_RESTART[Process Restart]
+        end
+        
+        subgraph "Recovery Process"
+            P_LOAD_WAL[Load Raft WAL<br/>Committed entries]
+            P_REPLAY[Replay WAL<br/>Rebuild memtable]
+            P_LOAD_SSTABLES[Load SSTables<br/>Immutable on disk]
+            P_REBUILD_INDEX[Rebuild indexes<br/>Bloom filters, PPHM]
+            P_JOIN_CLUSTER[Join cluster<br/>Sync with leader]
+            P_READY[Ready to serve<br/>~500ms-2s]
+        end
+        
+        P_LSM --> P_CRASH
+        P_WAL --> P_CRASH
+        P_CRASH --> P_RESTART
+        P_RESTART --> P_LOAD_WAL
+        P_LOAD_WAL --> P_REPLAY
+        P_REPLAY --> P_LOAD_SSTABLES
+        P_LOAD_SSTABLES --> P_REBUILD_INDEX
+        P_REBUILD_INDEX --> P_JOIN_CLUSTER
+        P_JOIN_CLUSTER --> P_READY
+    end
+    
+    subgraph "Client Behavior During Failover"
+        direction TB
+        
+        subgraph "Write Request"
+            C_WRITE[Client writes<br/>to partition]
+            C_ERROR[Error: NotLeader<br/>or timeout]
+            C_INVALIDATE[Invalidate metadata<br/>for partition]
+            C_REFETCH[Refetch metadata<br/>Get new leader]
+            C_RETRY[Retry write<br/>to new leader]
+            C_SUCCESS[Write succeeds]
+        end
+        
+        subgraph "Read Request"
+            C_READ[Client reads<br/>from follower]
+            C_READ_ERROR[Error: Timeout]
+            C_FALLBACK[Fallback to leader]
+            C_READ_SUCCESS[Read succeeds]
+        end
+        
+        RESUME_WRITES -.->|Triggers| C_ERROR
+        C_WRITE --> C_ERROR
+        C_ERROR --> C_INVALIDATE
+        C_INVALIDATE --> C_REFETCH
+        C_REFETCH --> C_RETRY
+        C_RETRY --> C_SUCCESS
+        
+        F_REMOVE_ISR -.->|Triggers| C_READ_ERROR
+        C_READ --> C_READ_ERROR
+        C_READ_ERROR --> C_FALLBACK
+        C_FALLBACK --> C_READ_SUCCESS
+    end
+    
+    subgraph "Network Partition Handling"
+        direction TB
+        
+        NET_SPLIT[Network Split<br/>2 partitions]
+        
+        subgraph "Majority Partition"
+            MAJ_CONTINUE[Has quorum<br/>Continue operations]
+            MAJ_ELECT[Can elect leader<br/>Normal operations]
+        end
+        
+        subgraph "Minority Partition"
+            MIN_STALL[No quorum<br/>Cannot elect leader]
+            MIN_READONLY[Read-only mode<br/>Serve stale reads]
+            MIN_WAIT[Wait for network<br/>recovery]
+        end
+        
+        subgraph "Partition Heals"
+            HEAL[Network recovers]
+            RECONCILE[Minority rejoins<br/>Sync with majority]
+            UNIFIED[Cluster unified]
+        end
+        
+        P_NETWORK_PARTITION --> NET_SPLIT
+        NET_SPLIT --> MAJ_CONTINUE
+        NET_SPLIT --> MIN_STALL
+        MAJ_CONTINUE --> MAJ_ELECT
+        MIN_STALL --> MIN_READONLY
+        MIN_READONLY --> MIN_WAIT
+        MIN_WAIT --> HEAL
+        MAJ_ELECT --> HEAL
+        HEAL --> RECONCILE
+        RECONCILE --> UNIFIED
+    end
+    
+    subgraph "Recovery Time Comparison"
+        direction LR
+        
+        TIME_OBELISK[Obelisk Node:<br/>~1-10ms<br/>Client retry]
+        TIME_PYRAMID_FOLLOWER[Pyramid Follower:<br/>~500ms-2s<br/>WAL replay]
+        TIME_PYRAMID_LEADER[Pyramid Leader:<br/>~1-3s<br/>Election + catchup]
+        TIME_KAFKA[Kafka Leader:<br/>~10-30s<br/>ZK + ISR sync]
+        
+        O_INSTANT -.->|Measure| TIME_OBELISK
+        P_READY -.->|Measure| TIME_PYRAMID_FOLLOWER
+        RESUME_WRITES -.->|Measure| TIME_PYRAMID_LEADER
+    end
+    
+    subgraph "Exactly-Once During Failover"
+        direction TB
+        
+        EO_PRODUCER[Producer with<br/>Scarab ID + sequence]
+        EO_WRITE[Write with<br/>TX ID]
+        EO_FAILOVER[Failover occurs]
+        EO_RETRY[Client retries<br/>same TX ID]
+        EO_DEDUP[New leader<br/>deduplicates]
+        EO_NO_DUPLICATE[No duplicate writes<br/>Exactly-once preserved]
+        
+        EO_PRODUCER --> EO_WRITE
+        EO_WRITE --> EO_FAILOVER
+        EO_FAILOVER --> EO_RETRY
+        EO_RETRY --> EO_DEDUP
+        EO_DEDUP --> EO_NO_DUPLICATE
+    end
+    
+    %% Cross-component connections
+    O_RESUME -.->|Generates IDs for| C_WRITE
+    NEW_LEADER -.->|Serves| C_RETRY
+    F_ADD_ISR -.->|Serves| C_READ
+    
+    %% Styling
+    classDef obelisk fill:#FFD700,stroke:#FFA000,color:#000
+    classDef pyramid fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef failure fill:#E53935,stroke:#C62828,color:#fff
+    classDef recovery fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef client fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef timing fill:#00BCD4,stroke:#0097A7,color:#fff
+    
+    class O_HEALTHY,O_FAILURE,O_DETECT,O_HASH_RETRY,O_CONNECT,O_RESUME,O_INSTANT,O_NO_RAFT,O_NO_DATA_LOSS,O_FILE,O_CRASH,O_RESTART,O_STAT,O_READ_SIZE,O_INIT_COUNTER,O_READY obelisk
+    class P_LEADER_FAIL,P_FOLLOWER_FAIL,P_NETWORK_PARTITION,DETECT_FAILURE,START_ELECTION,VOTE_PHASE,NEW_LEADER,CATCHUP,RESUME_WRITES,F_DETECT,F_REMOVE_ISR,F_CONTINUE,F_RECOVER,F_CATCHUP,F_ADD_ISR pyramid
+    class P_LSM,P_WAL,P_CRASH,P_RESTART,P_LOAD_WAL,P_REPLAY,P_LOAD_SSTABLES,P_REBUILD_INDEX,P_JOIN_CLUSTER,P_READY recovery
+    class C_WRITE,C_ERROR,C_INVALIDATE,C_REFETCH,C_RETRY,C_SUCCESS,C_READ,C_READ_ERROR,C_FALLBACK,C_READ_SUCCESS client
+    class NET_SPLIT,MAJ_CONTINUE,MAJ_ELECT,MIN_STALL,MIN_READONLY,MIN_WAIT,HEAL,RECONCILE,UNIFIED failure
+    class TIME_OBELISK,TIME_PYRAMID_FOLLOWER,TIME_PYRAMID_LEADER,TIME_KAFKA timing
+    class EO_PRODUCER,EO_WRITE,EO_FAILOVER,EO_RETRY,EO_DEDUP,EO_NO_DUPLICATE recovery
+

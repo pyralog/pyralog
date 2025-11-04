@@ -1,0 +1,202 @@
+graph TB
+    subgraph "Three CopySet Replication Strategies"
+        direction TB
+        
+        STRATEGY_CHOICE[Choose based on:<br/>Workload type<br/>Consistency needs<br/>Leader I/O budget]
+        
+        STRATEGY_1[Strategy 1:<br/>Per-Partition CopySet<br/>Kafka-style]
+        STRATEGY_2[Strategy 2:<br/>Per-Record Hybrid<br/>LogDevice-inspired]
+        STRATEGY_3[Strategy 3:<br/>Leader as Coordinator<br/>Pyralog innovation! ⭐]
+        
+        STRATEGY_CHOICE --> STRATEGY_1
+        STRATEGY_CHOICE --> STRATEGY_2
+        STRATEGY_CHOICE --> STRATEGY_3
+    end
+    
+    subgraph "Strategy 1: Per-Partition CopySet (Kafka)"
+        direction TB
+        
+        subgraph "Partition Assignment"
+            P1_COPYSET[Partition 1<br/>CopySet: R1, R2, R3]
+            P2_COPYSET[Partition 2<br/>CopySet: R2, R3, R4]
+            P3_COPYSET[Partition 3<br/>CopySet: R3, R4, R5]
+        end
+        
+        subgraph "Write Flow"
+            S1_LEADER[Leader writes locally]
+            S1_REPLICATE[Leader sends to<br/>all replicas in CopySet]
+            S1_WAIT[Wait for quorum ACKs]
+            S1_ACK_CLIENT[ACK to client]
+        end
+        
+        subgraph "Characteristics"
+            S1_SIMPLE[Simple: Same replicas<br/>for all records]
+            S1_HOTSPOT[Leader I/O bottleneck<br/>All writes through leader]
+            S1_THROUGHPUT[Throughput:<br/>~500K writes/sec/partition]
+            S1_RELIABILITY[Reliability:<br/>Correlated failures]
+        end
+        
+        P1_COPYSET --> S1_LEADER
+        S1_LEADER --> S1_REPLICATE
+        S1_REPLICATE --> S1_WAIT
+        S1_WAIT --> S1_ACK_CLIENT
+    end
+    
+    subgraph "Strategy 2: Per-Record Hybrid (LogDevice)"
+        direction TB
+        
+        subgraph "Per-Record CopySet"
+            S2_RECORD1[Record 1<br/>CopySet: R1, R3, R5]
+            S2_RECORD2[Record 2<br/>CopySet: R2, R4, R6]
+            S2_RECORD3[Record 3<br/>CopySet: R1, R4, R7]
+        end
+        
+        subgraph "Write Flow"
+            S2_LEADER[Leader picks CopySet<br/>Random/round-robin]
+            S2_WRITE_LOCAL[Leader writes locally]
+            S2_FORWARD[Leader forwards to<br/>selected replicas]
+            S2_WAIT[Wait for quorum]
+            S2_ACK[ACK to client]
+        end
+        
+        subgraph "Characteristics"
+            S2_FLEXIBLE[Flexible: Different replicas<br/>per record]
+            S2_STILL_BOTTLENECK[Leader still bottleneck<br/>Forwards all writes]
+            S2_THROUGHPUT[Throughput:<br/>~800K writes/sec/partition]
+            S2_RELIABILITY[Better reliability:<br/>Reduced correlated failures]
+        end
+        
+        S2_RECORD1 --> S2_LEADER
+        S2_LEADER --> S2_WRITE_LOCAL
+        S2_WRITE_LOCAL --> S2_FORWARD
+        S2_FORWARD --> S2_WAIT
+        S2_WAIT --> S2_ACK
+    end
+    
+    subgraph "Strategy 3: Leader as Coordinator (Pyralog ⭐)"
+        direction TB
+        
+        subgraph "Novel Pattern"
+            S3_INNOVATION[Key Innovation:<br/>Leader coordinates<br/>but doesn't write!]
+        end
+        
+        subgraph "Per-Record CopySet Assignment"
+            S3_RECORD1[Record 1<br/>CopySet: R2, R4, R6<br/>Leader: R1]
+            S3_RECORD2[Record 2<br/>CopySet: R3, R5, R7<br/>Leader: R1]
+            S3_RECORD3[Record 3<br/>CopySet: R1, R4, R8<br/>Leader: R1]
+        end
+        
+        subgraph "Write Flow"
+            S3_LEADER[Leader assigns CopySet<br/>Excludes self usually!]
+            S3_DIRECT[Leader sends directly<br/>to CopySet replicas]
+            S3_NO_LOCAL[Leader does NOT<br/>write locally]
+            S3_PARALLEL[Replicas write<br/>in parallel]
+            S3_WAIT[Wait for quorum]
+            S3_ACK[ACK to client]
+        end
+        
+        subgraph "Characteristics"
+            S3_NO_BOTTLENECK[No I/O bottleneck!<br/>Leader only coordinates]
+            S3_THROUGHPUT[Throughput:<br/>5M+ writes/sec/partition<br/>6.25× faster!]
+            S3_LEADER_IO[Leader I/O:<br/>Reduced by 99%<br/>Only metadata]
+            S3_RELIABILITY[Best reliability:<br/>Leader rarely in CopySet]
+        end
+        
+        S3_INNOVATION --> S3_LEADER
+        S3_RECORD1 --> S3_LEADER
+        S3_LEADER --> S3_DIRECT
+        S3_DIRECT --> S3_NO_LOCAL
+        S3_DIRECT --> S3_PARALLEL
+        S3_PARALLEL --> S3_WAIT
+        S3_WAIT --> S3_ACK
+    end
+    
+    subgraph "Detailed: Leader as Coordinator Flow"
+        direction TB
+        
+        CLIENT_WRITE[Client sends write<br/>to partition leader]
+        
+        subgraph "Leader Coordination"
+            ASSIGN_COPYSET[1. Assign CopySet<br/>Pick N replicas<br/>Usually excludes leader]
+            ASSIGN_OFFSET[2. Assign Offset<br/>EpochOffset]
+            SEND_REPLICAS[3. Send to replicas<br/>Direct parallel send]
+            TRACK_ACKS[4. Track ACKs<br/>Wait for quorum]
+        end
+        
+        subgraph "Replica Writes (Parallel)"
+            R1_WRITE[Replica 1:<br/>Write to LSM]
+            R2_WRITE[Replica 2:<br/>Write to LSM]
+            R3_WRITE[Replica 3:<br/>Write to LSM]
+            R1_ACK[Replica 1: ACK]
+            R2_ACK[Replica 2: ACK]
+            R3_ACK[Replica 3: ACK]
+        end
+        
+        subgraph "Completion"
+            QUORUM_MET[Quorum reached<br/>e.g., 2 of 3 ACKs]
+            ACK_CLIENT_FINAL[ACK to client]
+        end
+        
+        CLIENT_WRITE --> ASSIGN_COPYSET
+        ASSIGN_COPYSET --> ASSIGN_OFFSET
+        ASSIGN_OFFSET --> SEND_REPLICAS
+        
+        SEND_REPLICAS -.->|Parallel| R1_WRITE
+        SEND_REPLICAS -.->|Parallel| R2_WRITE
+        SEND_REPLICAS -.->|Parallel| R3_WRITE
+        
+        R1_WRITE --> R1_ACK
+        R2_WRITE --> R2_ACK
+        R3_WRITE --> R3_ACK
+        
+        R1_ACK --> TRACK_ACKS
+        R2_ACK --> TRACK_ACKS
+        R3_ACK --> TRACK_ACKS
+        
+        TRACK_ACKS --> QUORUM_MET
+        QUORUM_MET --> ACK_CLIENT_FINAL
+    end
+    
+    subgraph "Performance Comparison"
+        direction LR
+        
+        PERF_S1[Strategy 1:<br/>500K writes/sec<br/>Leader I/O: 100%]
+        PERF_S2[Strategy 2:<br/>800K writes/sec<br/>Leader I/O: 100%]
+        PERF_S3[Strategy 3:<br/>5M writes/sec ⭐<br/>Leader I/O: 1%<br/>6.25× faster!]
+        
+        S1_THROUGHPUT -.->|Measure| PERF_S1
+        S2_THROUGHPUT -.->|Measure| PERF_S2
+        S3_THROUGHPUT -.->|Measure| PERF_S3
+    end
+    
+    subgraph "When to Use Each Strategy"
+        direction TB
+        
+        USE_S1[Use Strategy 1 when:<br/>• Simple deployment<br/>• Kafka compatibility<br/>• Low-medium throughput<br/>• Traditional workloads]
+        
+        USE_S2[Use Strategy 2 when:<br/>• Better reliability needed<br/>• Moderate throughput<br/>• Willing to add complexity<br/>• LogDevice-style]
+        
+        USE_S3[Use Strategy 3 when:<br/>• Maximum throughput<br/>• Leader I/O is bottleneck<br/>• High write workloads<br/>• Production Pyralog ⭐]
+    end
+    
+    %% Cross-strategy connections
+    STRATEGY_1 -.->|Evolves to| STRATEGY_2
+    STRATEGY_2 -.->|Optimized to| STRATEGY_3
+    
+    %% Styling
+    classDef choice fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef strategy1 fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef strategy2 fill:#F57C00,stroke:#E65100,color:#fff
+    classDef strategy3 fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef innovation fill:#FFD700,stroke:#FFA000,color:#000,stroke-width:3px
+    classDef perf fill:#FFD700,stroke:#FFA000,color:#000
+    classDef usage fill:#00BCD4,stroke:#0097A7,color:#fff
+    
+    class STRATEGY_CHOICE choice
+    class STRATEGY_1,P1_COPYSET,P2_COPYSET,P3_COPYSET,S1_LEADER,S1_REPLICATE,S1_WAIT,S1_ACK_CLIENT,S1_SIMPLE,S1_HOTSPOT,S1_THROUGHPUT,S1_RELIABILITY strategy1
+    class STRATEGY_2,S2_RECORD1,S2_RECORD2,S2_RECORD3,S2_LEADER,S2_WRITE_LOCAL,S2_FORWARD,S2_WAIT,S2_ACK,S2_FLEXIBLE,S2_STILL_BOTTLENECK,S2_THROUGHPUT,S2_RELIABILITY strategy2
+    class STRATEGY_3,S3_RECORD1,S3_RECORD2,S3_RECORD3,S3_LEADER,S3_DIRECT,S3_NO_LOCAL,S3_PARALLEL,S3_WAIT,S3_ACK,S3_NO_BOTTLENECK,S3_THROUGHPUT,S3_LEADER_IO,S3_RELIABILITY strategy3
+    class S3_INNOVATION,CLIENT_WRITE,ASSIGN_COPYSET,ASSIGN_OFFSET,SEND_REPLICAS,TRACK_ACKS,R1_WRITE,R2_WRITE,R3_WRITE,R1_ACK,R2_ACK,R3_ACK,QUORUM_MET,ACK_CLIENT_FINAL innovation
+    class PERF_S1,PERF_S2,PERF_S3 perf
+    class USE_S1,USE_S2,USE_S3 usage
+

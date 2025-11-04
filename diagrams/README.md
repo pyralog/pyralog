@@ -6,29 +6,46 @@ Visual representations of Pyralog's architecture, data flows, and key concepts.
 
 ## Diagram Index
 
-### Core Architecture
+### Core Architecture (5)
 - [system-architecture.mmd](system-architecture.mmd) - Complete system overview
 - [component-relationships.mmd](component-relationships.mmd) - How components interact
+- [two-tier-architecture.mmd](two-tier-architecture.mmd) - Obelisk vs Pyramid nodes ⭐
 - [data-flow.mmd](data-flow.mmd) - Write and read paths
+- [deployment-topologies.mmd](deployment-topologies.mmd) - Single vs multi-cluster
 
-### Novel Primitives
+### Novel Primitives (3)
+- [obelisk-pharaoh-scarab.mmd](obelisk-pharaoh-scarab.mmd) - The three core primitives ⭐
 - [shen-ring.mmd](shen-ring.mmd) - The Five Rings architecture
-- [obelisk-pharaoh-scarab.mmd](obelisk-pharaoh-scarab.mmd) - Coordination primitives
 - [exactly-once.mmd](exactly-once.mmd) - Exactly-once semantics flow
 
-### Storage & Indexing
+### Query & Execution (4)
+- [query-execution.mmd](query-execution.mmd) - SQL to results pipeline ⭐
+- [client-routing.mmd](client-routing.mmd) - Smart client pattern ⭐
+- [transaction-flow.mmd](transaction-flow.mmd) - Distributed ACID transactions ⭐
+- [batuta-compilation.mmd](batuta-compilation.mmd) - Batuta language pipeline
+
+### Storage & Indexing (4)
 - [lsm-storage.mmd](lsm-storage.mmd) - LSM tree structure
+- [hybrid-storage.mmd](hybrid-storage.mmd) - LSM + file references
 - [pphm-build.mmd](pphm-build.mmd) - PPHM build pipeline
 - [deduplication-layers.mmd](deduplication-layers.mmd) - Multi-layer deduplication
 
-### Distributed Systems
+### Distributed Systems (3)
 - [consensus.mmd](consensus.mmd) - Raft consensus protocol
-- [replication.mmd](replication.mmd) - Data replication strategies
-- [failover.mmd](failover.mmd) - Failover and recovery
+- [replication.mmd](replication.mmd) - CopySet replication strategies
+- [failover.mmd](failover.mmd) - Recovery and failover flows
 
-### Actor Model
+### Actor Model (2)
 - [actor-topology.mmd](actor-topology.mmd) - Actor hierarchy and supervision
 - [message-flow.mmd](message-flow.mmd) - Message passing patterns
+
+### Multi-Model & Data Flow (4)
+- [multi-model-joins.mmd](multi-model-joins.mmd) - Cross-model zero-copy joins
+- [zero-copy-flow.mmd](zero-copy-flow.mmd) - End-to-end zero-copy
+- [category-theory-schema.mmd](category-theory-schema.mmd) - Schema as category
+- [vlsn-partitioning.mmd](vlsn-partitioning.mmd) - Client-side VLSN pattern
+
+**Total: 25 diagrams** (⭐ = high priority)
 
 ---
 

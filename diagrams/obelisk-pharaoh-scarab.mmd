@@ -1,0 +1,153 @@
+graph TB
+    subgraph "🗿 Obelisk Sequencer: Persistent Atomic Counter"
+        direction TB
+        
+        subgraph "The Innovation: File Size = Counter Value"
+            INNOVATION[Key Insight:<br/>Use filesystem metadata<br/>as counter storage]
+            
+            COUNTER[AtomicU64<br/>In-memory counter]
+            SPARSE[Sparse File<br/>Append-only writes]
+            SIZE[file_size = counter_value]
+            
+            INNOVATION --> COUNTER
+            INNOVATION --> SPARSE
+            COUNTER --> SPARSE
+            SPARSE --> SIZE
+        end
+        
+        subgraph "Operations"
+            INIT[Initialize:<br/>stat file_size → counter]
+            INCREMENT[Increment:<br/>fetch_add 1<br/>write &[0]<br/>fsync batched]
+            RECOVER[Recovery:<br/>stat file_size<br/>~2 µs]
+            
+            INIT -.->|Setup| COUNTER
+            COUNTER -->|Fast path| INCREMENT
+            INCREMENT -->|Append 1 byte| SPARSE
+            SPARSE -->|Crash!| RECOVER
+            RECOVER -->|Instant| COUNTER
+        end
+        
+        subgraph "Performance Characteristics"
+            PERF_WRITE[Write: 1-2 µs]
+            PERF_RECOVER[Recovery: 2 µs]
+            PERF_DISK[Disk: ~8 KB for billions]
+            PERF_SCALE[Scales: Unlimited]
+            
+            INCREMENT -.->|Latency| PERF_WRITE
+            RECOVER -.->|Latency| PERF_RECOVER
+            SIZE -.->|Sparse| PERF_DISK
+            COUNTER -.->|u64::MAX| PERF_SCALE
+        end
+    end
+    
+    subgraph "🪲 Scarab IDs: Crash-Safe Snowflake"
+        direction TB
+        
+        subgraph "64-bit Structure"
+            BIT_LAYOUT[Bit 0: Sign 0<br/>Bits 1-41: Timestamp 41 bits<br/>Bits 42-51: Machine ID 10 bits<br/>Bits 52-63: Sequence 12 bits]
+            
+            TIMESTAMP[Timestamp<br/>Milliseconds since epoch<br/>~69 years range]
+            MACHINE[Machine ID<br/>1024 machines<br/>5 bits DC + 5 bits worker]
+            SEQUENCE[Sequence<br/>4096 per millisecond<br/>From Obelisk Sequencer]
+            
+            BIT_LAYOUT --> TIMESTAMP
+            BIT_LAYOUT --> MACHINE
+            BIT_LAYOUT --> SEQUENCE
+        end
+        
+        subgraph "Generation Process"
+            GEN_TIME[Get current_ms]
+            GEN_MACHINE[Get machine_id]
+            GEN_SEQ[Get sequence from<br/>Obelisk Sequencer]
+            GEN_COMBINE[Combine:<br/>timestamp << 22<br/>| machine_id << 12<br/>| sequence]
+            GEN_ID[64-bit Scarab ID]
+            
+            GEN_TIME --> GEN_COMBINE
+            GEN_MACHINE --> GEN_COMBINE
+            GEN_SEQ --> GEN_COMBINE
+            GEN_COMBINE --> GEN_ID
+        end
+        
+        subgraph "Properties"
+            PROP_UNIQUE[Globally Unique<br/>No collisions]
+            PROP_TIME[Time-ordered<br/>Sortable by time]
+            PROP_FAST[4+ billion IDs/sec<br/>Per coordinator type]
+            PROP_SAFE[Crash-safe<br/>No duplicate IDs]
+            
+            GEN_ID --> PROP_UNIQUE
+            GEN_ID --> PROP_TIME
+            GEN_ID --> PROP_FAST
+            GEN_SEQ -.->|Obelisk guarantees| PROP_SAFE
+        end
+    end
+    
+    subgraph "☀️ Pharaoh Network: Distributed Coordinators"
+        direction TB
+        
+        subgraph "The Pattern: 1,024 × 4 Types"
+            PATTERN[Traditional:<br/>1 coordinator → 500K ops/sec<br/><br/>Pharaoh:<br/>1,024 coordinators → 4B+ ops/sec]
+            
+            N_TSO[1,024 TSO Nodes<br/>Timestamp allocation<br/>4B timestamps/sec]
+            N_TX[1,024 TX Coordinators<br/>Transaction management<br/>4B tx/sec]
+            N_SESSION[1,024 Session Managers<br/>Session tracking<br/>4B sessions/sec]
+            N_CONSUMER[1,024 Consumer Coords<br/>Consumer groups<br/>4B ops/sec]
+            
+            PATTERN --> N_TSO
+            PATTERN --> N_TX
+            PATTERN --> N_SESSION
+            PATTERN --> N_CONSUMER
+        end
+        
+        subgraph "Routing Strategy"
+            HASH[Hash-based Routing<br/>No coordination!]
+            ROUTE_TSO[hash tx_id % 1024<br/>→ TSO node]
+            ROUTE_TX[hash tx_id % 1024<br/>→ TX coordinator]
+            ROUTE_SESSION[hash client_id % 1024<br/>→ Session manager]
+            ROUTE_CONSUMER[hash group_id % 1024<br/>→ Consumer coord]
+            
+            HASH --> ROUTE_TSO
+            HASH --> ROUTE_TX
+            HASH --> ROUTE_SESSION
+            HASH --> ROUTE_CONSUMER
+        end
+        
+        subgraph "Scaling Benefits"
+            BENEFIT_LINEAR[Linear Scaling<br/>2,048 nodes = 2× throughput]
+            BENEFIT_STATELESS[Stateless<br/>Just Obelisk counters]
+            BENEFIT_FAILOVER[Fast Failover<br/>Client retries different node]
+            BENEFIT_OPS[Total: 28+ billion ops/sec<br/>Across all types]
+            
+            N_TSO -.->|Add nodes| BENEFIT_LINEAR
+            ROUTE_TSO -.->|Hash routing| BENEFIT_STATELESS
+            HASH -.->|No leader| BENEFIT_FAILOVER
+            N_TSO -.->|Aggregate| BENEFIT_OPS
+            N_TX -.->|Aggregate| BENEFIT_OPS
+            N_SESSION -.->|Aggregate| BENEFIT_OPS
+            N_CONSUMER -.->|Aggregate| BENEFIT_OPS
+        end
+    end
+    
+    %% Integration: How they work together
+    SEQUENCE -.->|Powers| GEN_SEQ
+    COUNTER -.->|Provides| SEQUENCE
+    GEN_ID -.->|Used by| N_TSO
+    GEN_ID -.->|Used by| N_TX
+    N_TSO -.->|Each has| COUNTER
+    N_TX -.->|Each has| COUNTER
+    N_SESSION -.->|Each has| COUNTER
+    N_CONSUMER -.->|Each has| COUNTER
+    
+    %% Styling
+    classDef obelisk fill:#8B4513,stroke:#5D2E0C,color:#fff,stroke-width:3px
+    classDef scarab fill:#FFD700,stroke:#FFA000,color:#000,stroke-width:3px
+    classDef pharaoh fill:#4A90E2,stroke:#2E5C8A,color:#fff,stroke-width:3px
+    classDef perf fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef innovation fill:#F57C00,stroke:#E65100,color:#fff
+    
+    class INNOVATION,COUNTER,SPARSE,SIZE,INIT,INCREMENT,RECOVER innovation
+    class PERF_WRITE,PERF_RECOVER,PERF_DISK,PERF_SCALE perf
+    class BIT_LAYOUT,TIMESTAMP,MACHINE,SEQUENCE,GEN_TIME,GEN_MACHINE,GEN_SEQ,GEN_COMBINE,GEN_ID scarab
+    class PROP_UNIQUE,PROP_TIME,PROP_FAST,PROP_SAFE perf
+    class PATTERN,N_TSO,N_TX,N_SESSION,N_CONSUMER,HASH,ROUTE_TSO,ROUTE_TX,ROUTE_SESSION,ROUTE_CONSUMER pharaoh
+    class BENEFIT_LINEAR,BENEFIT_STATELESS,BENEFIT_FAILOVER,BENEFIT_OPS perf
+

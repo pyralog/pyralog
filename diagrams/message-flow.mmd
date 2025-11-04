@@ -1,0 +1,259 @@
+graph TB
+    subgraph "Actor Communication Patterns"
+        direction TB
+        
+        PATTERNS[Four Message Patterns:<br/>Tell, Ask, Supervision, Topology]
+        
+        TELL[Tell<br/>Fire-and-forget]
+        ASK[Ask<br/>Request-response]
+        SUPERVISION[Supervision<br/>Parent-child]
+        TOPOLOGY[Topology<br/>Flocks/reactivity]
+        
+        PATTERNS --> TELL
+        PATTERNS --> ASK
+        PATTERNS --> SUPERVISION
+        PATTERNS --> TOPOLOGY
+    end
+    
+    subgraph "Pattern 1: Tell (Fire-and-Forget)"
+        direction TB
+        
+        subgraph "Characteristics"
+            TELL_ASYNC[Fully asynchronous<br/>No response expected]
+            TELL_FAST[Fast: No blocking<br/>Sub-microsecond]
+            TELL_ORDER[Ordering: Per-sender<br/>FIFO guaranteed]
+        end
+        
+        subgraph "Example Flow"
+            TELL_SENDER[Actor A<br/>Worker]
+            TELL_MSG[Send: ProcessData]
+            TELL_RECEIVER[Actor B<br/>Processor]
+            TELL_MAILBOX[Mailbox queue]
+            TELL_PROCESS[Process message<br/>Async]
+            
+            TELL_SENDER --> TELL_MSG
+            TELL_MSG --> TELL_RECEIVER
+            TELL_RECEIVER --> TELL_MAILBOX
+            TELL_MAILBOX --> TELL_PROCESS
+        end
+        
+        subgraph "Use Cases"
+            TELL_USE1[Event broadcasting]
+            TELL_USE2[Logging/metrics]
+            TELL_USE3[Best-effort delivery]
+            TELL_USE4[High-throughput streams]
+        end
+    end
+    
+    subgraph "Pattern 2: Ask (Request-Response)"
+        direction TB
+        
+        subgraph "Characteristics"
+            ASK_SYNC[Request-response<br/>Await reply]
+            ASK_TIMEOUT[Timeout: Configurable<br/>Default 5s]
+            ASK_FUTURE[Returns Future<br/>Async/await]
+        end
+        
+        subgraph "Example Flow"
+            ASK_SENDER[Actor A<br/>Requester]
+            ASK_REQUEST[Send: QueryData<br/>+ ReplyTo channel]
+            ASK_RECEIVER[Actor B<br/>Responder]
+            ASK_HANDLE[Handle request]
+            ASK_REPLY[Reply to channel]
+            ASK_RECEIVE[Receive response<br/>Or timeout]
+            
+            ASK_SENDER --> ASK_REQUEST
+            ASK_REQUEST --> ASK_RECEIVER
+            ASK_RECEIVER --> ASK_HANDLE
+            ASK_HANDLE --> ASK_REPLY
+            ASK_REPLY --> ASK_RECEIVE
+            ASK_RECEIVE --> ASK_SENDER
+        end
+        
+        subgraph "Use Cases"
+            ASK_USE1[RPC-style calls]
+            ASK_USE2[Coordination queries]
+            ASK_USE3[Critical operations]
+            ASK_USE4[State queries]
+        end
+    end
+    
+    subgraph "Pattern 3: Supervision (Parent-Child)"
+        direction TB
+        
+        subgraph "Supervision Tree"
+            SUPER_ROOT[Root Supervisor<br/>Cluster coordinator]
+            SUPER_MIDDLE[Mid Supervisor<br/>Query coordinator]
+            SUPER_LEAF1[Worker 1<br/>Partition handler]
+            SUPER_LEAF2[Worker 2<br/>Partition handler]
+            SUPER_LEAF3[Worker 3<br/>Partition handler]
+            
+            SUPER_ROOT --> SUPER_MIDDLE
+            SUPER_MIDDLE --> SUPER_LEAF1
+            SUPER_MIDDLE --> SUPER_LEAF2
+            SUPER_MIDDLE --> SUPER_LEAF3
+        end
+        
+        subgraph "Failure Handling"
+            CHILD_FAIL[Child crashes]
+            SUPER_DETECT[Supervisor detects<br/>DeathWatch]
+            SUPER_STRATEGY[Apply strategy:<br/>Restart/Stop/Escalate]
+            SUPER_RESTART[Restart child]
+            SUPER_NOTIFY[Notify siblings<br/>If needed]
+            
+            SUPER_LEAF1 -.->|Crash| CHILD_FAIL
+            CHILD_FAIL --> SUPER_DETECT
+            SUPER_DETECT --> SUPER_STRATEGY
+            SUPER_STRATEGY --> SUPER_RESTART
+            SUPER_RESTART --> SUPER_LEAF1
+            SUPER_RESTART -.->|Optional| SUPER_NOTIFY
+        end
+        
+        subgraph "Strategies"
+            STRAT_ONE_FOR_ONE[OneForOne:<br/>Restart only failed child]
+            STRAT_ONE_FOR_ALL[OneForAll:<br/>Restart all siblings]
+            STRAT_REST_FOR_ONE[RestForOne:<br/>Restart failed + younger siblings]
+        end
+    end
+    
+    subgraph "Pattern 4: Topology Reactivity (Flocks)"
+        direction TB
+        
+        subgraph "Flock Concept"
+            FLOCK_DEF[Flock:<br/>Group of related actors<br/>React to topology changes]
+            FLOCK_MEMBERS[Members:<br/>Query workers<br/>Partition handlers<br/>Replication actors]
+        end
+        
+        subgraph "Events"
+            TOPO_NODE_JOIN[Node Join<br/>New Pyramid node]
+            TOPO_NODE_LEAVE[Node Leave<br/>Node crash/shutdown]
+            TOPO_PARTITION_SPLIT[Partition Split<br/>Rebalance]
+            TOPO_LEADER_CHANGE[Leader Change<br/>Raft election]
+        end
+        
+        subgraph "Reactions"
+            REACT_REBALANCE[Rebalance actors<br/>Across nodes]
+            REACT_MIGRATE[Migrate state<br/>To new node]
+            REACT_RECONNECT[Reconnect<br/>to new leader]
+            REACT_NOTIFY[Notify dependents<br/>Update routing]
+        end
+        
+        TOPO_NODE_JOIN --> REACT_REBALANCE
+        TOPO_NODE_LEAVE --> REACT_REBALANCE
+        TOPO_PARTITION_SPLIT --> REACT_MIGRATE
+        TOPO_LEADER_CHANGE --> REACT_RECONNECT
+        REACT_RECONNECT --> REACT_NOTIFY
+    end
+    
+    subgraph "Location Transparency"
+        direction TB
+        
+        LOC_ABSTRACTION[ActorRef:<br/>Logical reference<br/>not physical address]
+        
+        subgraph "Local vs Remote"
+            LOC_LOCAL[Local Actor<br/>Same process<br/>Direct method call]
+            LOC_REMOTE[Remote Actor<br/>Different node<br/>Serialized message]
+            LOC_TRANSPARENT[Same API!<br/>Location transparent]
+        end
+        
+        subgraph "Routing"
+            ROUTE_LOCAL[If local:<br/>Direct dispatch]
+            ROUTE_REMOTE[If remote:<br/>Network send<br/>Arrow Flight IPC]
+        end
+        
+        LOC_ABSTRACTION --> LOC_LOCAL
+        LOC_ABSTRACTION --> LOC_REMOTE
+        LOC_LOCAL --> ROUTE_LOCAL
+        LOC_REMOTE --> ROUTE_REMOTE
+        LOC_LOCAL -.->|Same code| LOC_TRANSPARENT
+        LOC_REMOTE -.->|Same code| LOC_TRANSPARENT
+    end
+    
+    subgraph "Message Serialization"
+        direction TB
+        
+        SER_TYPES[Message Types:<br/>Arrow RecordBatch<br/>Bincode structs<br/>Custom types]
+        
+        subgraph "Local Messages"
+            SER_LOCAL[Zero-copy<br/>Shared memory<br/>Arc pointers]
+        end
+        
+        subgraph "Remote Messages"
+            SER_ARROW[Arrow Flight IPC<br/>Zero-copy network]
+            SER_BINCODE[Bincode serde<br/>Fast binary]
+            SER_CUSTOM[Custom protocol<br/>If needed]
+        end
+        
+        SER_TYPES --> SER_LOCAL
+        SER_TYPES --> SER_ARROW
+        SER_TYPES --> SER_BINCODE
+        SER_TYPES --> SER_CUSTOM
+    end
+    
+    subgraph "Backpressure & Flow Control"
+        direction TB
+        
+        BACKPRESSURE[Bounded mailboxes<br/>Prevent overload]
+        
+        subgraph "Strategies"
+            BP_BLOCK[Block sender<br/>Wait for capacity]
+            BP_DROP[Drop messages<br/>Best-effort]
+            BP_BUFFER[Buffer to disk<br/>Persistent queue]
+            BP_REDIRECT[Redirect<br/>to overflow handler]
+        end
+        
+        subgraph "Monitoring"
+            MONITOR_SIZE[Monitor mailbox size]
+            MONITOR_LAG[Detect lag]
+            MONITOR_ALERT[Alert if threshold]
+            MONITOR_SCALE[Auto-scale actors]
+        end
+        
+        BACKPRESSURE --> BP_BLOCK
+        BACKPRESSURE --> BP_DROP
+        BACKPRESSURE --> BP_BUFFER
+        BACKPRESSURE --> BP_REDIRECT
+        
+        BP_BLOCK -.->|Measure| MONITOR_SIZE
+        MONITOR_SIZE --> MONITOR_LAG
+        MONITOR_LAG --> MONITOR_ALERT
+        MONITOR_ALERT --> MONITOR_SCALE
+    end
+    
+    subgraph "Performance Characteristics"
+        direction LR
+        
+        PERF_TELL[Tell latency:<br/>~100-500 ns local<br/>~50-200 µs remote]
+        PERF_ASK[Ask latency:<br/>~1-5 µs local<br/>~100-500 µs remote]
+        PERF_THROUGHPUT[Throughput:<br/>10M+ msgs/sec/core]
+        PERF_OVERHEAD[Overhead:<br/>Minimal<br/>Lock-free queues]
+        
+        TELL_PROCESS -.->|Measure| PERF_TELL
+        ASK_RECEIVE -.->|Measure| PERF_ASK
+        TELL_MAILBOX -.->|Measure| PERF_THROUGHPUT
+        LOC_TRANSPARENT -.->|Measure| PERF_OVERHEAD
+    end
+    
+    %% Cross-pattern connections
+    TELL -.->|Used in| TOPO_NODE_JOIN
+    ASK -.->|Used in| REACT_RECONNECT
+    SUPERVISION -.->|Manages| SUPER_LEAF1
+    TOPOLOGY -.->|Triggers| REACT_REBALANCE
+    
+    %% Styling
+    classDef pattern fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef tell fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef ask fill:#F57C00,stroke:#E65100,color:#fff
+    classDef supervision fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef topology fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef location fill:#FFD700,stroke:#FFA000,color:#000
+    classDef perf fill:#E91E63,stroke:#C2185B,color:#fff
+    
+    class PATTERNS,TELL,ASK,SUPERVISION,TOPOLOGY pattern
+    class TELL_ASYNC,TELL_FAST,TELL_ORDER,TELL_SENDER,TELL_MSG,TELL_RECEIVER,TELL_MAILBOX,TELL_PROCESS,TELL_USE1,TELL_USE2,TELL_USE3,TELL_USE4 tell
+    class ASK_SYNC,ASK_TIMEOUT,ASK_FUTURE,ASK_SENDER,ASK_REQUEST,ASK_RECEIVER,ASK_HANDLE,ASK_REPLY,ASK_RECEIVE,ASK_USE1,ASK_USE2,ASK_USE3,ASK_USE4 ask
+    class SUPER_ROOT,SUPER_MIDDLE,SUPER_LEAF1,SUPER_LEAF2,SUPER_LEAF3,CHILD_FAIL,SUPER_DETECT,SUPER_STRATEGY,SUPER_RESTART,SUPER_NOTIFY,STRAT_ONE_FOR_ONE,STRAT_ONE_FOR_ALL,STRAT_REST_FOR_ONE supervision
+    class FLOCK_DEF,FLOCK_MEMBERS,TOPO_NODE_JOIN,TOPO_NODE_LEAVE,TOPO_PARTITION_SPLIT,TOPO_LEADER_CHANGE,REACT_REBALANCE,REACT_MIGRATE,REACT_RECONNECT,REACT_NOTIFY topology
+    class LOC_ABSTRACTION,LOC_LOCAL,LOC_REMOTE,LOC_TRANSPARENT,ROUTE_LOCAL,ROUTE_REMOTE,SER_TYPES,SER_LOCAL,SER_ARROW,SER_BINCODE,SER_CUSTOM location
+    class BACKPRESSURE,BP_BLOCK,BP_DROP,BP_BUFFER,BP_REDIRECT,MONITOR_SIZE,MONITOR_LAG,MONITOR_ALERT,MONITOR_SCALE,PERF_TELL,PERF_ASK,PERF_THROUGHPUT,PERF_OVERHEAD perf
+

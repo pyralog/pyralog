@@ -1,0 +1,208 @@
+graph TB
+    subgraph "Transaction Lifecycle"
+        direction TB
+        
+        BEGIN[Client: begin_transaction]
+        TX_ID[Generate TX ID<br/>Scarab ID]
+        TSO[Get Timestamp<br/>From Pharaoh TSO]
+        WRITES[Execute Writes<br/>To multiple partitions]
+        COMMIT_REQ[Client: commit]
+        ABORT_REQ[Client: abort<br/>Or timeout]
+        
+        BEGIN --> TX_ID
+        TX_ID --> TSO
+        TSO --> WRITES
+        WRITES --> COMMIT_REQ
+        WRITES -.->|Failure| ABORT_REQ
+    end
+    
+    subgraph "Distributed TSO: Pharaoh Network"
+        direction TB
+        
+        subgraph "1,024 TSO Nodes"
+            TSO_HASH[Hash TX ID % 1,024<br/>Deterministic routing]
+            TSO_NODE[TSO Node<br/>Obelisk Sequencer]
+            TSO_COUNTER[Increment counter<br/>~1-2 µs]
+            TSO_TIMESTAMP[Return timestamp<br/>Monotonically increasing]
+        end
+        
+        subgraph "Performance"
+            TSO_PERF[4+ billion timestamps/sec<br/>Total across all nodes<br/>vs TiKV: 500K/sec<br/>8,000× faster!]
+        end
+        
+        TSO --> TSO_HASH
+        TSO_HASH --> TSO_NODE
+        TSO_NODE --> TSO_COUNTER
+        TSO_COUNTER --> TSO_TIMESTAMP
+        TSO_NODE -.->|Aggregate| TSO_PERF
+    end
+    
+    subgraph "Write Phase: Percolator Protocol"
+        direction TB
+        
+        subgraph "For Each Partition"
+            WRITE_LOCK[Acquire write lock<br/>On key]
+            WRITE_CHECK[Check for conflicts<br/>Read timestamp < TX timestamp]
+            WRITE_TENTATIVE[Write tentative value<br/>With TX ID & timestamp]
+            WRITE_RELEASE[Release lock<br/>After write]
+        end
+        
+        subgraph "Parallel Writes"
+            PARTITION_A[Partition A<br/>Write key1=val1]
+            PARTITION_B[Partition B<br/>Write key2=val2]
+            PARTITION_C[Partition C<br/>Write key3=val3]
+        end
+        
+        WRITES --> PARTITION_A
+        WRITES --> PARTITION_B
+        WRITES --> PARTITION_C
+        
+        PARTITION_A --> WRITE_LOCK
+        PARTITION_B --> WRITE_LOCK
+        PARTITION_C --> WRITE_LOCK
+        
+        WRITE_LOCK --> WRITE_CHECK
+        WRITE_CHECK -->|No conflict| WRITE_TENTATIVE
+        WRITE_CHECK -.->|Conflict| ABORT_REQ
+        WRITE_TENTATIVE --> WRITE_RELEASE
+    end
+    
+    subgraph "Commit Phase: Two-Phase Commit (2PC)"
+        direction TB
+        
+        subgraph "Phase 1: Prepare"
+            COORD_HASH[Hash TX ID % 1,024<br/>Route to TX Coordinator]
+            COORD_NODE[TX Coordinator<br/>From Pharaoh Network]
+            SEND_PREPARE[Send PREPARE<br/>To all participants]
+            WAIT_VOTES[Wait for votes<br/>From all partitions]
+            CHECK_VOTES[All voted YES?]
+        end
+        
+        subgraph "Phase 2: Commit or Abort"
+            DECIDE_COMMIT[Decision: COMMIT]
+            DECIDE_ABORT[Decision: ABORT]
+            SEND_COMMIT[Send COMMIT<br/>To all participants]
+            SEND_ABORT[Send ABORT<br/>To all participants]
+            APPLY_COMMIT[Apply commit<br/>Make writes visible]
+            APPLY_ABORT[Rollback<br/>Delete tentative writes]
+        end
+        
+        COMMIT_REQ --> COORD_HASH
+        COORD_HASH --> COORD_NODE
+        COORD_NODE --> SEND_PREPARE
+        SEND_PREPARE --> WAIT_VOTES
+        WAIT_VOTES --> CHECK_VOTES
+        
+        CHECK_VOTES -->|All YES| DECIDE_COMMIT
+        CHECK_VOTES -->|Any NO| DECIDE_ABORT
+        
+        DECIDE_COMMIT --> SEND_COMMIT
+        DECIDE_ABORT --> SEND_ABORT
+        
+        SEND_COMMIT --> APPLY_COMMIT
+        SEND_ABORT --> APPLY_ABORT
+    end
+    
+    subgraph "Participant Actions (Per Partition)"
+        direction TB
+        
+        subgraph "Prepare Phase"
+            PART_PREPARE[Receive PREPARE]
+            PART_CHECK[Check locks<br/>Validate writes]
+            PART_VOTE_YES[Vote YES<br/>Can commit]
+            PART_VOTE_NO[Vote NO<br/>Cannot commit]
+            PART_PERSIST[Persist vote<br/>To Raft log]
+        end
+        
+        subgraph "Commit/Abort Phase"
+            PART_COMMIT[Receive COMMIT]
+            PART_ABORT[Receive ABORT]
+            PART_FINALIZE_COMMIT[Finalize commit<br/>Remove TX metadata]
+            PART_FINALIZE_ABORT[Cleanup<br/>Remove tentative writes]
+            PART_ACK[Send ACK<br/>To coordinator]
+        end
+        
+        SEND_PREPARE -.->|Broadcast| PART_PREPARE
+        PART_PREPARE --> PART_CHECK
+        PART_CHECK -->|Valid| PART_VOTE_YES
+        PART_CHECK -->|Invalid| PART_VOTE_NO
+        PART_VOTE_YES --> PART_PERSIST
+        PART_VOTE_NO --> PART_PERSIST
+        PART_PERSIST --> WAIT_VOTES
+        
+        SEND_COMMIT -.->|Broadcast| PART_COMMIT
+        SEND_ABORT -.->|Broadcast| PART_ABORT
+        PART_COMMIT --> PART_FINALIZE_COMMIT
+        PART_ABORT --> PART_FINALIZE_ABORT
+        PART_FINALIZE_COMMIT --> PART_ACK
+        PART_FINALIZE_ABORT --> PART_ACK
+    end
+    
+    subgraph "Isolation: MVCC & Snapshot Isolation"
+        direction TB
+        
+        MVCC[Multi-Version Concurrency Control<br/>Each write gets timestamp]
+        SNAPSHOT[Snapshot Isolation<br/>Read at specific timestamp]
+        READ_OWN[Transactions read<br/>their own writes]
+        NO_DIRTY[No dirty reads<br/>Only committed data]
+        
+        TSO_TIMESTAMP -.->|Provides| MVCC
+        MVCC --> SNAPSHOT
+        SNAPSHOT --> READ_OWN
+        SNAPSHOT --> NO_DIRTY
+    end
+    
+    subgraph "Failure Handling"
+        direction TB
+        
+        TIMEOUT[Timeout<br/>Client or coordinator crash]
+        COORD_FAILOVER[Coordinator Failover<br/>Client retries different node]
+        PART_FAILOVER[Partition Failover<br/>Raft elects new leader]
+        TX_ABORT_AUTO[Auto-abort<br/>After timeout TTL]
+        CLEANUP[Cleanup<br/>Remove locks & metadata]
+        
+        TIMEOUT --> COORD_FAILOVER
+        TIMEOUT --> PART_FAILOVER
+        TIMEOUT --> TX_ABORT_AUTO
+        TX_ABORT_AUTO --> CLEANUP
+    end
+    
+    subgraph "Performance Characteristics"
+        direction LR
+        
+        PERF_THROUGHPUT[Throughput:<br/>4M+ transactions/sec<br/>Across 1,024 coordinators]
+        PERF_LATENCY[Latency:<br/>2-5ms typical<br/>10ms p99]
+        PERF_SCALABILITY[Scalability:<br/>Linear with coordinators<br/>2,048 nodes = 2× throughput]
+        PERF_COMPARISON[vs TiKV:<br/>8,000× faster<br/>Centralized TSO bottleneck]
+        
+        COORD_NODE -.->|Enable| PERF_THROUGHPUT
+        TSO_COUNTER -.->|Enable| PERF_LATENCY
+        TSO_HASH -.->|Enable| PERF_SCALABILITY
+        TSO_PERF -.->|Enable| PERF_COMPARISON
+    end
+    
+    %% Cross-component connections
+    WRITE_TENTATIVE -.->|Use| MVCC
+    APPLY_COMMIT -.->|Update| MVCC
+    COORD_NODE -.->|On failure| COORD_FAILOVER
+    PART_PREPARE -.->|On failure| PART_FAILOVER
+    
+    %% Styling
+    classDef lifecycle fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef tso fill:#FFD700,stroke:#FFA000,color:#000
+    classDef write fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef commit fill:#F57C00,stroke:#E65100,color:#fff
+    classDef participant fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef isolation fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef failure fill:#E53935,stroke:#C62828,color:#fff
+    classDef perf fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class BEGIN,TX_ID,TSO,WRITES,COMMIT_REQ,ABORT_REQ lifecycle
+    class TSO_HASH,TSO_NODE,TSO_COUNTER,TSO_TIMESTAMP,TSO_PERF tso
+    class WRITE_LOCK,WRITE_CHECK,WRITE_TENTATIVE,WRITE_RELEASE,PARTITION_A,PARTITION_B,PARTITION_C write
+    class COORD_HASH,COORD_NODE,SEND_PREPARE,WAIT_VOTES,CHECK_VOTES,DECIDE_COMMIT,DECIDE_ABORT,SEND_COMMIT,SEND_ABORT,APPLY_COMMIT,APPLY_ABORT commit
+    class PART_PREPARE,PART_CHECK,PART_VOTE_YES,PART_VOTE_NO,PART_PERSIST,PART_COMMIT,PART_ABORT,PART_FINALIZE_COMMIT,PART_FINALIZE_ABORT,PART_ACK participant
+    class MVCC,SNAPSHOT,READ_OWN,NO_DIRTY isolation
+    class TIMEOUT,COORD_FAILOVER,PART_FAILOVER,TX_ABORT_AUTO,CLEANUP failure
+    class PERF_THROUGHPUT,PERF_LATENCY,PERF_SCALABILITY,PERF_COMPARISON perf
+

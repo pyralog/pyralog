@@ -1,0 +1,171 @@
+graph TB
+    subgraph "Smart Client Architecture"
+        direction TB
+        
+        CLIENT[PyralogClient<br/>Application instance]
+        
+        subgraph "Client-Side Components"
+            METADATA_CACHE[Metadata Cache<br/>Partition → Leader<br/>Obelisk nodes<br/>Pyramid nodes]
+            PARTITIONER[Partitioner<br/>hash key % partition_count]
+            CONNECTION_POOL[Connection Pool<br/>Per leader node]
+            RETRY_LOGIC[Retry Logic<br/>Handle NotLeader]
+        end
+        
+        CLIENT --> METADATA_CACHE
+        CLIENT --> PARTITIONER
+        CLIENT --> CONNECTION_POOL
+        CLIENT --> RETRY_LOGIC
+    end
+    
+    subgraph "Metadata Discovery"
+        direction TB
+        
+        subgraph "Bootstrap"
+            BOOTSTRAP[Bootstrap Servers<br/>Initial connection<br/>localhost:9092]
+            DISCOVER_OBELISK[Discover Obelisk Nodes<br/>TSO, TX, Session, Consumer]
+            DISCOVER_PYRAMID[Discover Pyramid Nodes<br/>Partition leaders]
+        end
+        
+        subgraph "Metadata Protocol"
+            REQ_METADATA[Request Metadata<br/>For LogId]
+            RESP_PARTITIONS[Response:<br/>Partitions<br/>Replicas<br/>Leaders]
+            RESP_OBELISK[Response:<br/>Obelisk endpoints<br/>Per coordinator type]
+        end
+        
+        BOOTSTRAP --> DISCOVER_OBELISK
+        BOOTSTRAP --> DISCOVER_PYRAMID
+        DISCOVER_PYRAMID --> REQ_METADATA
+        REQ_METADATA --> RESP_PARTITIONS
+        DISCOVER_OBELISK --> RESP_OBELISK
+    end
+    
+    subgraph "Write Path: Direct to Leader"
+        direction TB
+        
+        WRITE_REQ[Write Request<br/>key, value]
+        
+        subgraph "Client-Side Processing"
+            CALC_PARTITION[Calculate partition<br/>hash key % N]
+            LOOKUP_LEADER[Lookup leader<br/>from cache]
+            GEN_SCARAB[Generate Scarab ID<br/>From Obelisk node]
+            CREATE_RECORD[Create record<br/>With Scarab ID]
+        end
+        
+        subgraph "Direct Connection"
+            CONNECT_LEADER[Connect to leader<br/>Direct TCP/QUIC]
+            SEND_WRITE[Send write request<br/>Arrow Flight]
+            WAIT_ACK[Wait for ACK<br/>Quorum written]
+        end
+        
+        WRITE_REQ --> CALC_PARTITION
+        CALC_PARTITION --> LOOKUP_LEADER
+        LOOKUP_LEADER --> GEN_SCARAB
+        GEN_SCARAB --> CREATE_RECORD
+        CREATE_RECORD --> CONNECT_LEADER
+        CONNECT_LEADER --> SEND_WRITE
+        SEND_WRITE --> WAIT_ACK
+    end
+    
+    subgraph "Read Path: Direct to Follower"
+        direction TB
+        
+        READ_REQ[Read Request<br/>partition, offset]
+        
+        subgraph "Routing Strategy"
+            PREFER_FOLLOWER[Prefer follower<br/>Reduce leader load]
+            CALC_READ_PARTITION[Calculate partition<br/>From offset/VLSN]
+            LOOKUP_REPLICA[Lookup replica<br/>Round-robin followers]
+            FALLBACK_LEADER[Fallback to leader<br/>If follower stale]
+        end
+        
+        subgraph "Direct Read"
+            CONNECT_REPLICA[Connect to replica<br/>Direct connection]
+            SEND_READ[Send read request<br/>Arrow Flight]
+            RECV_DATA[Receive data<br/>Zero-copy Arrow]
+        end
+        
+        READ_REQ --> PREFER_FOLLOWER
+        PREFER_FOLLOWER --> CALC_READ_PARTITION
+        CALC_READ_PARTITION --> LOOKUP_REPLICA
+        LOOKUP_REPLICA --> CONNECT_REPLICA
+        CONNECT_REPLICA --> SEND_READ
+        SEND_READ --> RECV_DATA
+        RECV_DATA -.->|Stale?| FALLBACK_LEADER
+        FALLBACK_LEADER -.->|Retry| CONNECT_LEADER
+    end
+    
+    subgraph "Metadata Refresh Triggers"
+        direction TB
+        
+        ERROR_NOTLEADER[Error: NotLeader<br/>Leader moved]
+        ERROR_TIMEOUT[Error: Timeout<br/>Node down]
+        ERROR_PARTITION[Error: UnknownPartition<br/>Partition split]
+        PERIODIC_REFRESH[Periodic Refresh<br/>Every 60 seconds]
+        
+        subgraph "Refresh Actions"
+            INVALIDATE[Invalidate cache<br/>For affected log]
+            REFETCH[Refetch metadata<br/>From cluster]
+            UPDATE_CACHE[Update cache<br/>New leaders/partitions]
+            RETRY_REQUEST[Retry request<br/>With new metadata]
+        end
+        
+        ERROR_NOTLEADER --> INVALIDATE
+        ERROR_TIMEOUT --> INVALIDATE
+        ERROR_PARTITION --> INVALIDATE
+        PERIODIC_REFRESH --> INVALIDATE
+        
+        INVALIDATE --> REFETCH
+        REFETCH --> UPDATE_CACHE
+        UPDATE_CACHE --> RETRY_REQUEST
+    end
+    
+    subgraph "Load Balancing"
+        direction LR
+        
+        LB_WRITES[Writes:<br/>Always to leader<br/>No choice]
+        LB_READS[Reads:<br/>Round-robin followers<br/>Reduce leader load]
+        LB_OBELISK[Obelisk requests:<br/>Hash-based routing<br/>Deterministic]
+        LB_PARTITIONS[Partitions:<br/>Distribute across<br/>all leaders]
+        
+        CONNECT_LEADER -.->|Strategy| LB_WRITES
+        LOOKUP_REPLICA -.->|Strategy| LB_READS
+        GEN_SCARAB -.->|Strategy| LB_OBELISK
+        PARTITIONER -.->|Strategy| LB_PARTITIONS
+    end
+    
+    subgraph "Benefits vs Proxy Architecture"
+        direction TB
+        
+        BENEFIT_LATENCY[Lower Latency<br/>No proxy hop<br/>~50% reduction]
+        BENEFIT_THROUGHPUT[Higher Throughput<br/>No proxy bottleneck<br/>Linear scaling]
+        BENEFIT_FAILOVER[Faster Failover<br/>Client detects immediately<br/>Sub-second retry]
+        BENEFIT_LOAD[Better Load Distribution<br/>Client-side balancing<br/>Even distribution]
+        
+        CONNECT_LEADER -.->|Enable| BENEFIT_LATENCY
+        CONNECTION_POOL -.->|Enable| BENEFIT_THROUGHPUT
+        RETRY_REQUEST -.->|Enable| BENEFIT_FAILOVER
+        LOOKUP_REPLICA -.->|Enable| BENEFIT_LOAD
+    end
+    
+    %% Cross-component connections
+    METADATA_CACHE -.->|Update from| UPDATE_CACHE
+    PARTITIONER -.->|Use| CALC_PARTITION
+    CONNECTION_POOL -.->|Reuse| CONNECT_LEADER
+    CONNECTION_POOL -.->|Reuse| CONNECT_REPLICA
+    RETRY_LOGIC -.->|Trigger| INVALIDATE
+    
+    %% Styling
+    classDef client fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef metadata fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef write fill:#F57C00,stroke:#E65100,color:#fff
+    classDef read fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef error fill:#E53935,stroke:#C62828,color:#fff
+    classDef benefit fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class CLIENT,METADATA_CACHE,PARTITIONER,CONNECTION_POOL,RETRY_LOGIC client
+    class BOOTSTRAP,DISCOVER_OBELISK,DISCOVER_PYRAMID,REQ_METADATA,RESP_PARTITIONS,RESP_OBELISK metadata
+    class WRITE_REQ,CALC_PARTITION,LOOKUP_LEADER,GEN_SCARAB,CREATE_RECORD,CONNECT_LEADER,SEND_WRITE,WAIT_ACK write
+    class READ_REQ,PREFER_FOLLOWER,CALC_READ_PARTITION,LOOKUP_REPLICA,FALLBACK_LEADER,CONNECT_REPLICA,SEND_READ,RECV_DATA read
+    class ERROR_NOTLEADER,ERROR_TIMEOUT,ERROR_PARTITION,PERIODIC_REFRESH,INVALIDATE,REFETCH,UPDATE_CACHE,RETRY_REQUEST error
+    class LB_WRITES,LB_READS,LB_OBELISK,LB_PARTITIONS,BENEFIT_LATENCY,BENEFIT_THROUGHPUT,BENEFIT_FAILOVER,BENEFIT_LOAD benefit
+

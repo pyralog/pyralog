@@ -1,0 +1,117 @@
+graph TB
+    subgraph "🗿 Obelisk Nodes - ☀️ Pharaoh Network Layer"
+        direction TB
+        
+        subgraph "Node Characteristics"
+            O_SIZE[Small: 10-50 MB RAM<br/>Stateless design]
+            O_PERF[High throughput:<br/>Millions ops/sec/node]
+            O_STATE[Minimal state:<br/>Just counter files]
+            O_SCALE[Scale independently<br/>from storage]
+        end
+        
+        subgraph "1,024 Coordinators per Type"
+            TSO[TSO Nodes<br/>4B timestamps/sec]
+            TX_COORD[TX Coordinators<br/>4B tx/sec]
+            SESSION[Session Managers<br/>4B sessions/sec]
+            CONSUMER[Consumer Coords<br/>4B ops/sec]
+        end
+        
+        subgraph "Obelisk Sequencer"
+            COUNTER[AtomicU64<br/>In-memory counter]
+            FILE[Sparse File<br/>file_size = counter]
+            RECOVERY[Recovery: stat()<br/>~2 µs]
+        end
+        
+        O_SIZE --> TSO
+        O_SIZE --> TX_COORD
+        O_SIZE --> SESSION
+        O_SIZE --> CONSUMER
+        
+        TSO --> COUNTER
+        TX_COORD --> COUNTER
+        SESSION --> COUNTER
+        CONSUMER --> COUNTER
+        
+        COUNTER --> FILE
+        FILE --> RECOVERY
+    end
+    
+    subgraph "🔺 Pyramid Nodes - Pyralog Cluster"
+        direction TB
+        
+        subgraph "Node Characteristics"
+            P_SIZE[Large: 10-100 GB RAM<br/>Stateful design]
+            P_PERF[High throughput:<br/>100K+ writes/sec/partition]
+            P_STATE[Full state:<br/>LSM + Raft logs]
+            P_SCALE[Scale with data<br/>and partitions]
+        end
+        
+        subgraph "Storage & Consensus"
+            LSM[LSM-Tree Storage<br/>Write-optimized]
+            RAFT[Per-Partition Raft<br/>Consensus]
+            SEGMENTS[Parquet Segments<br/>Columnar format]
+            CACHE[Arrow Cache<br/>Zero-copy]
+        end
+        
+        subgraph "Query Engine"
+            DATAFUSION[DataFusion SQL]
+            POLARS[Polars DataFrames]
+            ACTORS[Actor System<br/>Distributed queries]
+        end
+        
+        P_SIZE --> LSM
+        P_SIZE --> RAFT
+        
+        LSM --> SEGMENTS
+        LSM --> CACHE
+        RAFT --> LSM
+        
+        DATAFUSION --> CACHE
+        POLARS --> CACHE
+        ACTORS --> DATAFUSION
+        ACTORS --> POLARS
+    end
+    
+    subgraph "Interaction Patterns"
+        direction LR
+        
+        CLIENT[Smart Client]
+        
+        subgraph "ID Generation Flow"
+            REQ1[Request Scarab ID]
+            OBELISK_RESP[Obelisk generates<br/>~1-2 µs]
+            ID_RETURN[Return ID]
+        end
+        
+        subgraph "Write Flow"
+            REQ2[Write with Scarab ID]
+            PYRAMID_WRITE[Pyramid stores<br/>Raft consensus]
+            WRITE_ACK[Acknowledge]
+        end
+        
+        CLIENT --> REQ1
+        REQ1 --> OBELISK_RESP
+        OBELISK_RESP --> ID_RETURN
+        ID_RETURN --> CLIENT
+        
+        CLIENT --> REQ2
+        REQ2 --> PYRAMID_WRITE
+        PYRAMID_WRITE --> WRITE_ACK
+        WRITE_ACK --> CLIENT
+    end
+    
+    %% Cross-tier connections
+    TSO -.->|Provide IDs| PYRAMID_WRITE
+    TX_COORD -.->|Coordinate TXs| RAFT
+    CONSUMER -.->|Track offsets| LSM
+    
+    %% Styling
+    classDef obelisk fill:#FFD700,stroke:#FFA000,color:#000,stroke-width:3px
+    classDef pyramid fill:#4A90E2,stroke:#2E5C8A,color:#fff,stroke-width:3px
+    classDef interaction fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef perf fill:#F57C00,stroke:#E65100,color:#fff
+    
+    class O_SIZE,O_PERF,O_STATE,O_SCALE,TSO,TX_COORD,SESSION,CONSUMER,COUNTER,FILE,RECOVERY obelisk
+    class P_SIZE,P_PERF,P_STATE,P_SCALE,LSM,RAFT,SEGMENTS,CACHE,DATAFUSION,POLARS,ACTORS pyramid
+    class CLIENT,REQ1,REQ2,OBELISK_RESP,ID_RETURN,PYRAMID_WRITE,WRITE_ACK interaction
+

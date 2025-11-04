@@ -1,0 +1,145 @@
+graph TB
+    subgraph "Storage Decision Matrix"
+        DECISION[Incoming Data]
+        
+        HOT_CHECK{Hot data?<br/>Frequent updates?<br/>Small size?}
+        
+        COLD_CHECK{Cold data?<br/>Immutable?<br/>Large size?}
+        
+        DECISION --> HOT_CHECK
+        DECISION --> COLD_CHECK
+    end
+    
+    subgraph "Path 1: Native LSM-Tree"
+        HOT_CHECK -->|Yes| LSM
+        
+        LSM[LSM-Tree Storage]
+        
+        subgraph "LSM Components"
+            MEMTABLE[Memtable<br/>In-memory<br/>Arrow RecordBatch]
+            SSTABLE[SSTables<br/>Sorted on disk<br/>Parquet format]
+            BLOOM[Bloom Filters<br/>Fast lookup]
+        end
+        
+        LSM --> MEMTABLE
+        LSM --> SSTABLE
+        LSM --> BLOOM
+        
+        subgraph "LSM Use Cases"
+            LSM_EVENTS[Event streams<br/>High write rate]
+            LSM_TRANSACTIONS[Transactions<br/>ACID updates]
+            LSM_METADATA[Metadata<br/>Frequent changes]
+            LSM_RECENT[Recent data<br/>Last 7 days]
+        end
+    end
+    
+    subgraph "Path 2: File References"
+        COLD_CHECK -->|Yes| FILE_REF
+        
+        FILE_REF[Store File Reference]
+        
+        subgraph "Reference Storage"
+            PATH[Store path:<br/>/data/dataset.parquet]
+            METADATA_REF[Store metadata:<br/>size, schema, checksum]
+            NO_COPY[NO data copy!<br/>Just path string]
+        end
+        
+        FILE_REF --> PATH
+        FILE_REF --> METADATA_REF
+        FILE_REF --> NO_COPY
+        
+        subgraph "File Types"
+            PARQUET_FILE[Parquet:<br/>Analytics tables<br/>1 TB datasets]
+            SAFETENSORS_FILE[Safetensors:<br/>ML models<br/>10 GB weights]
+            ZARR_FILE[Zarr:<br/>Scientific arrays<br/>100 GB tensors]
+            HDF5_FILE[HDF5:<br/>Legacy data<br/>Any size]
+        end
+        
+        PATH --> PARQUET_FILE
+        PATH --> SAFETENSORS_FILE
+        PATH --> ZARR_FILE
+        PATH --> HDF5_FILE
+    end
+    
+    subgraph "Access Patterns"
+        direction TB
+        
+        ACCESS_LSM[Read from LSM:<br/>1. Check memtable<br/>2. Check SSTables<br/>3. Decompress if needed]
+        
+        ACCESS_FILE[Read from file reference:<br/>1. Lookup path<br/>2. Memory-map file<br/>3. Zero-copy access]
+        
+        SSTABLE -.->|Read| ACCESS_LSM
+        PARQUET_FILE -.->|Read| ACCESS_FILE
+    end
+    
+    subgraph "Cost Comparison"
+        direction LR
+        
+        COST_LSM[LSM Storage:<br/>$$$ High<br/>Fast NVMe SSD<br/>Full data copy]
+        
+        COST_FILE[File Reference:<br/>$ Low<br/>Cheap object storage<br/>No data copy]
+        
+        SAVINGS[Savings example:<br/>1 TB analytics table<br/><br/>LSM: $100/month<br/>Object storage: $10/month<br/><br/>10× cost reduction!]
+    end
+    
+    subgraph "Performance Trade-offs"
+        direction TB
+        
+        subgraph "LSM Performance"
+            LSM_WRITE[Writes: Fast<br/>~100K-1M/sec]
+            LSM_READ[Reads: Fast<br/>~1-10 ms]
+            LSM_UPDATE[Updates: Efficient<br/>Compaction handles]
+        end
+        
+        subgraph "File Reference Performance"
+            FILE_WRITE[Writes: External<br/>Upload separately]
+            FILE_READ[Reads: Fast<br/>Memory-mapped<br/>~1-10 ms]
+            FILE_UPDATE[Updates: Inefficient<br/>Rewrite entire file]
+        end
+    end
+    
+    subgraph "Hybrid Query Example"
+        direction TB
+        
+        QUERY[SQL Query:<br/>SELECT u.name, o.total, m.embedding<br/>FROM users u<br/>JOIN orders o ON u.id = o.user_id<br/>JOIN ml_embeddings m ON u.id = m.user_id]
+        
+        USERS_LSM[users table:<br/>Native LSM<br/>Frequent updates]
+        
+        ORDERS_LSM[orders table:<br/>Native LSM<br/>Transactional]
+        
+        EMBEDDINGS_FILE[ml_embeddings:<br/>File reference<br/>/models/embeddings.safetensors]
+        
+        QUERY --> USERS_LSM
+        QUERY --> ORDERS_LSM
+        QUERY --> EMBEDDINGS_FILE
+        
+        UNIFIED[All join in Arrow!<br/>Zero-copy across<br/>storage types]
+        
+        USERS_LSM --> UNIFIED
+        ORDERS_LSM --> UNIFIED
+        EMBEDDINGS_FILE --> UNIFIED
+    end
+    
+    subgraph "When to Use Each"
+        direction LR
+        
+        USE_LSM[Use Native LSM when:<br/>✅ Frequent writes/updates<br/>✅ Small-medium data <100 GB<br/>✅ Need ACID transactions<br/>✅ Low latency required<br/>✅ Recent/hot data]
+        
+        USE_FILE[Use File Reference when:<br/>✅ Immutable data<br/>✅ Large data >100 GB<br/>✅ Infrequent access<br/>✅ Cost optimization<br/>✅ ML models, archives]
+    end
+    
+    %% Styling
+    classDef decision fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef lsm fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef file fill:#F57C00,stroke:#E65100,color:#fff
+    classDef cost fill:#7CB342,stroke:#558B2F,color:#fff
+    classDef query fill:#00BCD4,stroke:#0097A7,color:#fff
+    classDef usage fill:#FFD700,stroke:#FFA000,color:#000
+    
+    class DECISION,HOT_CHECK,COLD_CHECK decision
+    class LSM,MEMTABLE,SSTABLE,BLOOM,LSM_EVENTS,LSM_TRANSACTIONS,LSM_METADATA,LSM_RECENT,ACCESS_LSM,LSM_WRITE,LSM_READ,LSM_UPDATE,USERS_LSM,ORDERS_LSM lsm
+    class FILE_REF,PATH,METADATA_REF,NO_COPY,PARQUET_FILE,SAFETENSORS_FILE,ZARR_FILE,HDF5_FILE,ACCESS_FILE,FILE_WRITE,FILE_READ,FILE_UPDATE,EMBEDDINGS_FILE file
+    class COST_LSM,COST_FILE,SAVINGS cost
+    class QUERY,UNIFIED query
+    class USE_LSM,USE_FILE usage
+
