@@ -4,7 +4,7 @@ graph TB
     end
     
     subgraph "Source Code"
-        SOURCE[```batuta<br/> def users-with-orders =<br/>   from users<br/>   | join orders on .id = .user_id<br/>   | where .total > 100<br/>   | select .name, .total<br/>```]
+        SOURCE["def users-with-orders =<br/>   from users<br/>   &#124; join orders on .id = .user_id<br/>   &#124; where .total > 100<br/>   &#124; select .name, .total"]
     end
     
     subgraph "Parsing"
@@ -111,11 +111,11 @@ graph TB
     subgraph "Macro System"
         direction TB
         
-        MACRO_DEF[Define Macro:<br/>```batuta<br/> defmacro when [test & body]<br/>   if ,test<br/>     do @body<br/>```]
+        MACRO_DEF["Define Macro:<br/>defmacro when test & body<br/>   if test<br/>     do body"]
         
         MACRO_EXPAND[Macro Expansion<br/>Hygienic macros]
         
-        MACRO_USE[Use Macro:<br/>```batuta<br/> when .age > 18<br/>   println "Adult"<br/>```]
+        MACRO_USE["Use Macro:<br/>when .age > 18<br/>   println Adult"]
         
         MACRO_DEF -.->|Expand| MACRO_EXPAND
         MACRO_USE --> MACRO_EXPAND
