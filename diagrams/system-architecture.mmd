@@ -6,19 +6,10 @@ graph TB
     end
     
     subgraph "🔺 Pyramid Nodes - Pyralog Cluster"
-        subgraph "Shen Ring Layer - The One Ring 𓍶"
-            SHEN[Shen Ring<br/>Unified Log Interface]
-            
-            subgraph "The Five Rings"
-                ANKH[☥ Ankh Ring<br/>Consistent Hashing]
-                SUNDIAL[⭕ Sundial Circle<br/>Gossip Membership]
-                CARTOUCHE[𓍹𓍺 Cartouche Ring<br/>Token Coordination]
-                OUROBOROS[🐍 Ouroboros Circle<br/>Chain Replication]
-            end
-        end
-        
         PYRAMID_RAFT[Raft Consensus<br/>Per Partition]
         PYRAMID_STORAGE[LSM Storage<br/>Segments & Indexes]
+        PARTITION[Partition Assignment<br/>Consistent Hashing]
+        MEMBERSHIP[Cluster Membership<br/>Gossip Protocol]
     end
     
     subgraph "🗿 Obelisk Nodes - ☀️ Pharaoh Network"
@@ -48,33 +39,27 @@ graph TB
         TOPOLOGY[Topology-Level Reactivity]
     end
     
-    %% Application to Shen Ring
+    %% Application to Pyramid
     APP --> BATUTA
     BATUTA --> QUERY
-    QUERY --> SHEN
+    QUERY --> PYRAMID_RAFT
+    QUERY --> PYRAMID_STORAGE
     
-    %% Shen Ring to Five Rings
-    SHEN --> ANKH
-    SHEN --> SUNDIAL
-    SHEN --> CARTOUCHE
-    SHEN --> OUROBOROS
-    
-    %% Five Rings to Coordination
-    ANKH --> SCARAB
-    SUNDIAL --> PHARAOH
-    CARTOUCHE --> PHARAOH
-    OUROBOROS --> OBELISK
+    %% Partition and membership
+    QUERY --> PARTITION
+    QUERY --> MEMBERSHIP
     
     %% Pyramid internals
-    SHEN --> PYRAMID_RAFT
-    SHEN --> PYRAMID_STORAGE
     PYRAMID_RAFT --> LSM
     PYRAMID_STORAGE --> LSM
     
-    %% Pyramid requests from Pharaoh Network
-    SHEN -->|Request IDs| OBELISK
+    %% Pyramid requests IDs from Pharaoh Network
+    QUERY -->|Request IDs| OBELISK
     OBELISK --> OBELISK_SPARSE
     OBELISK_SPARSE -->|Generate| SCARAB
+    
+    %% Partition assignment
+    PARTITION --> SCARAB
     
     %% Storage internals
     LSM --> SEGMENTS
@@ -85,13 +70,13 @@ graph TB
     %% Consensus
     RAFT --> QUORUM
     QUORUM --> COPYSET
-    COPYSET --> OUROBOROS
+    PYRAMID_RAFT --> RAFT
     
     %% Actor integration
     QUERY --> ACTORS
     ACTORS --> SUPERVISION
     SUPERVISION --> TOPOLOGY
-    TOPOLOGY --> SHEN
+    TOPOLOGY --> PYRAMID_RAFT
     
     %% Styling
     classDef primitive fill:#4A90E2,stroke:#2E5C8A,color:#fff
@@ -99,12 +84,12 @@ graph TB
     classDef pyramid_storage fill:#7CB342,stroke:#558B2F,color:#fff
     classDef consensus fill:#F57C00,stroke:#E65100,color:#fff
     classDef application fill:#9C27B0,stroke:#6A1B9A,color:#fff
-    classDef ring fill:#FFD700,stroke:#FFA000,color:#000
+    classDef coordination fill:#FFD700,stroke:#FFA000,color:#000
     
     class OBELISK,PHARAOH,SCARAB primitive
     class OBELISK_SPARSE obelisk_storage
     class LSM,SEGMENTS,INDEX,PPHM,TIERED,PYRAMID_STORAGE,PYRAMID_RAFT pyramid_storage
     class RAFT,QUORUM,COPYSET consensus
     class APP,BATUTA,QUERY,ACTORS,SUPERVISION,TOPOLOGY application
-    class SHEN,ANKH,SUNDIAL,CARTOUCHE,OUROBOROS ring
+    class PARTITION,MEMBERSHIP coordination
 
