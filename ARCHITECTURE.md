@@ -15,9 +15,8 @@
 
 ### Core Architecture
 4. [Two-Tier Node Architecture](#two-tier-node-architecture)
-5. [Shen Ring Architecture](#-shen-ring-architecture)
-6. [Consensus Protocol: Dual Raft](#consensus-protocol-dual-raft)
-7. [Storage Engine](#storage-engine)
+5. [Consensus Protocol: Dual Raft](#consensus-protocol-dual-raft)
+6. [Storage Engine](#storage-engine)
 
 ### Multi-Model & Query
 8. [Multi-Model Database](#multi-model-database)
@@ -72,7 +71,6 @@ Pyralog draws inspiration from **ancient Egyptian civilization** - a culture tha
 | **🗿 Obelisk Sequencer** | Novel | Persistent atomic counter (file size = value), 28B ops/sec |
 | **☀️ Pharaoh Network** | Novel | Lightweight coordination layer (Obelisk nodes) |
 | **🪲 Scarab IDs** | Novel | Crash-safe globally unique 64-bit IDs |
-| **𓍶 Shen Ring** | Novel | 5 unified distributed patterns |
 | **🎼 Batuta Language** | Novel | Category Theory + Functional Relational Algebra |
 | **Dual Raft Clusters** | Synthesized | Parallel failover (1000 partitions in 10ms) |
 | **CopySet Replication** | Synthesized | Maximum cluster utilization (90%+) |
@@ -103,7 +101,6 @@ Pyralog draws inspiration from **ancient Egyptian civilization** - a culture tha
 | Scarab seals (unique identity) | Globally unique IDs (Scarab IDs) |
 | Hieroglyphics (immutable records) | Append-only logs |
 | Pyramids (layered architecture) | Two-tier nodes (Obelisk vs Pyramid) |
-| Five crowns (unified power) | Five Rings (Shen Ring Architecture) |
 
 ---
 
@@ -721,353 +718,6 @@ impl PyramidNode {
 5. **Fault Isolation**: Obelisk failure doesn't affect storage
 
 **See also**: [NODES.md](NODES.md), [BRANDING.md](BRANDING.md) for two-tier architecture details, diagrams [system-architecture.mmd](diagrams/system-architecture.mmd), [component-relationships.mmd](diagrams/component-relationships.mmd).
-
----
-
-## 𓍶 Shen Ring Architecture
-
-**Five unified distributed patterns** for coordinated system behavior, inspired by Egyptian symbolism.
-
-### Overview
-
-The **Shen Ring** (𓍶) is an Egyptian hieroglyph meaning "eternity" or "protection". In Pyralog, it represents the **unification of five essential distributed patterns**:
-
-```
-      𓍶 Shen Ring
-    (Unified Log)
-         │
-    ┌────┼────┐
-    │    │    │
-   ☥    ⭕   𓍹𓍺   🐍
- Ankh  Sundial Cartouche Ouroboros
- Ring  Circle   Ring      Circle
-```
-
-### The Five Rings
-
-#### 1. ☥ Ankh Ring (Consistent Hashing)
-
-**Partition assignment and load balancing** using consistent hashing.
-
-**Purpose**: Distribute partitions evenly across nodes with minimal reassignment on topology changes.
-
-**Algorithm**:
-```rust
-pub struct AnkhRing {
-    ring: BTreeMap<u64, NodeId>,  // Hash → Node mapping
-    vnodes_per_node: usize,         // Virtual nodes
-}
-
-impl AnkhRing {
-    pub fn assign_partition(&self, partition_id: PartitionId) -> NodeId {
-        // 1. Hash partition ID
-        let hash = hash_partition(partition_id);
-        
-        // 2. Find next node on ring (clockwise)
-        let node = self.ring.range(hash..).next()
-            .or_else(|| self.ring.iter().next())  // Wrap around
-            .map(|(_, node)| *node)
-            .unwrap();
-        
-        node
-    }
-    
-    pub fn add_node(&mut self, node: NodeId) {
-        // Add virtual nodes for better distribution
-        for i in 0..self.vnodes_per_node {
-            let hash = hash_vnode(node, i);
-            self.ring.insert(hash, node);
-        }
-    }
-}
-```
-
-**Benefits**:
-- **Minimal movement**: Only affected partitions rebalance
-- **Even distribution**: Virtual nodes smooth out hotspots
-- **Fast lookup**: O(log N) with BTreeMap
-
-**Use cases**:
-- Partition → Node assignment
-- Read replica selection
-- Load balancing
-
-#### 2. ⭕ Sundial Circle (Gossip Protocol)
-
-**Cluster membership and failure detection** using gossip-style epidemic protocols.
-
-**Purpose**: Maintain consistent view of cluster membership without centralized coordination.
-
-**Algorithm**:
-```rust
-pub struct SundialCircle {
-    members: HashMap<NodeId, MemberState>,
-    gossip_interval: Duration,  // e.g., 1 second
-}
-
-#[derive(Debug, Clone)]
-pub struct MemberState {
-    node_id: NodeId,
-    status: NodeStatus,      // Alive, Suspected, Dead
-    heartbeat: u64,          // Monotonic counter
-    last_seen: SystemTime,
-}
-
-impl SundialCircle {
-    pub async fn gossip_tick(&mut self) {
-        // 1. Select random subset of nodes (fanout = 3)
-        let targets = self.select_random_nodes(3);
-        
-        // 2. Send our member list + our heartbeat
-        for target in targets {
-            self.send_gossip(target, self.members.clone()).await;
-        }
-        
-        // 3. Detect failures (no heartbeat for > 3x gossip_interval)
-        self.detect_failures();
-    }
-    
-    fn detect_failures(&mut self) {
-        let now = SystemTime::now();
-        let timeout = self.gossip_interval * 3;
-        
-        for member in self.members.values_mut() {
-            if now.duration_since(member.last_seen).unwrap() > timeout {
-                if member.status == NodeStatus::Alive {
-                    member.status = NodeStatus::Suspected;
-                } else if member.status == NodeStatus::Suspected {
-                    member.status = NodeStatus::Dead;
-                }
-            }
-        }
-    }
-}
-```
-
-**Benefits**:
-- **Decentralized**: No single point of failure
-- **Scalable**: O(log N) message complexity
-- **Fast convergence**: Membership updates propagate quickly
-
-**Use cases**:
-- Cluster membership tracking
-- Failure detection (heartbeats)
-- Metadata propagation
-
-#### 3. 𓍹𓍺 Cartouche Ring (Token-Based Coordination)
-
-**Mutual exclusion and resource allocation** using token passing.
-
-**Purpose**: Coordinate access to shared resources without centralized locks.
-
-**Algorithm**:
-```rust
-pub struct CartoucheRing {
-    ring: Vec<NodeId>,            // Ordered ring of nodes
-    token_holder: NodeId,          // Current token owner
-    request_queue: VecDeque<TokenRequest>,
-}
-
-impl CartoucheRing {
-    pub async fn request_token(&mut self, requester: NodeId) -> TokenLease {
-        // 1. Add to queue
-        self.request_queue.push_back(TokenRequest {
-            requester,
-            timestamp: SystemTime::now(),
-        });
-        
-        // 2. Wait for token to arrive
-        loop {
-            if self.token_holder == requester {
-                return TokenLease::new(requester, Duration::from_secs(30));
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-    }
-    
-    pub fn release_token(&mut self) {
-        // Pass token to next in queue
-        if let Some(next) = self.request_queue.pop_front() {
-            self.token_holder = next.requester;
-        } else {
-            // No waiters, pass to next node in ring
-            let idx = self.ring.iter().position(|&n| n == self.token_holder).unwrap();
-            self.token_holder = self.ring[(idx + 1) % self.ring.len()];
-        }
-    }
-}
-```
-
-**Benefits**:
-- **Fairness**: FIFO ordering for requests
-- **Deadlock-free**: Token always moves
-- **Low overhead**: No heavyweight locks
-
-**Use cases**:
-- Leader election (for partitions)
-- Exclusive resource access
-- Distributed transactions (2PC coordinator)
-
-#### 4. 🐍 Ouroboros Circle (Chain Replication)
-
-**Data durability and strong consistency** using chain replication.
-
-**Purpose**: Replicate writes through a chain of nodes for strong consistency and durability.
-
-**Algorithm**:
-```rust
-pub struct OuroborosCircle {
-    chain: Vec<NodeId>,  // Head → ... → Tail
-}
-
-impl OuroborosCircle {
-    pub async fn write(&self, record: Record) -> Result<()> {
-        // 1. Send to head of chain
-        let head = self.chain.first().unwrap();
-        self.send_to_node(*head, record.clone()).await?;
-        
-        // 2. Head propagates down the chain:
-        //    Head → Node2 → Node3 → ... → Tail
-        
-        // 3. Tail acknowledges back to client
-        //    (ensures all nodes in chain have the data)
-        
-        Ok(())
-    }
-    
-    // On each node in the chain:
-    pub async fn handle_write(&self, record: Record, next: Option<NodeId>) -> Result<()> {
-        // 1. Write locally
-        self.local_storage.append(record.clone()).await?;
-        
-        // 2. Forward to next in chain (if not tail)
-        if let Some(next_node) = next {
-            self.send_to_node(next_node, record).await?;
-        }
-        
-        // 3. If tail, acknowledge to client
-        if next.is_none() {
-            self.ack_to_client(record.id).await?;
-        }
-        
-        Ok(())
-    }
-}
-```
-
-**Benefits**:
-- **Strong consistency**: All nodes in chain have data before ACK
-- **Ordered replication**: Linear chain ensures order
-- **Fast reads**: Read from tail (most up-to-date)
-- **Low latency**: Pipeline writes through chain
-
-**Use cases**:
-- Primary replication strategy
-- Strong consistency requirements
-- Audit logs (sequential integrity)
-
-#### 5. 𓍶 Shen Ring (Unified Log Interface)
-
-**Append-only log with total ordering** - the core abstraction that unifies all other rings.
-
-**Purpose**: Provide a single, unified interface for all log operations.
-
-**Algorithm**:
-```rust
-pub struct ShenRing {
-    ankh: AnkhRing,               // Partition assignment
-    sundial: SundialCircle,       // Cluster membership
-    cartouche: CartoucheRing,     // Leader election
-    ouroboros: OuroborosCircle,   // Replication chain
-}
-
-impl ShenRing {
-    pub async fn append(&mut self, record: Record) -> Result<LogOffset> {
-        // 1. Use Ankh Ring: Determine partition
-        let partition = self.ankh.assign_partition(record.key);
-        
-        // 2. Use Cartouche Ring: Get partition leader
-        let leader = self.cartouche.get_leader(partition).await?;
-        
-        // 3. Use Sundial Circle: Check if leader is alive
-        if !self.sundial.is_alive(leader) {
-            // Trigger leader election via Cartouche
-            leader = self.cartouche.elect_leader(partition).await?;
-        }
-        
-        // 4. Use Ouroboros Circle: Replicate through chain
-        let offset = self.ouroboros.write(record).await?;
-        
-        Ok(offset)
-    }
-    
-    pub async fn read(&self, partition: PartitionId, offset: LogOffset) -> Result<Record> {
-        // 1. Use Ankh Ring: Find replica nodes
-        let replicas = self.ankh.get_replicas(partition);
-        
-        // 2. Use Sundial Circle: Filter alive replicas
-        let alive_replicas: Vec<_> = replicas.into_iter()
-            .filter(|&n| self.sundial.is_alive(n))
-            .collect();
-        
-        // 3. Read from any alive replica (Ouroboros tail is best)
-        let tail = self.ouroboros.get_tail(partition);
-        if alive_replicas.contains(&tail) {
-            return self.read_from_node(tail, partition, offset).await;
-        }
-        
-        // Fallback to any alive replica
-        let node = alive_replicas.first().unwrap();
-        self.read_from_node(*node, partition, offset).await
-    }
-}
-```
-
-**Benefits**:
-- **Unified interface**: Single API for all operations
-- **Composable**: Combines strengths of all rings
-- **Flexible**: Can swap implementations of individual rings
-- **Observable**: Each ring can be monitored independently
-
-**Use cases**:
-- Complete log system implementation
-- Multi-model database operations
-- Distributed queries
-
-### Shen Ring Architecture Diagram
-
-```
-┌──────────────────────────────────────────────────────┐
-│   Shen Ring Architecture (Five Unified Patterns)     │
-├──────────────────────────────────────────────────────┤
-│                                                      │
-│                   𓍶 Shen Ring                         │
-│                (Unified Log Interface)               │
-│                        │                             │
-│           ┌────────────┼────────────┐                │
-│           │            │            │                │
-│       ┌───┴───┐    ┌───┴───┐   ┌───┴───┐           │
-│       │       │    │       │   │       │            │
-│      ☥        ⭕   𓍹𓍺      🐍     │            │
-│    Ankh    Sundial Cartouche Ouroboros │            │
-│    Ring    Circle   Ring     Circle    │            │
-│       │       │        │        │                    │
-│  Partition  Cluster  Leader  Chain                   │
-│  Assignment Membership Election Replication          │
-│                                                      │
-│  Use Case Flow:                                      │
-│  1. Ankh: Which partition?                           │
-│  2. Cartouche: Who is leader?                        │
-│  3. Sundial: Is leader alive?                        │
-│  4. Ouroboros: Replicate data                        │
-│  5. Shen: Return success                             │
-│                                                      │
-└──────────────────────────────────────────────────────┘
-```
-
-**Performance**: Each ring operates independently, enabling parallelism and fault isolation.
-
-**See also**: [SHEN_RING.md](SHEN_RING.md) for comprehensive details, diagram [shen-ring.mmd](diagrams/shen-ring.mmd), blog post [12](blog/12-shen-ring.md).
 
 ---
 
@@ -3395,8 +3045,7 @@ Pyralog's architecture embodies **four core principles**.
 1. **🗿 Obelisk Sequencer** - File size as persistent atomic counter
 2. **☀️ Pharaoh Network** - Two-tier architecture (coordination vs storage)
 3. **🪲 Scarab IDs** - Crash-safe globally unique IDs
-4. **𓍶 Shen Ring** - Five unified distributed patterns
-5. **🎼 Batuta Language** - Category Theory + Functional Relational Algebra
+4. **🎼 Batuta Language** - Category Theory + Functional Relational Algebra
 
 ### Synthesized (Best of Breed)
 
@@ -3415,7 +3064,7 @@ Pyralog synthesizes innovations from:
 - **TiKV** (PingCAP): Multi-Raft architecture
 - **Raft** (Stanford): Proven consensus algorithm
 
-**Plus our own innovations**: Obelisk, Pharaoh, Scarab, Shen Ring, Batuta
+**Plus our own innovations**: Obelisk, Pharaoh, Scarab, Batuta
 
 ## The Big Picture
 
@@ -3449,7 +3098,7 @@ Pyralog synthesizes innovations from:
 **Built to last millennia. Built for the next generation of distributed systems.**
 
 This architecture combines:
-- **Novel primitives** (Obelisk, Pharaoh, Scarab, Shen Ring)
+- **Novel primitives** (Obelisk, Pharaoh, Scarab)
 - **Proven techniques** (Raft, CopySet, LSM-Tree, Arrow)
 - **Theoretical rigor** (Category Theory, Functional Relational Algebra)
 - **Practical performance** (10M+ writes/sec, sub-ms latencies)
