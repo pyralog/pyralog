@@ -45,8 +45,8 @@ graph TB
         FUNCTOR[Instance = Functor<br/>From schema to Sets]
         
         subgraph "Mapping Objects"
-            MAP_USER[User → Set of users<br/>{Alice, Bob, Carol}]
-            MAP_ORDER[Order → Set of orders<br/>{Order1, Order2}]
+            MAP_USER["User → Set of users<br/>Alice, Bob, Carol"]
+            MAP_ORDER["Order → Set of orders<br/>Order1, Order2"]
         end
         
         subgraph "Mapping Morphisms"
@@ -104,10 +104,10 @@ graph TB
         PULLBACK_DEF[Pullback:<br/>Universal property<br/>for joins]
         
         subgraph "Commutative Square"
-            A[Table A: users]
-            B[Table B: orders]
-            C[Common: user_id]
-            P[Pullback P:<br/>A ×_C B<br/>JOIN result]
+            A["Table A: users"]
+            B["Table B: orders"]
+            C["Common: user_id"]
+            P["Pullback P:<br/>A ×_C B<br/>JOIN result"]
             
             A -->|π1| C
             B -->|π2| C
@@ -126,13 +126,13 @@ graph TB
     subgraph "Algebraic Rewrite Rules"
         direction TB
         
-        RULE_FILTER[Filter pushdown:<br/>σ_p A ⊗ B<br/>≡<br/>σ_p A ⊗ B]
+        RULE_FILTER["Filter pushdown:<br/>σ_p (A ⊗ B)<br/>≡<br/>(σ_p A) ⊗ B"]
         
-        RULE_PROJECT[Projection pruning:<br/>π_x π_y,z A<br/>≡<br/>π_x A]
+        RULE_PROJECT["Projection pruning:<br/>π_x (π_y,z A)<br/>≡<br/>π_x A"]
         
-        RULE_JOIN[Join commutativity:<br/>A ⊗ B<br/>≡<br/>B ⊗ A]
+        RULE_JOIN["Join commutativity:<br/>A ⊗ B<br/>≡<br/>B ⊗ A"]
         
-        RULE_COMPOSE[Composition:<br/> f ∘ g ∘ h]
+        RULE_COMPOSE["Composition:<br/>f ∘ g ∘ h"]
         
         RULE_PROVEN[All proven correct!<br/>Category theory<br/>guarantees]
         
@@ -155,7 +155,7 @@ graph TB
         MONAD --> BIND
         MONAD --> LAWS
         
-        EXAMPLE[```batuta<br/>from users<br/>|> filter .age > 18<br/>|> map .name<br/>|> take 10<br/>```<br/><br/>Each step = monad bind!]
+        EXAMPLE["from users<br/>&#124;> filter .age > 18<br/>&#124;> map .name<br/>&#124;> take 10<br/><br/>Each step = monad bind!"]
     end
     
     subgraph "Benefits in Practice"
@@ -178,13 +178,13 @@ graph TB
     subgraph "Comparison with Traditional"
         direction TB
         
-        TRADITIONAL[Traditional SQL:<br/>• Ad-hoc semantics<br/>• Runtime errors<br/>• No formal proofs<br/>• Schema changes risky]
+        TRADITIONAL["Traditional SQL:<br/>• Ad-hoc semantics<br/>• Runtime errors<br/>• No formal proofs<br/>• Schema changes risky"]
         
-        CATEGORY_THEORY[Category Theory:<br/>✅ Mathematical foundation<br/>✅ Compile-time checks<br/>✅ Proven correct<br/>✅ Safe migrations]
+        CATEGORY_THEORY["Category Theory:<br/>✅ Mathematical foundation<br/>✅ Compile-time checks<br/>✅ Proven correct<br/>✅ Safe migrations"]
         
-        EXAMPLE_ERROR[Traditional:<br/>SELECT * FROM users<br/>JOIN orders<br/><br/>If schema changes:<br/>💥 Runtime error!]
+        EXAMPLE_ERROR["Traditional:<br/>SELECT * FROM users<br/>JOIN orders<br/><br/>If schema changes:<br/>💥 Runtime error!"]
         
-        EXAMPLE_SAFE[Category Theory:<br/>users.join orders<br/>on .id = .user_id<br/><br/>If schema changes:<br/>✅ Compile error<br/>Fix before deploy!]
+        EXAMPLE_SAFE["Category Theory:<br/>users.join orders<br/>on .id = .user_id<br/><br/>If schema changes:<br/>✅ Compile error<br/>Fix before deploy!"]
     end
     
     %% Styling
