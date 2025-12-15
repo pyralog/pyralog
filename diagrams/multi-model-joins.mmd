@@ -37,17 +37,17 @@ graph TB
         direction TB
         
         subgraph "SQL Table"
-            SQL_USERS[users table<br/>id: Int64<br/>name: Utf8<br/>country: Utf8]
+            SQL_USERS["users table<br/>id: Int64<br/>name: Utf8<br/>country: Utf8"]
         end
         
         subgraph "JSON Documents"
-            JSON_ORDERS[orders collection<br/>id: Int64<br/>user_id: Int64<br/>data: Struct<br/>product, price, qty]
+            JSON_ORDERS["orders collection<br/>id: Int64<br/>user_id: Int64<br/>data: Struct<br/>product, price, qty"]
         end
         
         subgraph "Category Theory Join"
-            CT_PULLBACK[Pullback:<br/>users ×_user_id orders]
-            CT_ARROW[Both in Arrow!<br/>Zero-copy join]
-            CT_RESULT[Result:<br/>Unified RecordBatch<br/>user_name, country, order_data]
+            CT_PULLBACK["Pullback:<br/>users ×_user_id orders"]
+            CT_ARROW["Both in Arrow!<br/>Zero-copy join"]
+            CT_RESULT["Result:<br/>Unified RecordBatch<br/>user_name, country, order_data"]
         end
         
         SQL_USERS --> CT_PULLBACK
@@ -60,19 +60,19 @@ graph TB
         direction TB
         
         subgraph "Property Graph"
-            GRAPH_NODES[Nodes: User, Product<br/>Arrow Struct<br/>properties]
-            GRAPH_EDGES[Edges: PURCHASED<br/>Arrow Struct<br/>source, target, properties]
+            GRAPH_NODES["Nodes: User, Product<br/>Arrow Struct<br/>properties"]
+            GRAPH_EDGES["Edges: PURCHASED<br/>Arrow Struct<br/>source, target, properties"]
         end
         
         subgraph "Relational Table"
-            REL_INVENTORY[inventory table<br/>product_id: Int64<br/>stock: Int32<br/>warehouse: Utf8]
+            REL_INVENTORY["inventory table<br/>product_id: Int64<br/>stock: Int32<br/>warehouse: Utf8"]
         end
         
         subgraph "Cross-Model Query"
-            QUERY[Query:<br/>MATCH u:User-[:PURCHASED]->p:Product<br/>JOIN inventory ON p.id = product_id<br/>WHERE stock > 0]
-            OPTIMIZE[DataFusion optimizer<br/>Push filters<br/>Reorder joins]
-            EXECUTE[Execute:<br/>Arrow compute kernels<br/>SIMD vectorized]
-            UNIFIED_RESULT[Unified result:<br/>Arrow RecordBatch]
+            QUERY["Query:<br/>MATCH u:User-PURCHASED->p:Product<br/>JOIN inventory ON p.id = product_id<br/>WHERE stock > 0"]
+            OPTIMIZE["DataFusion optimizer<br/>Push filters<br/>Reorder joins"]
+            EXECUTE["Execute:<br/>Arrow compute kernels<br/>SIMD vectorized"]
+            UNIFIED_RESULT["Unified result:<br/>Arrow RecordBatch"]
         end
         
         GRAPH_NODES --> QUERY
@@ -87,17 +87,17 @@ graph TB
         direction TB
         
         subgraph "Tensor Data"
-            TENSOR_EMBEDDINGS[User embeddings<br/>Arrow FixedSizeList<br/>768-dim vectors]
+            TENSOR_EMBEDDINGS["User embeddings<br/>Arrow FixedSizeList<br/>768-dim vectors"]
         end
         
         subgraph "Relational Data"
-            REL_USERS[users table<br/>user_id: Int64<br/>segment: Utf8<br/>score: Float64]
+            REL_USERS["users table<br/>user_id: Int64<br/>segment: Utf8<br/>score: Float64"]
         end
         
         subgraph "ML Feature Join"
-            ML_QUERY[Query:<br/>SELECT embedding, segment, score<br/>FROM embeddings<br/>JOIN users ON embedding.user_id = users.id<br/>WHERE segment = 'premium']
-            ML_ZERO_COPY[Zero-copy:<br/>No deserialize!<br/>Direct array access]
-            ML_TO_PYTORCH[Export to PyTorch<br/>DLPack zero-copy]
+            ML_QUERY["Query:<br/>SELECT embedding, segment, score<br/>FROM embeddings<br/>JOIN users ON embedding.user_id = users.id<br/>WHERE segment = premium"]
+            ML_ZERO_COPY["Zero-copy:<br/>No deserialize!<br/>Direct array access"]
+            ML_TO_PYTORCH["Export to PyTorch<br/>DLPack zero-copy"]
         end
         
         TENSOR_EMBEDDINGS --> ML_QUERY
@@ -110,21 +110,21 @@ graph TB
         direction TB
         
         subgraph "Schema as Category"
-            CT_OBJECTS[Objects:<br/>Data types<br/>Relations, Documents, Graphs]
-            CT_MORPHISMS[Morphisms:<br/>Transformations<br/>Queries, Joins]
-            CT_COMPOSITION[Composition:<br/>Q3 = Q2 ∘ Q1<br/>Associative]
+            CT_OBJECTS["Objects:<br/>Data types<br/>Relations, Documents, Graphs"]
+            CT_MORPHISMS["Morphisms:<br/>Transformations<br/>Queries, Joins"]
+            CT_COMPOSITION["Composition:<br/>Q3 = Q2 ∘ Q1<br/>Associative"]
         end
         
         subgraph "Pullback Semantics"
-            CT_PULLBACK_DEF[Pullback:<br/>Universal construction<br/>for joins]
-            CT_COMMUTE[Commutative diagram:<br/>Proven correctness]
-            CT_UNIQUE[Unique morphism:<br/>Deterministic result]
+            CT_PULLBACK_DEF["Pullback:<br/>Universal construction<br/>for joins"]
+            CT_COMMUTE["Commutative diagram:<br/>Proven correctness"]
+            CT_UNIQUE["Unique morphism:<br/>Deterministic result"]
         end
         
         subgraph "Benefits"
-            CT_PROVEN[Proven correct:<br/>Mathematical guarantee]
-            CT_OPTIMIZE[Algebraic laws:<br/>Rewrite rules]
-            CT_TYPE_SAFE[Type-safe:<br/>Compile-time checks]
+            CT_PROVEN["Proven correct:<br/>Mathematical guarantee"]
+            CT_OPTIMIZE["Algebraic laws:<br/>Rewrite rules"]
+            CT_TYPE_SAFE["Type-safe:<br/>Compile-time checks"]
         end
         
         CT_OBJECTS --> CT_PULLBACK_DEF
@@ -141,18 +141,18 @@ graph TB
         direction TB
         
         subgraph "Traditional Approach"
-            ETL_EXTRACT[Extract from DB1<br/>Serialize to JSON]
-            ETL_TRANSFORM[Transform<br/>Deserialize, process]
-            ETL_LOAD[Load to DB2<br/>Serialize again]
-            ETL_QUERY[Query<br/>Finally!]
-            ETL_TIME[Total: 10-50× slower<br/>Multiple copies]
+            ETL_EXTRACT["Extract from DB1<br/>Serialize to JSON"]
+            ETL_TRANSFORM["Transform<br/>Deserialize, process"]
+            ETL_LOAD["Load to DB2<br/>Serialize again"]
+            ETL_QUERY["Query<br/>Finally!"]
+            ETL_TIME["Total: 10-50× slower<br/>Multiple copies"]
         end
         
         subgraph "Pyralog Approach"
-            PYRA_QUERY[Query across models<br/>Single API]
-            PYRA_ZERO_COPY[Zero-copy:<br/>All data in Arrow]
-            PYRA_RESULT[Results<br/>Instantly]
-            PYRA_TIME[Total: 10-50× faster<br/>No copies!]
+            PYRA_QUERY["Query across models<br/>Single API"]
+            PYRA_ZERO_COPY["Zero-copy:<br/>All data in Arrow"]
+            PYRA_RESULT["Results<br/>Instantly"]
+            PYRA_TIME["Total: 10-50× faster<br/>No copies!"]
         end
         
         ETL_EXTRACT --> ETL_TRANSFORM
@@ -168,12 +168,12 @@ graph TB
     subgraph "Example Query: Multi-Model"
         direction TB
         
-        QUERY_CODE[```batuta<br/>graph:match u:User-[:LIKES]->p:Product<br/>| sql:join inventory on p.id = inventory.product_id<br/>| filter inventory.stock > 0<br/>| rdf:match ?p rdf:type schema:Product<br/>| tensor:lookup embedding where user = u.id<br/>| return u.name, p.title, embedding<br/>```]
+        QUERY_CODE["graph:match u:User-LIKES->p:Product<br/>&#124; sql:join inventory on p.id = inventory.product_id<br/>&#124; filter inventory.stock > 0<br/>&#124; rdf:match ?p rdf:type schema:Product<br/>&#124; tensor:lookup embedding where user = u.id<br/>&#124; return u.name, p.title, embedding"]
         
-        QUERY_COMPILE[Compile to:<br/>DataFusion LogicalPlan<br/>Category-theoretic joins]
-        QUERY_OPTIMIZE[Optimize:<br/>Push filters<br/>Reorder joins<br/>Prune columns]
-        QUERY_EXECUTE[Execute:<br/>Distributed actors<br/>Arrow kernels]
-        QUERY_RESULT[Result:<br/>Unified RecordBatch<br/>All models joined]
+        QUERY_COMPILE["Compile to:<br/>DataFusion LogicalPlan<br/>Category-theoretic joins"]
+        QUERY_OPTIMIZE["Optimize:<br/>Push filters<br/>Reorder joins<br/>Prune columns"]
+        QUERY_EXECUTE["Execute:<br/>Distributed actors<br/>Arrow kernels"]
+        QUERY_RESULT["Result:<br/>Unified RecordBatch<br/>All models joined"]
         
         QUERY_CODE --> QUERY_COMPILE
         QUERY_COMPILE --> QUERY_OPTIMIZE
@@ -184,11 +184,11 @@ graph TB
     subgraph "Schema Evolution"
         direction TB
         
-        SCHEMA_V1[Schema v1:<br/>users table<br/>id, name]
-        FUNCTOR[Functor:<br/>Add column<br/>email: Utf8]
-        SCHEMA_V2[Schema v2:<br/>users table<br/>id, name, email]
-        NAT_TRANSFORM[Natural transformation:<br/>Migrate data<br/>NULL for missing]
-        SCHEMA_PROVEN[Proven correct:<br/>Category theory<br/>guarantees]
+        SCHEMA_V1["Schema v1:<br/>users table<br/>id, name"]
+        FUNCTOR["Functor:<br/>Add column<br/>email: Utf8"]
+        SCHEMA_V2["Schema v2:<br/>users table<br/>id, name, email"]
+        NAT_TRANSFORM["Natural transformation:<br/>Migrate data<br/>NULL for missing"]
+        SCHEMA_PROVEN["Proven correct:<br/>Category theory<br/>guarantees"]
         
         SCHEMA_V1 --> FUNCTOR
         FUNCTOR --> SCHEMA_V2
@@ -199,10 +199,10 @@ graph TB
     subgraph "Benefits Summary"
         direction LR
         
-        BENEFIT_PERF[Performance:<br/>10-50× faster<br/>vs ETL pipelines]
-        BENEFIT_SIMPLE[Simplicity:<br/>Single query API<br/>vs multiple systems]
-        BENEFIT_CORRECT[Correctness:<br/>Category theory<br/>proven joins]
-        BENEFIT_TYPE[Type safety:<br/>Compile-time<br/>schema validation]
+        BENEFIT_PERF["Performance:<br/>10-50× faster<br/>vs ETL pipelines"]
+        BENEFIT_SIMPLE["Simplicity:<br/>Single query API<br/>vs multiple systems"]
+        BENEFIT_CORRECT["Correctness:<br/>Category theory<br/>proven joins"]
+        BENEFIT_TYPE["Type safety:<br/>Compile-time<br/>schema validation"]
         
         CT_PROVEN -.->|Enable| BENEFIT_CORRECT
         PYRA_ZERO_COPY -.->|Enable| BENEFIT_PERF
