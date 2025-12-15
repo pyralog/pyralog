@@ -61,7 +61,6 @@ Pyralog draws inspiration from **ancient Egyptian civilization** - a culture tha
 | Scarab seals (unique identity) | Globally unique IDs (Scarab IDs) |
 | Hieroglyphics (immutable records) | Append-only logs |
 | Pyramids (layered architecture) | Two-tier nodes (Obelisk vs Pyramid) |
-| Five crowns (unified power) | Five Rings (Shen Ring Architecture) |
 
 ### Key Innovations at a Glance
 
@@ -70,7 +69,6 @@ Pyralog draws inspiration from **ancient Egyptian civilization** - a culture tha
 | **🗿 Obelisk Sequencer** | Novel | 28B ops/sec, coordination-free |
 | **☀️ Pharaoh Network** | Novel | Lightweight coordination layer |
 | **🪲 Scarab IDs** | Novel | Crash-safe unique IDs |
-| **𓍶 Shen Ring** | Novel | 5 unified distributed patterns |
 | **🎼 Batuta Language** | Novel | Category Theory foundations |
 | **Dual Raft Clusters** | Synthesized | Parallel failover (1000 partitions in 10ms) |
 | **CopySet Replication** | Synthesized | 90%+ cluster utilization |
@@ -82,7 +80,7 @@ Pyralog draws inspiration from **ancient Egyptian civilization** - a culture tha
 
 ## Design Philosophy
 
-Pyralog's design embodies **four philosophical pillars** inspired by Egyptian architecture.
+Pyralog's design embodies **three philosophical pillars** inspired by Egyptian architecture.
 
 ### Egyptian Architecture Metaphor
 
@@ -133,17 +131,6 @@ Pyralog's design embodies **four philosophical pillars** inspired by Egyptian ar
 
 **Egyptian parallel**: Scarab seals as unique identifiers
 
-#### 4. 𓍶 Unified Patterns (Shen Ring)
-
-**Design choice**: Five distributed patterns in one architecture
-
-**Rationale**:
-- Ankh Ring (consistent hashing), Sundial Circle (gossip)
-- Cartouche Ring (token coordination), Ouroboros Circle (chain replication)
-- Shen Ring (unified log interface)
-
-**Egyptian parallel**: Shen hieroglyph meaning "eternity" or "protection"
-
 ---
 
 ## Core Design Principles
@@ -184,7 +171,6 @@ Pyralog's architecture follows **seven core principles**.
 - **Obelisk Sequencer**: File size as counter (not found in Kafka/LogDevice/TiKV)
 - **Pharaoh Network**: Two-tier separation (novel architecture)
 - **Scarab IDs**: Crash-safe Snowflake IDs (original enhancement)
-- **Shen Ring**: Unifies 5 patterns (novel composition)
 
 **Benefits**:
 - ✅ Coordination-free ID generation
@@ -1021,7 +1007,7 @@ Pyralog makes explicit **trade-offs** between simplicity, performance, and featu
 
 ## Innovation Summary
 
-Pyralog combines **5 novel + 10 synthesized** innovations.
+Pyralog combines **4 novel + 10 synthesized** innovations.
 
 ### Novel Contributions ⭐ (Original to Pyralog)
 
@@ -1043,13 +1029,7 @@ Pyralog combines **5 novel + 10 synthesized** innovations.
    - No coordination between generators
    - **Original enhancement**
 
-4. **𓍶 Shen Ring Architecture**
-   - Unifies 5 distributed patterns
-   - Egyptian symbolism for intuitive understanding
-   - Comprehensive distributed systems toolkit
-   - **Original composition**
-
-5. **🎼 Batuta Language**
+4. **🎼 Batuta Language**
    - Category Theory + Functional Relational Algebra
    - Two execution modes (client/server)
    - Actor-first distributed queries
@@ -1092,7 +1072,7 @@ Pyralog combines **5 novel + 10 synthesized** innovations.
 ### What Makes Pyralog Unique?
 
 **Combination**, not just individual features:
-- Novel primitives (Obelisk, Pharaoh, Scarab, Shen Ring, Batuta)
+- Novel primitives (Obelisk, Pharaoh, Scarab, Batuta)
 - + Proven techniques (Raft, CopySet, LSM-Tree, Arrow)
 - + Theoretical rigor (Category Theory, Functional Relational Algebra)
 - + Practical performance (10M+ writes/sec, sub-ms latencies)
@@ -1112,7 +1092,6 @@ Pyralog's implementation follows a **phased approach** from foundation to ecosys
 - [x] Branding overhaul (DLog → Pyralog)
 - [x] Novel primitives (Obelisk, Pharaoh, Scarab)
 - [x] Two-tier architecture
-- [x] Shen Ring patterns
 - [x] Basic storage (LSM-Tree)
 - [x] Raft consensus
 - [x] Documentation (48 markdown files, 93K lines)
@@ -1292,7 +1271,7 @@ Pyralog will be considered successful when it meets **technical, adoption, and e
 Pyralog represents a **synthesis of proven techniques and novel innovations** for the next generation of distributed systems:
 
 1. **Theoretical Rigor**: Category Theory, Functional Relational Algebra, formal semantics
-2. **Novel Primitives**: Obelisk Sequencer, Pharaoh Network, Scarab IDs, Shen Ring
+2. **Novel Primitives**: Obelisk Sequencer, Pharaoh Network, Scarab IDs
 3. **Multi-Model Unified**: 6 data models in Apache Arrow
 4. **Actor-First**: Distributed queries as self-healing actors
 5. **Cryptographic Safety**: Merkle trees, BLAKE3, zero-trust
@@ -1341,7 +1320,7 @@ Like the Egyptian pyramids that have stood for 4,500 years, Pyralog is designed 
 Pyralog isn't just another distributed log system. It's a **platform for secure, parallel, distributed, and decentralized computing** that:
 
 1. **Learns from the best** (LogDevice, Kafka, Redpanda, TiKV)
-2. **Innovates boldly** (Obelisk, Pharaoh, Scarab, Shen Ring, Batuta)
+2. **Innovates boldly** (Obelisk, Pharaoh, Scarab, Batuta)
 3. **Embraces theory** (Category Theory, Functional Relational Algebra)
 4. **Prioritizes practice** (Performance, reliability, operations)
 
