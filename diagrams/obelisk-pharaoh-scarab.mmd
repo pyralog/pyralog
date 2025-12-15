@@ -3,11 +3,11 @@ graph TB
         direction TB
         
         subgraph "The Innovation: File Size = Counter Value"
-            INNOVATION[Key Insight:<br/>Use filesystem metadata<br/>as counter storage]
+            INNOVATION["Key Insight:<br/>Use filesystem metadata<br/>as counter storage"]
             
-            COUNTER[AtomicU64<br/>In-memory counter]
-            SPARSE[Sparse File<br/>Append-only writes]
-            SIZE[file_size = counter_value]
+            COUNTER["AtomicU64<br/>In-memory counter"]
+            SPARSE["Sparse File<br/>Append-only writes"]
+            SIZE["file_size = counter_value"]
             
             INNOVATION --> COUNTER
             INNOVATION --> SPARSE
@@ -16,9 +16,9 @@ graph TB
         end
         
         subgraph "Operations"
-            INIT[Initialize:<br/>stat file_size → counter]
-            INCREMENT[Increment:<br/>fetch_add 1<br/>write &[0]<br/>fsync batched]
-            RECOVER[Recovery:<br/>stat file_size<br/>~2 µs]
+            INIT["Initialize:<br/>stat file_size → counter"]
+            INCREMENT["Increment:<br/>fetch_add 1<br/>write byte<br/>fsync batched"]
+            RECOVER["Recovery:<br/>stat file_size<br/>~2 µs"]
             
             INIT -.->|Setup| COUNTER
             COUNTER -->|Fast path| INCREMENT
@@ -28,10 +28,10 @@ graph TB
         end
         
         subgraph "Performance Characteristics"
-            PERF_WRITE[Write: 1-2 µs]
-            PERF_RECOVER[Recovery: 2 µs]
-            PERF_DISK[Disk: ~8 KB for billions]
-            PERF_SCALE[Scales: Unlimited]
+            PERF_WRITE["Write: 1-2 µs"]
+            PERF_RECOVER["Recovery: 2 µs"]
+            PERF_DISK["Disk: ~8 KB for billions"]
+            PERF_SCALE["Scales: Unlimited"]
             
             INCREMENT -.->|Latency| PERF_WRITE
             RECOVER -.->|Latency| PERF_RECOVER
@@ -44,11 +44,11 @@ graph TB
         direction TB
         
         subgraph "64-bit Structure"
-            BIT_LAYOUT[Bit 0: Sign 0<br/>Bits 1-41: Timestamp 41 bits<br/>Bits 42-51: Machine ID 10 bits<br/>Bits 52-63: Sequence 12 bits]
+            BIT_LAYOUT["Bit 0: Sign 0<br/>Bits 1-41: Timestamp 41 bits<br/>Bits 42-51: Machine ID 10 bits<br/>Bits 52-63: Sequence 12 bits"]
             
-            TIMESTAMP[Timestamp<br/>Milliseconds since epoch<br/>~69 years range]
-            MACHINE[Machine ID<br/>1024 machines<br/>5 bits DC + 5 bits worker]
-            SEQUENCE[Sequence<br/>4096 per millisecond<br/>From Obelisk Sequencer]
+            TIMESTAMP["Timestamp<br/>Milliseconds since epoch<br/>~69 years range"]
+            MACHINE["Machine ID<br/>1024 machines<br/>5 bits DC + 5 bits worker"]
+            SEQUENCE["Sequence<br/>4096 per millisecond<br/>From Obelisk Sequencer"]
             
             BIT_LAYOUT --> TIMESTAMP
             BIT_LAYOUT --> MACHINE
@@ -56,11 +56,11 @@ graph TB
         end
         
         subgraph "Generation Process"
-            GEN_TIME[Get current_ms]
-            GEN_MACHINE[Get machine_id]
-            GEN_SEQ[Get sequence from<br/>Obelisk Sequencer]
-            GEN_COMBINE[Combine:<br/>timestamp << 22<br/>| machine_id << 12<br/>| sequence]
-            GEN_ID[64-bit Scarab ID]
+            GEN_TIME["Get current_ms"]
+            GEN_MACHINE["Get machine_id"]
+            GEN_SEQ["Get sequence from<br/>Obelisk Sequencer"]
+            GEN_COMBINE["Combine:<br/>timestamp << 22<br/>&#124; machine_id << 12<br/>&#124; sequence"]
+            GEN_ID["64-bit Scarab ID"]
             
             GEN_TIME --> GEN_COMBINE
             GEN_MACHINE --> GEN_COMBINE
@@ -69,10 +69,10 @@ graph TB
         end
         
         subgraph "Properties"
-            PROP_UNIQUE[Globally Unique<br/>No collisions]
-            PROP_TIME[Time-ordered<br/>Sortable by time]
-            PROP_FAST[4+ billion IDs/sec<br/>Per coordinator type]
-            PROP_SAFE[Crash-safe<br/>No duplicate IDs]
+            PROP_UNIQUE["Globally Unique<br/>No collisions"]
+            PROP_TIME["Time-ordered<br/>Sortable by time"]
+            PROP_FAST["4+ billion IDs/sec<br/>Per coordinator type"]
+            PROP_SAFE["Crash-safe<br/>No duplicate IDs"]
             
             GEN_ID --> PROP_UNIQUE
             GEN_ID --> PROP_TIME
@@ -85,12 +85,12 @@ graph TB
         direction TB
         
         subgraph "The Pattern: 1,024 × 4 Types"
-            PATTERN[Traditional:<br/>1 coordinator → 500K ops/sec<br/><br/>Pharaoh:<br/>1,024 coordinators → 4B+ ops/sec]
+            PATTERN["Traditional:<br/>1 coordinator → 500K ops/sec<br/><br/>Pharaoh:<br/>1,024 coordinators → 4B+ ops/sec"]
             
-            N_TSO[1,024 TSO Nodes<br/>Timestamp allocation<br/>4B timestamps/sec]
-            N_TX[1,024 TX Coordinators<br/>Transaction management<br/>4B tx/sec]
-            N_SESSION[1,024 Session Managers<br/>Session tracking<br/>4B sessions/sec]
-            N_CONSUMER[1,024 Consumer Coords<br/>Consumer groups<br/>4B ops/sec]
+            N_TSO["1,024 TSO Nodes<br/>Timestamp allocation<br/>4B timestamps/sec"]
+            N_TX["1,024 TX Coordinators<br/>Transaction management<br/>4B tx/sec"]
+            N_SESSION["1,024 Session Managers<br/>Session tracking<br/>4B sessions/sec"]
+            N_CONSUMER["1,024 Consumer Coords<br/>Consumer groups<br/>4B ops/sec"]
             
             PATTERN --> N_TSO
             PATTERN --> N_TX
@@ -99,11 +99,11 @@ graph TB
         end
         
         subgraph "Routing Strategy"
-            HASH[Hash-based Routing<br/>No coordination!]
-            ROUTE_TSO[hash tx_id % 1024<br/>→ TSO node]
-            ROUTE_TX[hash tx_id % 1024<br/>→ TX coordinator]
-            ROUTE_SESSION[hash client_id % 1024<br/>→ Session manager]
-            ROUTE_CONSUMER[hash group_id % 1024<br/>→ Consumer coord]
+            HASH["Hash-based Routing<br/>No coordination!"]
+            ROUTE_TSO["hash tx_id % 1024<br/>→ TSO node"]
+            ROUTE_TX["hash tx_id % 1024<br/>→ TX coordinator"]
+            ROUTE_SESSION["hash client_id % 1024<br/>→ Session manager"]
+            ROUTE_CONSUMER["hash group_id % 1024<br/>→ Consumer coord"]
             
             HASH --> ROUTE_TSO
             HASH --> ROUTE_TX
@@ -112,10 +112,10 @@ graph TB
         end
         
         subgraph "Scaling Benefits"
-            BENEFIT_LINEAR[Linear Scaling<br/>2,048 nodes = 2× throughput]
-            BENEFIT_STATELESS[Stateless<br/>Just Obelisk counters]
-            BENEFIT_FAILOVER[Fast Failover<br/>Client retries different node]
-            BENEFIT_OPS[Total: 4B+ ops/sec per type<br/>Linear scaling]
+            BENEFIT_LINEAR["Linear Scaling<br/>2,048 nodes = 2× throughput"]
+            BENEFIT_STATELESS["Stateless<br/>Just Obelisk counters"]
+            BENEFIT_FAILOVER["Fast Failover<br/>Client retries different node"]
+            BENEFIT_OPS["Total: 4B+ ops/sec per type<br/>Linear scaling"]
             
             N_TSO -.->|Add nodes| BENEFIT_LINEAR
             ROUTE_TSO -.->|Hash routing| BENEFIT_STATELESS
