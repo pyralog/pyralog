@@ -1,6 +1,6 @@
 # 🔺 Pyralog - Platform for Secure, Parallel, Distributed, and Decentralized Computing
 
-> **Built to last millennia** · 🗿 Obelisk · ☀️ Pharaoh · 🪲 Scarab · 𓍶 Shen Ring · 🎼 Batuta
+> **Built to last millennia** · 🗿 Obelisk · ☀️ Pharaoh · 🪲 Scarab · 🎼 Batuta
 
 **A unified infrastructure for building secure, fault-tolerant distributed systems with cryptographic verification, actor-based concurrency, and functional programming abstractions.**
 
@@ -42,6 +42,32 @@ Pyralog has evolved from a distributed log into a **comprehensive computing plat
 | **🌐 Decentralized** | Proof of Stake/Work, autonomous agents, peer discovery (flocks), deploy-* operators, perfect hash functions | Autonomous operation, open networks, self-organizing, censorship resistance |
 
 **🎯 One Platform. Infinite Possibilities. Zero Compromises.**
+
+### How Does Pyralog Compare?
+
+**TL;DR**: Pyralog = **Kafka (distributed log) + ArangoDB (multi-model) + Category Theory foundations + Novel primitives**
+
+| Aspect | Kafka | ArangoDB | Pyralog |
+|--------|-------|----------|---------|
+| **Core Model** | Distributed log | Multi-model database | Unified log + multi-model |
+| **Data Models** | Log only | 3 (Relational, Document, Graph) | 6 (+ RDF, Tensor, Key-Value) |
+| **Cross-Model Queries** | ❌ No | ✅ Yes | ✅ Yes (10-50× faster via Arrow) |
+| **Streaming** | ✅ Best-in-class | ❌ Limited | ✅ Kafka-compatible + multi-model |
+| **Theoretical Foundations** | ❌ None | ❌ None | ✅ Category Theory, Functional RA |
+| **Novel Primitives** | ❌ Traditional | ❌ Traditional | ✅ Obelisk, Pharaoh, Scarab |
+| **Actor Model** | ❌ No | ❌ No | ✅ Erlang-style supervision trees |
+| **Crypto Verification** | ❌ No | ❌ No | ✅ BLAKE3 Merkle trees |
+
+**Key Insight**: Pyralog isn't just "Kafka + ArangoDB glued together" — it's a **unified log + multi-model database from the ground up**. The log **IS** the database, not separate systems.
+
+**Use Cases**:
+- **Replace Kafka**: When you need multi-model queries on streaming data
+- **Replace ArangoDB**: When you need Kafka-level streaming performance
+- **Beyond Both**: When you need Category Theory correctness, cryptographic verification, and actor-based execution
+
+📖 See [COMPARISON.md](COMPARISON.md) for detailed comparisons with Kafka, TiKV, LogDevice, Databend, and others.
+
+---
 
 - 🚀 **Distributed Log**: 500M writes/sec (Kafka replacement)
 - 💾 **Multi-Model Database**: SQL, Graph, Document, Key-Value, RDF in one system
@@ -85,18 +111,6 @@ Pyralog has evolved from a distributed log into a **comprehensive computing plat
 
 **Key Innovation**: 🗿 **Obelisk Sequencer** - coordination-free atomic counters using sparse files (file size = counter value). Separate coordination from storage/consensus for independent scaling.  
 📖 See [NODES.md](NODES.md) for complete architecture
-
-#### 𓍶 Shen Ring: Unified Distributed Patterns
-
-Five ring patterns that work together as **The One Ring**:
-
-- ☥ **Ankh Ring**: Consistent hashing for partition assignment
-- ⭕ **Sundial Circle**: Gossip protocol for cluster membership
-- 𓍹𓍺 **Cartouche Ring**: Token-based mutual exclusion
-- 🐍 **Ouroboros Circle**: Chain replication for durability
-- 𓍶 **Shen Ring**: Unified log interface (binds all patterns)
-
-📖 See [SHEN_RING.md](SHEN_RING.md) for algorithms and implementation
 
 ### 🔐 Cryptographic Verification
 
